@@ -4,12 +4,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.IllegalFormatException;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 class Header {
 
-    static String read(InputStream in) {
+    String dtype;
+    boolean fortranOrder;
+    int[] shape;
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder("{'descr': '");
+        b.append(dtype).append("', 'fortran_order': ");
+        if (fortranOrder) {
+            b.append("True");
+        } else {
+            b.append("False");
+        }
+        b.append(", 'shape': (");
+        if (shape != null) {
+            for (int i : shape) {
+                b.append(i).append(',');
+            }
+        }
+        b.append("), }");
+        return b.toString();
+    }
+
+    static Header read(InputStream in) {
         try {
             // The first 6 bytes are a magic string: exactly \x93NUMPY.
             byte[] bytes = new byte[6];
@@ -48,21 +71,52 @@ class Header {
             bytes = new byte[headerLength];
             in.read(bytes);
             String header = new String(bytes);
-            return header;
+            return parse(header);
         } catch (IOException e) {
             throw new RuntimeException("Failed to read header", e);
         }
     }
 
-    private static void parse(String s) {
-        Object top = null;
-        Object key = null;
-        Object val = null;
-        for (char c : s.toCharArray()) {
-            if (c == '{') {
+    static Header parse(String s) {
+        Header header = new Header();
+        Ref ref = new Ref();
+        ref.s = s.trim();
+        parseChar(ref, '{');
 
+        for (int i = 0; i < 3; i++) {
+            ref.strip();
+            String key = parseString(ref);
+            ref.strip();
+            parseChar(ref, ':');
+            ref.strip();
+            switch (key) {
+                case "descr":
+                    header.dtype = parseString(ref);
+                    break;
+                case "fortran_order":
+                    header.fortranOrder = parseBoolean(ref);
+                    break;
+                case "shape":
+                    header.shape = parseTuple(ref);
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "parsing header failed: bad dictionary key");
             }
+            ref.strip();
+            if (ref.s.charAt(0) == '}')
+                break;
+            parseChar(ref, ',');
         }
+
+        ref.strip();
+        parseChar(ref, '}');
+        ref.strip();
+        if (ref.s.length() != 0) {
+            throw new IllegalStateException(
+                    "malformed header");
+        }
+        return header;
     }
 
     private static String parseString(Ref ref) {
@@ -90,27 +144,62 @@ class Header {
                 "parsing header failed: excepted True or False");
     }
 
+    private static int parseInt(Ref ref) {
+        int len = 0;
+        for (int i = 0; i < ref.s.length(); i++) {
+            char c = ref.s.charAt(i);
+            if (!Character.isDigit(c)) {
+                break;
+            }
+            len++;
+        }
+        if (len == 0) {
+            throw new IllegalStateException(
+                    "parsing header failed: no digits");
+        }
+        String intstr = ref.s.substring(0, len);
+        ref.s = ref.s.substring(len);
+        return Integer.parseInt(intstr);
+    }
 
+    private static int[] parseTuple(Ref ref) {
+        parseChar(ref, '(');
+        List<Integer> tup = new ArrayList<>();
+        while (true) {
+            ref.strip();
+            if (ref.s.charAt(0) == ')')
+                break;
+            int n = parseInt(ref);
+            tup.add(n);
+            ref.strip();
+            if (ref.s.charAt(0) == ')')
+                break;
+            parseChar(ref, ',');
+        }
+        parseChar(ref, ')');
+
+        int[] tuple = new int[tup.size()];
+        for (int i = 0; i < tup.size(); i++) {
+            tuple[i] = tup.get(i);
+        }
+        return tuple;
+    }
 
     private static void parseChar(Ref ref, char c) {
         char first = ref.s.charAt(0);
         if (first != c) {
             throw new IllegalStateException(
                     "parsing header failed: expected character '"
-                    + c + "', found '"+ first +"'");
+                            + c + "', found '" + first + "'");
         }
         ref.s = ref.s.substring(1);
     }
 
     private static class Ref {
         String s;
+
+        void strip() {
+            s = s.trim();
+        }
     }
-
-
-    public static void main(String[] args) {
-        String header = "{'descr': '<i4', 'fortran_order': False, 'shape': (2,), }";
-        System.out.println(parseChar(header, '{'));
-        System.out.println(parseString("'descr': '<i4'")[1]);
-    }
-
 }
