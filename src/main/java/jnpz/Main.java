@@ -6,6 +6,7 @@ import java.io.File;
 public class Main {
 
     public static void main(String[] args) {
-        NPY.load("target/testdata/m.npy");
+        // NPY.load("target/testdata/m.npy");
+        NPZ.load("target/testdata/sparse.npz");
     }
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.IllegalFormatException;
+import java.util.function.Consumer;
 
 class Header {
 
@@ -50,6 +52,65 @@ class Header {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read header", e);
         }
+    }
+
+    private static void parse(String s) {
+        Object top = null;
+        Object key = null;
+        Object val = null;
+        for (char c : s.toCharArray()) {
+            if (c == '{') {
+
+            }
+        }
+    }
+
+    private static String parseString(Ref ref) {
+        parseChar(ref, '\'');
+        int i = ref.s.indexOf('\'');
+        if (i < 0) {
+            throw new IllegalStateException(
+                    "parsing header failed: malformed string");
+        }
+        String s = ref.s.substring(0, i);
+        ref.s = ref.s.substring(i + 1);
+        return s;
+    }
+
+    private static boolean parseBoolean(Ref ref) {
+        if (ref.s.substring(0, 4).equals("True")) {
+            ref.s = ref.s.substring(4);
+            return true;
+        }
+        if (ref.s.substring(0, 5).equals("False")) {
+            ref.s = ref.s.substring(5);
+            return false;
+        }
+        throw new IllegalStateException(
+                "parsing header failed: excepted True or False");
+    }
+
+
+
+    private static void parseChar(Ref ref, char c) {
+        char first = ref.s.charAt(0);
+        if (first != c) {
+            throw new IllegalStateException(
+                    "parsing header failed: expected character '"
+                    + c + "', found '"+ first +"'");
+        }
+        ref.s = ref.s.substring(1);
+    }
+
+    private static class Ref {
+        String s;
+    }
+
+
+    public static void main(String[] args) {
+        String header = "{'descr': '<i4', 'fortran_order': False, 'shape': (2,), }";
+        System.out.println(parseChar(header, '{'));
+        System.out.println(parseString("'descr': '<i4'")[1]);
     }
 
 }
