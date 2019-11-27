@@ -3,6 +3,8 @@ package jnpz;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+
 public class DenseFMatrixTest {
 
 	@Test
@@ -35,6 +37,18 @@ public class DenseFMatrixTest {
 		});
 		Assert.assertArrayEquals(m.getRow(0), new double[]{1., 3., 5.}, 1e-10);
 		Assert.assertArrayEquals(m.getRow(1), new double[]{2., 4., 6.}, 1e-10);
+	}
+
+	@Test
+	public void testWriteRead() {
+		File npy = new File("target/testdata/_j_dense_f_matrix.npy");
+		if (!npy.getParentFile().exists()) {
+			npy.getParentFile().mkdirs();
+		}
+		DenseFMatrix m = new DenseFMatrix(2, 3, new double[]{
+				1., 2., 3., 4., 5., 6.
+		});
+		m.toNPY(npy);
 	}
 
 }
