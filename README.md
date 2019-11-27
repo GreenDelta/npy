@@ -22,3 +22,5 @@ https://docs.scipy.org/doc/numpy-1.14.2/neps/npy-format.html
 Handling unsigned data: https://stackoverflow.com/a/9883582
 scipy data types: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
 scipy sparse matrix examples: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.load_npz.html#scipy.sparse.load_npz
+
+* in npy v2 the header length is 4 bytes!

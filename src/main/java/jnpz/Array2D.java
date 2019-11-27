@@ -1,13 +1,20 @@
 package jnpz;
 
-public interface Array2D {
+public interface Array2D extends ArrayND {
 
-    int[] shape();    
+    /**
+     * Get the values of the row with the given index i.
+     */
+    double[] getRow(int i);
 
-    double[] row(int i);
+    /**
+     * Get the values of the column with the given index j.
+     */
+    double[] getColumn(int j);
 
-    double[] column(int j);
-
-    double entry(int i, int j);
+    /**
+     * Get the value of the entry at row i and column j.
+     */
+    double get(int i, int j);
 
 }
