@@ -22,6 +22,14 @@ def write_npy():
     np.save(TESTDIR + "/m.npy", m)
 
 
+def write_dense_f_matrix():
+    m = np.array([
+        [1.0, 3.0, 5.0],
+        [2.0, 4.0, 6.0]
+    ], order='F')
+    np.save(TESTDIR + "/_p_dense_f_matrix.npy")
+
+
 def write_sparse_npz():
     sparse_matrix = scipy.sparse.csc_matrix(
         np.array([[0.0, 0.0, 3.0], [4.0, 0.0, 0.0]]))

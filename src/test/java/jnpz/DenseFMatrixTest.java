@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 public class DenseFMatrixTest {
 
@@ -40,7 +41,7 @@ public class DenseFMatrixTest {
 	}
 
 	@Test
-	public void testWriteRead() {
+	public void testWriteRead() throws Exception {
 		File npy = new File("target/testdata/_j_dense_f_matrix.npy");
 		if (!npy.getParentFile().exists()) {
 			npy.getParentFile().mkdirs();
@@ -49,6 +50,9 @@ public class DenseFMatrixTest {
 				1., 2., 3., 4., 5., 6.
 		});
 		m.toNPY(npy);
+		try (FileInputStream fis = new FileInputStream(npy)) {
+			System.out.println(Header.read(fis));
+		}
 	}
 
 }

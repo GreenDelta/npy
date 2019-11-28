@@ -62,7 +62,7 @@ public class DenseFMatrix implements Array2D {
 			head.dtype = "<f8";
 			head.shape = shape();
 			head.fortranOrder = true;
-			byte[] headerBytes = (head.toString()).getBytes("utf-8");
+			byte[] headerBytes = (head.toString()).getBytes("ascii");
 
 			// see https://docs.scipy.org/doc/numpy-1.14.2/neps/npy-format.html
 			// 6 bytes: “x93NUMPY”
@@ -95,18 +95,28 @@ public class DenseFMatrix implements Array2D {
 
             // header & padding
             buf.put(headerBytes);
-            buf.put((byte) '\n');
 			for (int i = 0; i < padding; i++) {
-                buf.put((byte) ' ');
-            }
+				buf.put((byte)' ');
+			}
+			buf.put((byte)'\n');
 
 			// write the matrix data
-            buf.order(ByteOrder.LITTLE_ENDIAN);
             for (double val : data) {
                 buf.putDouble(val);
             }
 		} catch (IOException e) {
 			throw new RuntimeException("failed to write to " + file, e);
 		}
+	}
+
+	public static void main(String[] args) {
+		File npy = new File("target/_j_dense_f_matrix_2.npy");
+		if (!npy.getParentFile().exists()) {
+			npy.getParentFile().mkdirs();
+		}
+		DenseFMatrix m = new DenseFMatrix(2, 3, new double[]{
+				1., 2., 3., 4., 5., 6.
+		});
+		m.toNPY(npy);
 	}
 }
