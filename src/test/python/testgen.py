@@ -27,7 +27,7 @@ def write_dense_f_matrix():
         [1.0, 3.0, 5.0],
         [2.0, 4.0, 6.0]
     ], order='F')
-    np.save(TESTDIR + "/_p_dense_f_matrix.npy")
+    np.save(TESTDIR + "/_p_dense_f_matrix.npy", m)
 
 
 def write_sparse_npz():
