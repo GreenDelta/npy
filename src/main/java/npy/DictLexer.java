@@ -90,13 +90,10 @@ class DictLexer {
   private StateFunction lexIdentifier() {
     var buffer = new StringBuilder();
     while (true) {
-      char c = next();
-      if (c == EOF) {
-        tokens.add(new Token(TokenType.EOF, "eof"));
-        return null;
-      }
+      char c = peek();
       if (!Character.isJavaIdentifierPart(c))
         break;
+      pos++;
       buffer.append(c);
     }
     tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
@@ -106,13 +103,10 @@ class DictLexer {
   private StateFunction lexNumber() {
     var buffer = new StringBuilder();
     while (true) {
-      char c = next();
-      if (c == EOF) {
-        tokens.add(new Token(TokenType.EOF, "eof"));
-        return null;
-      }
+      char c = peek();
       if (!Character.isDigit(c))
         break;
+      pos++;
       buffer.append(c);
     }
     tokens.add(new Token(TokenType.NUMBER, buffer.toString()));
@@ -143,7 +137,7 @@ class DictLexer {
     final TokenType type;
     final String value;
 
-    private Token(TokenType type, String value) {
+    Token(TokenType type, String value) {
       this.type = type;
       this.value = value;
     }
