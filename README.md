@@ -1,6 +1,6 @@
-# jnpz
+# npy
 
-`jnpz` is a small library for reading and writing 
+`npy` is a small library for reading and writing 
 [NPY and NPZ](https://numpy.org/devdocs/reference/generated/numpy.lib.format.html)
 files.
 

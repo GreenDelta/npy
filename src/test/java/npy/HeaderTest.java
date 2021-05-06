@@ -1,4 +1,4 @@
-package jnpz;
+package npy;
 
 import org.junit.Assert;
 import org.junit.Test;

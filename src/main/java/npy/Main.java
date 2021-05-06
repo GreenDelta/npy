@@ -1,6 +1,4 @@
-package jnpz;
-
-import java.io.File;
+package npy;
 
 // just for testing this for now
 public class Main {

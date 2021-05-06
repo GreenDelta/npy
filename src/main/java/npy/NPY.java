@@ -1,4 +1,4 @@
-package jnpz;
+package npy;
 
 import java.io.BufferedInputStream;
 import java.io.File;

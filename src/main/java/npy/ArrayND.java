@@ -1,4 +1,4 @@
-package jnpz;
+package npy;
 
 public interface ArrayND {
 
