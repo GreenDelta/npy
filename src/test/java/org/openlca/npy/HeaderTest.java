@@ -1,4 +1,4 @@
-package npy;
+package org.openlca.npy;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package npy;
+package org.openlca.npy;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package npy;
+package org.openlca.npy;
 
 // just for testing this for now
 public class Main {

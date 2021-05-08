@@ -1,4 +1,4 @@
-package npy;
+package org.openlca.npy;
 
 public interface Array2D extends ArrayND {
 

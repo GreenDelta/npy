@@ -1,4 +1,4 @@
-package npy;
+package org.openlca.npy.dict;
 
 import java.util.ArrayList;
 import java.util.List;
