@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // https://talks.golang.org/2011/lex.slide#27
-class DictLexer {
+class Lexer {
 
   private final char EOF = Character.MIN_VALUE;
 
@@ -13,12 +13,12 @@ class DictLexer {
 
   private int pos = -1;
 
-  private DictLexer(String input) {
+  private Lexer(String input) {
     this.input = input;
   }
 
   static List<Token> lex(String input) {
-    var lexer = new DictLexer(input);
+    var lexer = new Lexer(input);
     lexer.loop();
     return lexer.tokens;
   }
@@ -40,7 +40,7 @@ class DictLexer {
 
     // eof
     if (c == EOF) {
-      tokens.add(new Token(TokenType.EOF, "eof"));
+      tokens.add(Token.eof());
       return null;
     }
 
@@ -57,16 +57,15 @@ class DictLexer {
       return this::lexIdentifier;
 
     // single character tokens
-    var charType = TokenType.of(c);
-    if (charType != null) {
+    var charToken = Token.of(c);
+    if (charToken.isPresent()) {
       pos++;
-      tokens.add(new Token(charType, Character.toString(c)));
+      tokens.add(charToken.get());
       return this::lexText;
     }
 
     // error
-    tokens.add(new Token(
-      TokenType.ERROR, "unexpected character: '" + c + "'"));
+    tokens.add(Token.error("unexpected character: '" + c + "'"));
     return null;
   }
 
@@ -76,14 +75,14 @@ class DictLexer {
     while (true) {
       char c = next();
       if (c == EOF) {
-        tokens.add(new Token(TokenType.EOF, "eof"));
+        tokens.add(Token.eof());
         return null;
       }
       if (c == quote)
         break;
       buffer.append(c);
     }
-    tokens.add(new Token(TokenType.STRING, buffer.toString()));
+    tokens.add(Token.string(buffer));
     return this::lexText;
   }
 
@@ -96,7 +95,7 @@ class DictLexer {
       pos++;
       buffer.append(c);
     }
-    tokens.add(new Token(TokenType.IDENTIFIER, buffer.toString()));
+    tokens.add(Token.identifier(buffer));
     return this::lexText;
   }
 
@@ -109,7 +108,7 @@ class DictLexer {
       pos++;
       buffer.append(c);
     }
-    tokens.add(new Token(TokenType.NUMBER, buffer.toString()));
+    tokens.add(Token.number(buffer));
     return this::lexText;
   }
 
@@ -133,79 +132,4 @@ class DictLexer {
     StateFunction execute();
   }
 
-  static class Token {
-    final TokenType type;
-    final String value;
-
-    Token(TokenType type, String value) {
-      this.type = type;
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      switch (type) {
-        case EOF:
-          return "EOF";
-        case ERROR:
-          return "ERROR: " + value;
-        case STRING:
-          return "'" + value + "'";
-        default:
-          return value;
-      }
-    }
-
-  }
-
-  enum TokenType {
-
-    IDENTIFIER,
-
-    // quoted string
-    STRING,
-
-    // some number, integer or decimal
-    NUMBER,
-
-    COMMA,
-
-    COLON,
-
-    OBJECT_START,
-
-    OBJECT_END,
-
-    TUPLE_START,
-
-    TUPLE_END,
-
-    // end of file/input
-    EOF,
-
-    ERROR;
-
-    /**
-     * Returns the single-character token type for the given character. Retruns
-     * null if no such token type exists.
-     */
-    static TokenType of(char c) {
-      switch (c) {
-        case ',':
-          return COMMA;
-        case ':':
-          return COLON;
-        case '{':
-          return OBJECT_START;
-        case '}':
-          return OBJECT_END;
-        case '(':
-          return TUPLE_START;
-        case ')':
-          return TUPLE_END;
-        default:
-          return null;
-      }
-    }
-  }
 }
