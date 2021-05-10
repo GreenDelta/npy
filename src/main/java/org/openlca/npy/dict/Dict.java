@@ -1,5 +1,8 @@
 package org.openlca.npy.dict;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openlca.npy.DataType;
 import org.openlca.npy.Endianness;
 
@@ -13,6 +16,8 @@ public class Dict {
   private final Endianness endianness;
   private final boolean fortranOrder;
   private final int[] shape;
+
+  private final Map<String, String> properties = new HashMap<>();
 
   public Dict(DataType dataType,
               Endianness endianness,
@@ -38,9 +43,5 @@ public class Dict {
 
   public int[] shape() {
     return shape;
-  }
-
-  public static class Builder {
-
   }
 }
