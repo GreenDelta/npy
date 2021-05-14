@@ -4,39 +4,41 @@ import java.util.Optional;
 
 class Token {
 
+  final int position;
   final TokenType type;
   final String value;
 
-  Token(TokenType type, String value) {
+  Token(int position, TokenType type, String value) {
+    this.position = position;
     this.type = type;
     this.value = value;
   }
 
-  static Token error(String value) {
-    return new Token(TokenType.ERROR, value);
+  static Token error(int position, String value) {
+    return new Token(position, TokenType.ERROR, value);
   }
 
-  static Token eof() {
-    return new Token(TokenType.EOF, "EOF");
+  static Token eof(int position) {
+    return new Token(position, TokenType.EOF, "EOF");
   }
 
-  static Token string(StringBuilder value) {
-    return new Token(TokenType.STRING, value.toString());
+  static Token string(int position, StringBuilder value) {
+    return new Token(position, TokenType.STRING, value.toString());
   }
 
-  static Token identifier(StringBuilder value) {
-    return new Token(TokenType.IDENTIFIER, value.toString());
+  static Token identifier(int position, StringBuilder value) {
+    return new Token(position, TokenType.IDENTIFIER, value.toString());
   }
 
-  static Token number(StringBuilder value) {
-    return new Token(TokenType.NUMBER, value.toString());
+  static Token number(int position, StringBuilder value) {
+    return new Token(position, TokenType.NUMBER, value.toString());
   }
 
-  static Optional<Token> of(char c) {
+  static Optional<Token> of(int position, char c) {
     var type = TokenType.of(c);
     return type == null
       ? Optional.empty()
-      : Optional.of(new Token(type, Character.toString(c)));
+      : Optional.of(new Token(position, type, Character.toString(c)));
   }
 
   @Override

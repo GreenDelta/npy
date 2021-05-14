@@ -13,24 +13,24 @@ public class LexerTest {
     var tokens = Lexer.lex(
       "{'descr': '<i4', 'fortran_order': False, 'shape': (2,), }");
     var expectedTokens = List.of(
-      new Token(TokenType.OBJECT_START, "{"),
-      new Token(TokenType.STRING, "descr"),
-      new Token(TokenType.COLON, ":"),
-      new Token(TokenType.STRING, "<i4"),
-      new Token(TokenType.COMMA, ","),
-      new Token(TokenType.STRING, "fortran_order"),
-      new Token(TokenType.COLON, ":"),
-      new Token(TokenType.IDENTIFIER, "False"),
-      new Token(TokenType.COMMA, ","),
-      new Token(TokenType.STRING, "shape"),
-      new Token(TokenType.COLON, ":"),
-      new Token(TokenType.TUPLE_START, "("),
-      new Token(TokenType.NUMBER, "2"),
-      new Token(TokenType.COMMA, ","),
-      new Token(TokenType.TUPLE_END, ")"),
-      new Token(TokenType.COMMA, ","),
-      new Token(TokenType.OBJECT_END, "}"),
-      new Token(TokenType.EOF, "_")
+      new Token(0, TokenType.OBJECT_START, "{"),
+      new Token(1, TokenType.STRING, "descr"),
+      new Token(-1, TokenType.COLON, ":"),
+      new Token(-1, TokenType.STRING, "<i4"),
+      new Token(-1, TokenType.COMMA, ","),
+      new Token(-1, TokenType.STRING, "fortran_order"),
+      new Token(-1, TokenType.COLON, ":"),
+      new Token(-1, TokenType.IDENTIFIER, "False"),
+      new Token(-1, TokenType.COMMA, ","),
+      new Token(-1, TokenType.STRING, "shape"),
+      new Token(-1, TokenType.COLON, ":"),
+      new Token(-1, TokenType.TUPLE_START, "("),
+      new Token(-1, TokenType.NUMBER, "2"),
+      new Token(-1, TokenType.COMMA, ","),
+      new Token(-1, TokenType.TUPLE_END, ")"),
+      new Token(-1, TokenType.COMMA, ","),
+      new Token(-1, TokenType.OBJECT_END, "}"),
+      new Token(-1, TokenType.EOF, "_")
     );
     for (int i = 0; i < tokens.size(); i++) {
       var token = tokens.get(i);

@@ -1,11 +1,11 @@
 package org.openlca.npy.dict;
 
-class KeyValuePair {
+class PyKeyValuePair {
 
   private final String key;
-  private final Value value;
+  private final PyValue value;
 
-  KeyValuePair(String key, Value value) {
+  PyKeyValuePair(String key, PyValue value) {
     this.key = key;
     this.value = value;
   }
@@ -14,7 +14,7 @@ class KeyValuePair {
     return key;
   }
 
-  public Value value() {
+  public PyValue value() {
     return value;
   }
 }

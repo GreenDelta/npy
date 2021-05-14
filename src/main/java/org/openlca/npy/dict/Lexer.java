@@ -40,7 +40,7 @@ class Lexer {
 
     // eof
     if (c == EOF) {
-      tokens.add(Token.eof());
+      tokens.add(Token.eof(pos));
       return null;
     }
 
@@ -57,7 +57,7 @@ class Lexer {
       return this::lexIdentifier;
 
     // single character tokens
-    var charToken = Token.of(c);
+    var charToken = Token.of(pos, c);
     if (charToken.isPresent()) {
       pos++;
       tokens.add(charToken.get());
@@ -65,29 +65,31 @@ class Lexer {
     }
 
     // error
-    tokens.add(Token.error("unexpected character: '" + c + "'"));
+    tokens.add(Token.error(pos, "unexpected character: '" + c + "'"));
     return null;
   }
 
   private StateFunction lexString() {
     char quote = next();
     var buffer = new StringBuilder();
+    int start = pos;
     while (true) {
       char c = next();
       if (c == EOF) {
-        tokens.add(Token.eof());
+        tokens.add(Token.eof(pos));
         return null;
       }
       if (c == quote)
         break;
       buffer.append(c);
     }
-    tokens.add(Token.string(buffer));
+    tokens.add(Token.string(start, buffer));
     return this::lexText;
   }
 
   private StateFunction lexIdentifier() {
     var buffer = new StringBuilder();
+    int start = pos + 1;
     while (true) {
       char c = peek();
       if (!Character.isJavaIdentifierPart(c))
@@ -95,12 +97,13 @@ class Lexer {
       pos++;
       buffer.append(c);
     }
-    tokens.add(Token.identifier(buffer));
+    tokens.add(Token.identifier(start, buffer));
     return this::lexText;
   }
 
   private StateFunction lexNumber() {
     var buffer = new StringBuilder();
+    int start = pos + 1;
     while (true) {
       char c = peek();
       if (!Character.isDigit(c))
@@ -108,7 +111,7 @@ class Lexer {
       pos++;
       buffer.append(c);
     }
-    tokens.add(Token.number(buffer));
+    tokens.add(Token.number(start, buffer));
     return this::lexText;
   }
 

@@ -7,16 +7,21 @@ import java.util.Objects;
 /**
  * A dictionary value is a sequence of key-value pairs.
  */
-class DictValue {
+final class PyDict implements PyValue {
 
-  private final List<KeyValuePair> pairs = new ArrayList<>();
+  private final List<PyKeyValuePair> pairs = new ArrayList<>();
 
-  void add(KeyValuePair pair) {
+  @Override
+  public boolean isDict() {
+    return true;
+  }
+
+  void add(PyKeyValuePair pair) {
     pairs.add(pair);
   }
 
-  KeyValuePair get(String key) {
-    for (KeyValuePair pair : pairs) {
+  PyKeyValuePair get(String key) {
+    for (PyKeyValuePair pair : pairs) {
       if (Objects.equals(key, pair.key()))
         return pair;
     }
