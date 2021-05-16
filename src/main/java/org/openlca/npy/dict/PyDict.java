@@ -9,23 +9,42 @@ import java.util.Objects;
  */
 final class PyDict implements PyValue {
 
-  private final List<PyKeyValuePair> pairs = new ArrayList<>();
+  private final List<Entry> entries = new ArrayList<>();
 
   @Override
   public boolean isDict() {
     return true;
   }
 
-  void add(PyKeyValuePair pair) {
-    pairs.add(pair);
+  void put(String key, PyValue value) {
+    entries.add(new Entry(key, value));
   }
 
-  PyKeyValuePair get(String key) {
-    for (PyKeyValuePair pair : pairs) {
-      if (Objects.equals(key, pair.key()))
-        return pair;
+  PyValue get(String key) {
+    for (var entry : entries) {
+      if (Objects.equals(key, entry.key()))
+        return entry.value;
     }
     return null;
+  }
+
+  static class Entry {
+
+    private final String key;
+    private final PyValue value;
+
+    Entry(String key, PyValue value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    String key() {
+      return key;
+    }
+
+    PyValue value() {
+      return value;
+    }
   }
 
 }
