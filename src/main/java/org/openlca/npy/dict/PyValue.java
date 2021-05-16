@@ -26,6 +26,10 @@ interface PyValue {
     return (PyString) this;
   }
 
+  default boolean isInt() {
+    return false;
+  }
+
   default PyInt asInt() {
     return (PyInt) this;
   }
@@ -34,11 +38,11 @@ interface PyValue {
     return false;
   }
 
-  default boolean isInt() {
-    return false;
+  default PyIdentifier asIdentifier() {
+    return (PyIdentifier) this;
   }
 
-  default boolean isTupel() {
+  default boolean isTuple() {
     return false;
   }
 }

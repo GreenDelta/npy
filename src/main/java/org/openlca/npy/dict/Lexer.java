@@ -92,7 +92,7 @@ class Lexer {
     int start = pos + 1;
     while (true) {
       char c = peek();
-      if (!Character.isJavaIdentifierPart(c))
+      if (c == EOF || !Character.isJavaIdentifierPart(c))
         break;
       pos++;
       buffer.append(c);

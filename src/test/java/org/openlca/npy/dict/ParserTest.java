@@ -34,6 +34,21 @@ public class ParserTest {
   }
 
   @Test
+  public void testParseIdentifier() {
+    var ids = new String[] {
+      "True",
+      " False",
+      " class ",
+    };
+    for (var id : ids) {
+      var value = Parser.parse(id);
+      assertFalse(value.isError());
+      assertTrue(value.isIdentifier());
+      assertEquals(id.trim(), value.asIdentifier().value());
+    }
+  }
+
+  @Test
   public void testParseInt() {
     var integers = new String[] {
       "42",

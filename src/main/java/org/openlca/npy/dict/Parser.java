@@ -30,10 +30,10 @@ class Parser {
   private PyValue parseNext(int pos) {
     if (pos >= tokens.size())
       return PyError.of("empty input");
-    var first = tokens.get(0);
+    var first = tokens.get(pos);
     switch (first.type) {
-      case STRING:
-        return new PyString(first.value);
+      case IDENTIFIER:
+        return new PyIdentifier(first.value);
       case INTEGER:
         try {
           long value = Long.parseLong(first.value);
@@ -43,6 +43,8 @@ class Parser {
             "failed to parse integer: '"
             + first.value + "' at:" + first.position);
         }
+      case STRING:
+        return new PyString(first.value);
       default:
         return PyError.of(
           "syntax error: unexpected token '"
