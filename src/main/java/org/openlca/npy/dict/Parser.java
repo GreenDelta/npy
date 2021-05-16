@@ -34,6 +34,15 @@ class Parser {
     switch (first.type) {
       case STRING:
         return new PyString(first.value);
+      case INTEGER:
+        try {
+          long value = Long.parseLong(first.value);
+          return new PyInt(value);
+        } catch (NumberFormatException e) {
+          return PyError.of(
+            "failed to parse integer: '"
+            + first.value + "' at:" + first.position);
+        }
       default:
         return PyError.of(
           "syntax error: unexpected token '"

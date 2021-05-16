@@ -33,5 +33,18 @@ public class ParserTest {
     }
   }
 
-
+  @Test
+  public void testParseInt() {
+    var integers = new String[] {
+      "42",
+      " 42",
+      " 42 ",
+    };
+    for (var s : integers) {
+      var value = Parser.parse(s);
+      assertFalse(value.isError());
+      assertTrue(value.isInt());
+      assertEquals(42, value.asInt().value());
+    }
+  }
 }

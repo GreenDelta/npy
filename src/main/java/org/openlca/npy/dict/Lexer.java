@@ -111,7 +111,7 @@ class Lexer {
       pos++;
       buffer.append(c);
     }
-    tokens.add(Token.number(start, buffer));
+    tokens.add(Token.integer(start, buffer));
     return this::lexText;
   }
 

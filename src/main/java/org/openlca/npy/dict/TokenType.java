@@ -6,7 +6,7 @@ enum TokenType {
 
   STRING,
 
-  NUMBER,
+  INTEGER,
 
   COMMA,
 

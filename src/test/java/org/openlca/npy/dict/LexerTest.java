@@ -25,7 +25,7 @@ public class LexerTest {
       new Token(-1, TokenType.STRING, "shape"),
       new Token(-1, TokenType.COLON, ":"),
       new Token(-1, TokenType.TUPLE_START, "("),
-      new Token(-1, TokenType.NUMBER, "2"),
+      new Token(-1, TokenType.INTEGER, "2"),
       new Token(-1, TokenType.COMMA, ","),
       new Token(-1, TokenType.TUPLE_END, ")"),
       new Token(-1, TokenType.COMMA, ","),

@@ -26,11 +26,15 @@ interface PyValue {
     return (PyString) this;
   }
 
+  default PyInt asInt() {
+    return (PyInt) this;
+  }
+
   default boolean isIdentifier() {
     return false;
   }
 
-  default boolean isNumber() {
+  default boolean isInt() {
     return false;
   }
 

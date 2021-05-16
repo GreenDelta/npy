@@ -30,8 +30,8 @@ class Token {
     return new Token(position, TokenType.IDENTIFIER, value.toString());
   }
 
-  static Token number(int position, StringBuilder value) {
-    return new Token(position, TokenType.NUMBER, value.toString());
+  static Token integer(int position, StringBuilder value) {
+    return new Token(position, TokenType.INTEGER, value.toString());
   }
 
   static Optional<Token> of(int position, char c) {
