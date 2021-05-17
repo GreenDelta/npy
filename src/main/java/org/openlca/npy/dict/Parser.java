@@ -63,15 +63,30 @@ class Parser {
       return PyError.of(
         "syntax error: expected tuple start at " + startToken.position);
     var values = new ArrayList<PyValue>();
-    boolean first = true;
-    int pos = start + 1;
+
+    boolean head = true;
+    int pos = start;
     while (true) {
+      pos++;
+      if (pos >= tokens.size())
+        return PyError.of("syntax error: unexpected end of tuple");
 
-      //
-      if (!first) {
+      var next = tokens.get(pos);
+      if (next.type == TokenType.TUPLE_END)
+        break;
 
+      if (!head) {
+        if (next.type != TokenType.COMMA)
+          return PyError.of("syntax error: unexpected token: " + next);
+        head = true;
+        continue;
       }
-      first = false;
+
+      var value = parseNext(pos);
+      if (value.isError())
+        return value;
+      values.add(value);
+      head = false;
     }
     return new PyTuple(values);
   }
