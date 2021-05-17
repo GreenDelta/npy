@@ -41,6 +41,10 @@ class Token {
       : Optional.of(new Token(position, type, Character.toString(c)));
   }
 
+  boolean isEof() {
+    return type == TokenType.EOF;
+  }
+
   @Override
   public String toString() {
     switch (type) {

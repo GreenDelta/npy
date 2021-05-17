@@ -6,6 +6,7 @@ import java.util.List;
 class Parser {
 
   private final List<Token> tokens;
+  private int pos = -1;
 
   private Parser(List<Token> tokens) {
     this.tokens = tokens;
@@ -25,17 +26,17 @@ class Parser {
           "syntax error: " + token.value + "; at " + token.position);
     }
 
-    return new Parser(tokens).parseNext(0);
+    return new Parser(tokens).parseNext();
   }
 
-  private PyValue parseNext(int pos) {
-    if (pos >= tokens.size())
-      return PyError.of("empty input");
-    var token = tokens.get(pos);
+  private PyValue parseNext() {
+    var token = peek();
     switch (token.type) {
       case IDENTIFIER:
+        moveNext();
         return new PyIdentifier(token.value);
       case INTEGER:
+        moveNext();
         try {
           long value = Long.parseLong(token.value);
           return new PyInt(value);
@@ -45,9 +46,10 @@ class Parser {
             + token.value + "' at:" + token.position);
         }
       case STRING:
+        moveNext();
         return new PyString(token.value);
       case TUPLE_START:
-        return parseTuple(pos);
+        return parseTuple();
       default:
         return PyError.of(
           "syntax error: unexpected token '"
@@ -55,40 +57,57 @@ class Parser {
     }
   }
 
-  private PyValue parseTuple(int start) {
-    if (start >= tokens.size())
-      return PyError.of("syntax error: unexpected end");
-    var startToken = tokens.get(start);
-    if (startToken.type != TokenType.TUPLE_START)
+  private PyValue parseTuple() {
+    var start = next();
+    if (start.type != TokenType.TUPLE_START)
       return PyError.of(
-        "syntax error: expected tuple start at " + startToken.position);
+        "syntax error: expected tuple start at " + start.position);
     var values = new ArrayList<PyValue>();
-
     boolean head = true;
-    int pos = start;
-    while (true) {
-      pos++;
-      if (pos >= tokens.size())
-        return PyError.of("syntax error: unexpected end of tuple");
 
-      var next = tokens.get(pos);
-      if (next.type == TokenType.TUPLE_END)
+    while (true) {
+      var next = peek();
+      if (next.isEof())
+        return PyError.of("syntax error: unexpected end of tuple");
+      if (next.type == TokenType.TUPLE_END) {
+        moveNext();
         break;
+      }
 
       if (!head) {
         if (next.type != TokenType.COMMA)
           return PyError.of("syntax error: unexpected token: " + next);
         head = true;
+        moveNext();
         continue;
       }
 
-      var value = parseNext(pos);
+      var value = parseNext();
       if (value.isError())
         return value;
       values.add(value);
       head = false;
     }
     return new PyTuple(values);
+  }
+
+  private Token peek() {
+    int nextPos = pos + 1;
+    return nextPos < tokens.size()
+      ? tokens.get(nextPos)
+      : Token.eof(-1);
+  }
+
+  private Token next() {
+    var peeked = peek();
+    if (peeked.type != TokenType.EOF) {
+      pos++;
+    }
+    return peeked;
+  }
+
+  private void moveNext() {
+    pos++;
   }
 
 }
