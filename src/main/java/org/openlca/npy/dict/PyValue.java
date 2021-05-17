@@ -45,4 +45,8 @@ interface PyValue {
   default boolean isTuple() {
     return false;
   }
+
+  default PyTuple asTuple() {
+    return (PyTuple) this;
+  }
 }
