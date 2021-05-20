@@ -22,7 +22,7 @@ public class HeaderDictionary {
   private final int[] shape;
   private final Map<String, String> properties;
 
-  public HeaderDictionary(Builder builder) {
+  private HeaderDictionary(Builder builder) {
     this.dataType = builder.dataType;
     this.shape = Arrays.copyOf(builder.dimensions, builder.dimensions.length);
     this.byteOrder = builder.byteOrder == null
@@ -96,8 +96,25 @@ public class HeaderDictionary {
         "invalid header dictionary; data type field " +
         "'descr' is not a string but: " + typeEntry);
 
+    var dtype = typeEntry.asString().value();
 
-    return null;
+    var builder = of(getDataType(dtype), getShape(dict))
+      .withFortranOrder(getFortranOrder(dict))
+      .withByteOrder(getByteOrder(dtype));
+
+    // collect other string properties
+    dict.forEach((key, val) -> {
+      if (!val.isString())
+        return;
+      if (key.equals("descr")
+          || key.equals("shape")
+          || key.equals("fortran_order"))
+        return;
+      builder.withOtherProperty(
+        key, val.asString().value());
+    });
+
+    return builder.create();
   }
 
   private static boolean getFortranOrder(PyDict dict) {
@@ -154,6 +171,31 @@ public class HeaderDictionary {
       "unsupported data type: '" + symbol + "'");
   }
 
+  private static int[] getShape(PyDict dict) {
+    var entry = dict.get("shape");
+    if (entry.isNone()) {
+      throw new UnsupportedFormatException(
+        "invalid header dictionary: property 'shape' is missing");
+    }
+    if (!entry.isTuple()) {
+      throw new UnsupportedFormatException(
+        "invalid header dictionary: property 'shape' is not a tuple");
+    }
+
+    var tuple = entry.asTuple();
+    int[] shape = new int[tuple.size()];
+    for (int i = 0; i < tuple.size(); i++) {
+      var value = tuple.at(i);
+      if (!value.isInt()) {
+        throw new UnsupportedFormatException(
+          "invalid header dictionary: argument "
+          + i + " of tuple 'shape' is not an integer");
+      }
+      shape[i] = (int) value.asInt().value();
+    }
+    return shape;
+  }
+
   public static class Builder {
 
     private final DataType dataType;
@@ -180,11 +222,17 @@ public class HeaderDictionary {
     }
 
     public Builder withOtherProperty(String key, String value) {
+      if (key == null || value == null)
+        return this;
       if (properties == null) {
         properties = new HashMap<>();
       }
       properties.put(key, value);
       return this;
+    }
+
+    public HeaderDictionary create() {
+      return new HeaderDictionary(this);
     }
   }
 }

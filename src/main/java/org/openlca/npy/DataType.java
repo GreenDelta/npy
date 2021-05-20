@@ -8,42 +8,52 @@ package org.openlca.npy;
 public enum DataType {
 
   /**
-   * A signed byte, 8-bit integer
+   * 8-bit signed integers
    */
   i("b"),
 
   /**
-   * A unsigned byte, 8-bit integer.
+   * 8-bit unsigned integers
    */
   u("B"),
 
   /**
-   * A 2-byte, 16 bit signed integer.
+   * 16 bit signed integers
    */
   i2("i2"),
 
   /**
-   * A 2-byte, 16 bit unsigned integer.
+   * 16 bit unsigned integers
    */
   u2("u2"),
 
   /**
-   * A 4-byte, 32 bit signed integer.
+   * 32 bit signed integers
    */
   i4("i4"),
 
   /**
-   * A 4-byte, 32 bit unsigned integer.
+   * 32 bit floating point numbers
+   */
+  f4("f4"),
+
+  /**
+   * 32 bit unsigned integers
    */
   u4("u4"),
 
   /**
-   * A 8-byte, 64 bit signed integer.
+   * 64 bit signed integers
    */
   i8("i8"),
 
   /**
-   * A 8-byte, 64 bit unsigned integer.
+   * 64 bit floating point numbers
+   */
+  f8("f8"),
+
+  /**
+   * 64 bit unsigned integers
    */
   u8("u4");
 

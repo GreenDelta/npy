@@ -3,6 +3,7 @@ package org.openlca.npy.dict;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 /**
  * A dictionary value is a sequence of key-value pairs.
@@ -17,6 +18,8 @@ final class PyDict implements PyValue {
   }
 
   void put(String key, PyValue value) {
+    if (key == null || value == null)
+      return;
     entries.add(new Entry(key, value));
   }
 
@@ -30,6 +33,12 @@ final class PyDict implements PyValue {
 
   public int size() {
     return entries.size();
+  }
+
+  void forEach(BiConsumer<String, PyValue> fn) {
+    for (var entry : entries) {
+      fn.accept(entry.key(), entry.value());
+    }
   }
 
   static class Entry {
