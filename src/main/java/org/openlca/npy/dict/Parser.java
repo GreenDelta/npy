@@ -26,7 +26,18 @@ class Parser {
           "syntax error: " + token.value + "; at " + token.position);
     }
 
-    return new Parser(tokens).parseNext();
+    // parse the value and make sure that it is followed by EOF
+    var parser = new Parser(tokens);
+    var value = parser.parseNext();
+    if (value.isError())
+      return value;
+    var next = parser.next();
+    if (!next.isEof())
+      return PyError.of(
+        "syntax error: expected EOF at "
+        + next.position + " but found: " + next);
+
+    return value;
   }
 
   private PyValue parseNext() {
@@ -50,6 +61,8 @@ class Parser {
         return new PyString(token.value);
       case TUPLE_START:
         return parseTuple();
+      case DICT_START:
+        return parseDict();
       default:
         return PyError.of(
           "syntax error: unexpected token '"
@@ -89,6 +102,41 @@ class Parser {
       head = false;
     }
     return new PyTuple(values);
+  }
+
+  private PyValue parseDict() {
+    var start = next();
+    if (start.type != TokenType.DICT_START)
+      return PyError.of(
+        "syntax error: expected dict start at " + start.position);
+    var dict = new PyDict();
+    boolean head = true;
+
+    while (true) {
+      var next = next();
+      if (next.type == TokenType.DICT_END)
+        break;
+      if (!head) {
+        if (next.type != TokenType.COMMA)
+          return PyError.of("syntax error: unexpected token: " + next);
+        head = true;
+        continue;
+      }
+      if (next.type != TokenType.STRING)
+        return PyError.of(
+          "syntax error: only string keys are allowed but found: " + next);
+      var key = next.value;
+      var colon = next();
+      if (colon.type != TokenType.COLON)
+        return PyError.of(
+          "syntax error: expected colon but found: " + next);
+      var value = parseNext();
+      if (value.isError())
+        return value;
+      dict.put(key, value);
+      head = false;
+    }
+    return dict;
   }
 
   private Token peek() {

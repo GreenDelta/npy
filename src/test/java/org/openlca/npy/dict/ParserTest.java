@@ -16,8 +16,24 @@ public class ParserTest {
   }
 
   @Test
+  public void testSyntaxErrors() {
+    var strings = new String[]{
+      " 1 2",
+      " 1, ",
+      "( a, b",
+      "'some",
+      "{ a : b}, "
+    };
+    for (var s : strings) {
+      assertTrue(
+        "'" + s + "' should give a syntax error",
+        Parser.parse(s).isError());
+    }
+  }
+
+  @Test
   public void testParseStrings() {
-    var strings = new String[] {
+    var strings = new String[]{
       "some",
       " some more",
       " some more strings  "
@@ -35,7 +51,7 @@ public class ParserTest {
 
   @Test
   public void testParseIdentifiers() {
-    var ids = new String[] {
+    var ids = new String[]{
       "True",
       " False",
       " class ",
@@ -50,7 +66,7 @@ public class ParserTest {
 
   @Test
   public void testParseInt() {
-    var integers = new String[] {
+    var integers = new String[]{
       "42",
       " 42",
       " 42 ",
@@ -65,7 +81,7 @@ public class ParserTest {
 
   @Test
   public void testParseIntTuples() {
-    var tuples = new String[] {
+    var tuples = new String[]{
       "()",
       "( 42, )",
       " (42, 42) ",
@@ -78,7 +94,7 @@ public class ParserTest {
       assertTrue(value.isTuple());
       var tuple = value.asTuple();
       assertEquals(i, tuple.size());
-      for (int j = 0;  j < i; j++) {
+      for (int j = 0; j < i; j++) {
         var elem = tuple.at(j);
         assertFalse(elem.isError());
         assertTrue(elem.isInt());
@@ -89,7 +105,7 @@ public class ParserTest {
 
   @Test
   public void testParseTupleErrors() {
-    var tuples = new String[] {
+    var tuples = new String[]{
       "(",
       "(, )",
       "(42 42)",
@@ -119,6 +135,53 @@ public class ParserTest {
     assertEquals(2, inner.size());
     assertEquals(1, inner.at(0).asInt().value());
     assertEquals("False", inner.at(1).asIdentifier().value());
+  }
+
+  @Test
+  public void testParseDict() {
+    var strings = new String[] {
+      "{'a':1,'b':True}",
+      "{'a' : 1, 'b' : True, }",
+      " { 'a' : 1, 'b' : True , } ",
+    };
+    for (var s : strings) {
+      var value = Parser.parse(s);
+      assertFalse(value.isError());
+      assertTrue(value.isDict());
+      var dict = value.asDict();
+      assertEquals(2, dict.size());
+      assertEquals(1, dict.get("a").asInt().value());
+      assertEquals("True", dict.get("b").asIdentifier().value());
+    }
+  }
+
+  @Test
+  public void testParseDictErrors() {
+    var strings = new String[] {
+      "{",
+      "{,}",
+      "{'a' 1}",
+      "{'a': 1 'b': 2}",
+      "{'a': 1, 'b': 2,,}",
+      "{'a': 1, 'b': 2,",
+    };
+    for (var s : strings) {
+      var value = Parser.parse(s);
+      assertFalse(value.isDict());
+      assertTrue(value.isError());
+    }
+  }
+
+  @Test
+  public void testParseHeaderDict() {
+    var s = "{'descr': '<i4', 'fortran_order': False, 'shape': (2,), }";
+    var dict = Parser.parse(s).asDict();
+    assertEquals(3, dict.size());
+    assertEquals("<i4", dict.get("descr").asString().value());
+    assertEquals("False", dict.get("fortran_order").asIdentifier().value());
+    var shape = dict.get("shape").asTuple();
+    assertEquals(1, shape.size());
+    assertEquals(2, shape.at(0).asInt().value());
   }
 
 }

@@ -28,6 +28,10 @@ final class PyDict implements PyValue {
     return null;
   }
 
+  public int size() {
+    return entries.size();
+  }
+
   static class Entry {
 
     private final String key;

@@ -12,9 +12,9 @@ enum TokenType {
 
   COLON,
 
-  OBJECT_START,
+  DICT_START,
 
-  OBJECT_END,
+  DICT_END,
 
   TUPLE_START,
 
@@ -35,9 +35,9 @@ enum TokenType {
       case ':':
         return COLON;
       case '{':
-        return OBJECT_START;
+        return DICT_START;
       case '}':
-        return OBJECT_END;
+        return DICT_END;
       case '(':
         return TUPLE_START;
       case ')':

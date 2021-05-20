@@ -13,7 +13,7 @@ public class LexerTest {
     var tokens = Lexer.lex(
       "{'descr': '<i4', 'fortran_order': False, 'shape': (2,), }");
     var expectedTokens = List.of(
-      new Token(0, TokenType.OBJECT_START, "{"),
+      new Token(0, TokenType.DICT_START, "{"),
       new Token(1, TokenType.STRING, "descr"),
       new Token(-1, TokenType.COLON, ":"),
       new Token(-1, TokenType.STRING, "<i4"),
@@ -29,7 +29,7 @@ public class LexerTest {
       new Token(-1, TokenType.COMMA, ","),
       new Token(-1, TokenType.TUPLE_END, ")"),
       new Token(-1, TokenType.COMMA, ","),
-      new Token(-1, TokenType.OBJECT_END, "}"),
+      new Token(-1, TokenType.DICT_END, "}"),
       new Token(-1, TokenType.EOF, "_")
     );
     for (int i = 0; i < tokens.size(); i++) {
