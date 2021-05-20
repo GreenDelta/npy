@@ -152,6 +152,7 @@ public class ParserTest {
       assertEquals(2, dict.size());
       assertEquals(1, dict.get("a").asInt().value());
       assertEquals("True", dict.get("b").asIdentifier().value());
+      assertTrue(dict.get("c").isNone());
     }
   }
 

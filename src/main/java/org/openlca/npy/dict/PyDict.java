@@ -25,7 +25,7 @@ final class PyDict implements PyValue {
       if (Objects.equals(key, entry.key()))
         return entry.value;
     }
-    return null;
+    return PyNone.get();
   }
 
   public int size() {

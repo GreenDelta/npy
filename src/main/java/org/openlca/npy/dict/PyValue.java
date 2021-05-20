@@ -2,6 +2,14 @@ package org.openlca.npy.dict;
 
 interface PyValue {
 
+  default boolean isNone() {
+    return false;
+  }
+
+  default PyNone asNone() {
+    return (PyNone) this;
+  }
+
   default boolean isError() {
     return false;
   }

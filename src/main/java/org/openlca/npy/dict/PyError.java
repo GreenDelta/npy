@@ -17,4 +17,8 @@ final class PyError implements PyValue {
     return new PyError(message);
   }
 
+  String message() {
+    return message;
+  }
+
 }

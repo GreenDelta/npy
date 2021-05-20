@@ -47,8 +47,6 @@ public enum DataType {
    */
   u8("u4");
 
-
-
   private final String symbol;
 
   DataType(String symbol) {
