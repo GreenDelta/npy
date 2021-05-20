@@ -57,4 +57,8 @@ public enum DataType {
   public String toString() {
     return symbol;
   }
+
+  public String symbol() {
+    return symbol;
+  }
 }
