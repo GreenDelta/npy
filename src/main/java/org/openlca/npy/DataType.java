@@ -4,8 +4,9 @@ import java.nio.ByteOrder;
 
 /**
  * An enumeration of the supported NumPy data types.
- * https://numpy.org/doc/stable/reference/arrays.dtypes.html
- * https://numpy.org/doc/stable/reference/arrays.interface.html#arrays-interface
+ *
+ * @see <a href="https://numpy.org/doc/stable/reference/arrays.dtypes.html">
+ * https://numpy.org/doc/stable/reference/arrays.dtypes.html</a>
  */
 public enum DataType {
 
@@ -18,15 +19,34 @@ public enum DataType {
     "bool8",
     "bool_",}),
 
+  f2("f2", 2, new String[]{
+    "e",
+    "float16",
+    "half",
+  }),
+
   /**
    * 32 bit floating point numbers
    */
-  f4("f4", 4, new String[]{}),
+  f4("f4", 4, new String[]{
+    "f",
+    "float32",
+    "single",
+  }),
 
   /**
    * 64 bit floating point numbers
    */
-  f8("f8", 8, new String[]{}),
+  f8("f8", 8, new String[]{
+    "d",
+    "double",
+    "float",
+    "float64",
+    "float_",
+    "g",
+    "longdouble",
+    "longfloat",
+  }),
 
   /**
    * 8-bit signed integers
@@ -48,12 +68,27 @@ public enum DataType {
   /**
    * 32 bit signed integers
    */
-  i4("i4", 4, new String[]{}),
+  i4("i4", 4, new String[]{
+    "i",
+    "int",
+    "int32",
+    "int_",
+    "intc",
+    "l",
+    "long",
+  }),
 
   /**
    * 64 bit signed integers
    */
-  i8("i8", 8, new String[]{}),
+  i8("i8", 8, new String[]{
+    "int0",
+    "int64",
+    "intp",
+    "longlong",
+    "p",
+    "q",
+  }),
 
   /**
    * 8-bit unsigned integers
@@ -67,17 +102,35 @@ public enum DataType {
   /**
    * 16 bit unsigned integers
    */
-  u2("u2", 2, new String[]{}),
+  u2("u2", 2, new String[]{
+    "H",
+    "uint16",
+    "ushort",
+  }),
 
   /**
    * 32 bit unsigned integers
    */
-  u4("u4", 4, new String[]{}),
+  u4("u4", 4, new String[]{
+    "I",
+    "L",
+    "uint",
+    "uint32",
+    "uintc",
+  }),
 
   /**
    * 64 bit unsigned integers
    */
-  u8("u8", 8, new String[]{});
+  u8("u8", 8, new String[]{
+    "P",
+    "Q",
+    "Uint64",
+    "uint0",
+    "uint64",
+    "uintp",
+    "ulonglong",
+  });
 
 
   private final String symbol;
@@ -171,6 +224,4 @@ public enum DataType {
         return ByteOrder.nativeOrder();
     }
   }
-
-
 }

@@ -1,3 +1,6 @@
+# This script collects the NumPy dtype symbols and prints them in a way so that
+# we can copy them easily.
+
 import numpy as np
 
 from typing import Dict, Set
@@ -16,7 +19,7 @@ if __name__ == '__main__':
             all = set()
             grouped[base] = all
         all.add(key)
-    
+
     # print them so that we can copy them easily
     for dt in grouped.keys():
         print('"%s",' % dt)

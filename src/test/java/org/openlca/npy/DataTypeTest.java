@@ -71,6 +71,99 @@ public class DataTypeTest {
         "short",
       }),
 
+      Expected.of(DataType.u2, 2, new String[] {
+        "<u2",
+        "H",
+        "u2",
+        "uint16",
+        "ushort",
+      }),
+
+      Expected.of(DataType.i4, 4, new String[] {
+        "<i4",
+        "i",
+        "i4",
+        "int",
+        "int32",
+        "int_",
+        "intc",
+        "l",
+        "long",
+      }),
+
+      Expected.of(DataType.i4, 4, new String[] {
+        "<i4",
+        "i",
+        "i4",
+        "int",
+        "int32",
+        "int_",
+        "intc",
+        "l",
+        "long",
+      }),
+
+      Expected.of(DataType.u4, 4, new String[] {
+        "<u4",
+        "I",
+        "L",
+        "u4",
+        "uint",
+        "uint32",
+        "uintc",
+      }),
+
+      Expected.of(DataType.i8, 8, new String[] {
+        "<i8",
+        "i8",
+        "int0",
+        "int64",
+        "intp",
+        "longlong",
+        "p",
+        "q",
+      }),
+
+      Expected.of(DataType.u8, 8, new String[] {
+        "<u8",
+        "P",
+        "Q",
+        "Uint64",
+        "u8",
+        "uint0",
+        "uint64",
+        "uintp",
+        "ulonglong",
+      }),
+
+      Expected.of(DataType.f2, 2, new String[] {
+        "<f2",
+        "e",
+        "f2",
+        "float16",
+        "half",
+      }),
+
+      Expected.of(DataType.f4, 4, new String[] {
+        "<f4",
+        "f",
+        "f4",
+        "float32",
+        "single",
+      }),
+
+      Expected.of(DataType.f8, 8, new String[] {
+        "<f8",
+        "d",
+        "double",
+        "f8",
+        "float",
+        "float64",
+        "float_",
+        "g",
+        "longdouble",
+        "longfloat",
+      }),
     };
 
     for (var e : expected) {
@@ -80,7 +173,6 @@ public class DataTypeTest {
         assertEquals(e.size, dtype.size());
       }
     }
-
   }
 
   static private class Expected {
