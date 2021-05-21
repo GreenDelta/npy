@@ -4,6 +4,15 @@
 [NPY and NPZ](https://numpy.org/devdocs/reference/generated/numpy.lib.format.html)
 files.
 
+# supported data types
+https://numpy.org/doc/stable/reference/arrays.dtypes.html
+
+> Several kinds of strings can be converted. Recognized strings can be prepended
+> with '>' (big-endian), '<' (little-endian), or '=' (hardware-native, the
+> default), to specify the byte order.
+
+
+
 ### TODO
 * maybe limiting this to 2d matrices, just with 64 bit floating point numbers?
 

@@ -87,6 +87,7 @@ public class HeaderDictionary {
 
     var dict = value.asDict();
 
+    // read the data type
     var typeEntry = dict.get("descr");
     if (typeEntry.isNone())
       throw new UnsupportedFormatException(
@@ -95,12 +96,15 @@ public class HeaderDictionary {
       throw new UnsupportedFormatException(
         "invalid header dictionary; data type field " +
         "'descr' is not a string but: " + typeEntry);
-
     var dtype = typeEntry.asString().value();
+    var dataType = DataType.of(dtype);
+    if (dataType == null)
+      throw new UnsupportedFormatException(
+        "unsupported data type: " + dtype);
 
-    var builder = of(getDataType(dtype), getShape(dict))
+    var builder = of(dataType, getShape(dict))
       .withFortranOrder(getFortranOrder(dict))
-      .withByteOrder(getByteOrder(dtype));
+      .withByteOrder(DataType.byteOrderOf(dtype));
 
     // collect other string properties
     dict.forEach((key, val) -> {
@@ -136,39 +140,6 @@ public class HeaderDictionary {
           "invalid header dictionary: fortran_order must be " +
           "True or False but was '" + value + "'");
     }
-  }
-
-  private static ByteOrder getByteOrder(String dtype) {
-    if (dtype == null || dtype.length() == 0)
-      return ByteOrder.nativeOrder();
-    switch (dtype.charAt(0)) {
-      case '>':
-        return ByteOrder.BIG_ENDIAN;
-      case '<':
-        return ByteOrder.LITTLE_ENDIAN;
-      default:
-        return ByteOrder.nativeOrder();
-    }
-  }
-
-  private static DataType getDataType(String dtype) {
-    if (dtype == null || dtype.length() == 0)
-      throw new UnsupportedFormatException(
-        "invalid header dictionary; data type field 'descr' is an empty string");
-    char first = dtype.charAt(0);
-    boolean hasOrderMark = first == '<'
-                           || first == '>'
-                           || first == '='
-                           || first == '|';
-    var symbol = hasOrderMark
-      ? dtype.substring(1)
-      : dtype;
-    for (var type : DataType.values()) {
-      if (symbol.equals(type.symbol()))
-        return type;
-    }
-    throw new UnsupportedFormatException(
-      "unsupported data type: '" + symbol + "'");
   }
 
   private static int[] getShape(PyDict dict) {

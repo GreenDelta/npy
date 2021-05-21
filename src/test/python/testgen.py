@@ -37,9 +37,28 @@ def write_sparse_npz():
         TESTDIR + '/sparse.npz', sparse_matrix)
 
 
+def generate_npy_files():
+
+    data_i = [[1, 2, 3],
+         [4, 5, 6]]
+    np.save(TESTDIR + '/i_le_f.npy', data_i)
+
+    """
+    np.save(TESTDIR + '/i8_le_f.npy', np.array(
+        data_i,
+        order='F', dtype='<f8'))
+    """
+
+    np.save(TESTDIR + '/f8_le_f.npy', np.array(
+        [[1.0, 2.0, 3.0],
+         [4.0, 5.0, 6.0]],
+        order='F', dtype='<f8'))
+
+
 if __name__ == "__main__":
     if not os.path.exists(TESTDIR):
         os.makedirs(TESTDIR)
-    write_u8bin()
-    write_npy()
-    write_sparse_npz()
+    # write_u8bin()
+    # write_npy()
+    # write_sparse_npz()
+    generate_npy_files()
