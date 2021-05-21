@@ -25,6 +25,10 @@ class Header {
     return dictionary.toString();
   }
 
+  public HeaderDictionary dictionary() {
+    return dictionary;
+  }
+
   static Header read(InputStream in) {
     try {
 
