@@ -39,8 +39,16 @@ def write_sparse_npz():
 
 def generate_npy_files():
 
+    types_i = [
+        ('i', 'b'),
+        ('i2', 'i2'),
+        ('u', 'B'),
+        ('u2', 'u2'),
+    ]
+
     data_i = [[1, 2, 3],
          [4, 5, 6]]
+    
     np.save(TESTDIR + '/i_le_f.npy', data_i)
 
     """

@@ -12,7 +12,11 @@ public enum DataType {
   /**
    * Booleans
    */
-  bool("?", 1, new String[]{}),
+  bool("?", 1, new String[]{
+    "b1",
+    "bool",
+    "bool8",
+    "bool_",}),
 
   /**
    * 32 bit floating point numbers
@@ -27,12 +31,19 @@ public enum DataType {
   /**
    * 8-bit signed integers
    */
-  i1("b", 1, new String[]{}),
+  i1("b", 1, new String[]{
+    "byte",
+    "i1",
+    "int8"}),
 
   /**
    * 16 bit signed integers
    */
-  i2("i2", 2, new String[]{}),
+  i2("i2", 2, new String[]{
+    "h",
+    "int16",
+    "short",
+  }),
 
   /**
    * 32 bit signed integers
@@ -47,7 +58,11 @@ public enum DataType {
   /**
    * 8-bit unsigned integers
    */
-  u1("B", 1, new String[]{}),
+  u1("B", 1, new String[]{
+    "u1",
+    "ubyte",
+    "uint8",
+  }),
 
   /**
    * 16 bit unsigned integers
