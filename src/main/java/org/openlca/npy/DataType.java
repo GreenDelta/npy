@@ -9,57 +9,60 @@ import java.nio.ByteOrder;
  */
 public enum DataType {
 
-  bool("?", new String[]{}),
-
   /**
-   * 8-bit signed integers
+   * Booleans
    */
-  i1("b", new String[]{}),
-
-  /**
-   * 8-bit unsigned integers
-   */
-  u1("B", new String[]{}),
-
-  /**
-   * 16 bit signed integers
-   */
-  i2("i2", new String[]{}),
-
-  /**
-   * 16 bit unsigned integers
-   */
-  u2("u2", new String[]{}),
-
-  /**
-   * 32 bit signed integers
-   */
-  i4("i4", new String[]{}),
+  bool("?", 1, new String[]{}),
 
   /**
    * 32 bit floating point numbers
    */
-  f4("f4", new String[]{}),
-
-  /**
-   * 32 bit unsigned integers
-   */
-  u4("u4", new String[]{}),
-
-  /**
-   * 64 bit signed integers
-   */
-  i8("i8", new String[]{}),
+  f4("f4", 4, new String[]{}),
 
   /**
    * 64 bit floating point numbers
    */
-  f8("f8", new String[]{}),
+  f8("f8", 8, new String[]{}),
+
+  /**
+   * 8-bit signed integers
+   */
+  i1("b", 1, new String[]{}),
+
+  /**
+   * 16 bit signed integers
+   */
+  i2("i2", 2, new String[]{}),
+
+  /**
+   * 32 bit signed integers
+   */
+  i4("i4", 4, new String[]{}),
+
+  /**
+   * 64 bit signed integers
+   */
+  i8("i8", 8, new String[]{}),
+
+  /**
+   * 8-bit unsigned integers
+   */
+  u1("B", 1, new String[]{}),
+
+  /**
+   * 16 bit unsigned integers
+   */
+  u2("u2", 2, new String[]{}),
+
+  /**
+   * 32 bit unsigned integers
+   */
+  u4("u4", 4, new String[]{}),
 
   /**
    * 64 bit unsigned integers
    */
-  u8("u4", new String[]{});
+  u8("u8", 8, new String[]{});
 
 
   private final String symbol;
@@ -67,8 +70,9 @@ public enum DataType {
   private final int size;
   private final String[] synonyms;
 
-  DataType(String symbol, String[] synonyms) {
+  DataType(String symbol, int size, String[] synonyms) {
     this.symbol = symbol;
+    this.size = size;
     this.synonyms = synonyms;
   }
 
@@ -78,10 +82,20 @@ public enum DataType {
   }
 
   /**
-   * Get the primary symbol of the data type.
+   * Get the NPY symbol of the data type.
+   *
+   * @return the NPY symbol of the data type, e.g. {@code i4}
    */
   public String symbol() {
     return symbol;
+  }
+
+  /**
+   * Get the size of the data type in number of bytes. This is similar to
+   * {@code numpy.dtype.itemsize}.
+   */
+  public int size() {
+    return size;
   }
 
   /**
