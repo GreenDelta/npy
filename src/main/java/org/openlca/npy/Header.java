@@ -2,7 +2,9 @@ package org.openlca.npy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -32,47 +34,79 @@ class Header {
     return dataOffset;
   }
 
-  static Header read(InputStream in) {
-    try {
+  static Header read(InputStream in) throws IOException {
 
-      // read the version
-      byte[] bytes = new byte[8];
-      int n = in.read(bytes);
-      if (n != 8)
+    // read the version
+    byte[] bytes = new byte[8];
+    int n = in.read(bytes);
+    if (n != 8)
+      throw new UnsupportedFormatException("invalid NPY header");
+    var version = Version.of(bytes);
+
+    // read the header length; 2 bytes for version 1; 4 bytes for versions > 1
+    int headerLength;
+    long dataOffset;
+    if (version.major == 1) {
+      bytes = new byte[2];
+      n = in.read(bytes);
+      if (n != 2)
         throw new UnsupportedFormatException("invalid NPY header");
-      var version = Version.of(bytes);
-
-
-      // read the header length; 2 bytes for version 1; 4 bytes for versions > 1
-      // note that we do
-      int headerLength;
-      long dataOffset;
-      if (version.major == 1) {
-        bytes = new byte[2];
-        n = in.read(bytes);
-        if (n != 2)
-          throw new UnsupportedFormatException("invalid NPY header");
-        headerLength = Unsigned.shortOf(bytes, ByteOrder.LITTLE_ENDIAN);
-        dataOffset = 10 + headerLength;
-      } else {
-        bytes = new byte[4];
-        n = in.read(bytes);
-        if (n != 4)
-          throw new UnsupportedFormatException("invalid NPY header");
-        long len = Unsigned.intOf(bytes, ByteOrder.LITTLE_ENDIAN);
-        dataOffset = 12 + len;
-        headerLength = (int) len;
-      }
-
-      // read the header string
-      bytes = new byte[headerLength];
-      if (in.read(bytes) != headerLength)
-        throw new UnsupportedFormatException("invalid NPY file");
-      var header = new String(bytes, version.headerEncoding());
-      return new Header(dataOffset, HeaderDictionary.parse(header));
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to read header", e);
+      headerLength = Unsigned.shortOf(bytes, ByteOrder.LITTLE_ENDIAN);
+      dataOffset = 10 + headerLength;
+    } else {
+      bytes = new byte[4];
+      n = in.read(bytes);
+      if (n != 4)
+        throw new UnsupportedFormatException("invalid NPY header");
+      long len = Unsigned.intOf(bytes, ByteOrder.LITTLE_ENDIAN);
+      dataOffset = 12 + len;
+      headerLength = (int) len;
     }
+
+    // read the header string
+    bytes = new byte[headerLength];
+    if (in.read(bytes) != headerLength)
+      throw new UnsupportedFormatException("invalid NPY file");
+    var header = new String(bytes, version.headerEncoding());
+    return new Header(dataOffset, HeaderDictionary.parse(header));
+  }
+
+  static Header read(ReadableByteChannel channel) throws IOException {
+
+    // read the version
+    var buffer = ByteBuffer.allocate(8)
+      .order(ByteOrder.LITTLE_ENDIAN);
+    if (channel.read(buffer) < 8) {
+      throw new UnsupportedFormatException("invalid NPY header");
+    }
+    buffer.flip();
+    var version = Version.of(buffer.array());
+
+    int headerLength;
+    long dataOffset;
+    buffer.position(0);
+    if (version.major == 1) {
+      buffer.limit(2);
+      if (channel.read(buffer) != 2)
+        throw new UnsupportedFormatException("invalid NPY header");
+      buffer.flip();
+      headerLength = Unsigned.shortOf(buffer);
+      dataOffset = 10 + headerLength;
+    } else {
+      buffer.limit(4);
+      if (channel.read(buffer) != 4)
+        throw new UnsupportedFormatException("invalid NPY header");
+      long len = Unsigned.intOf(buffer);
+      dataOffset = 12 + len;
+      headerLength = (int) len;
+    }
+
+    // read and parse the header
+    buffer = ByteBuffer.allocate(headerLength);
+    if (channel.read(buffer) != headerLength)
+      throw new UnsupportedFormatException("invalid NPY file");
+    var header = new String(buffer.array(), version.headerEncoding());
+    return new Header(dataOffset, HeaderDictionary.parse(header));
   }
 
   /**
