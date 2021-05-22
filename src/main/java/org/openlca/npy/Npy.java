@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class NPY {
+public class Npy {
 
     public static void load(String path) {
         File file = new File(path);

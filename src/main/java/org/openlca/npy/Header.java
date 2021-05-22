@@ -2,6 +2,7 @@ package org.openlca.npy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -42,33 +43,33 @@ class Header {
       var version = Version.of(bytes);
 
 
-      // read the header length;
-      // 2 bytes for version 1;
-      // 4 bytes for versions > 1
-      long headerLength;
+      // read the header length; 2 bytes for version 1; 4 bytes for versions > 1
+      // note that we do
+      int headerLength;
       long dataOffset;
       if (version.major == 1) {
         bytes = new byte[2];
         n = in.read(bytes);
         if (n != 2)
           throw new UnsupportedFormatException("invalid NPY header");
-        headerLength = Unsigned.shortOf(bytes);
+        headerLength = Unsigned.shortOf(bytes, ByteOrder.LITTLE_ENDIAN);
         dataOffset = 10 + headerLength;
       } else {
         bytes = new byte[4];
         n = in.read(bytes);
         if (n != 4)
           throw new UnsupportedFormatException("invalid NPY header");
-        headerLength = Unsigned.intOf(bytes);
-        dataOffset = 12 + headerLength;
+        long len = Unsigned.intOf(bytes, ByteOrder.LITTLE_ENDIAN);
+        dataOffset = 12 + len;
+        headerLength = (int) len;
       }
 
       // read the header string
-      bytes = new byte[(int) headerLength];
-      in.read(bytes);
+      bytes = new byte[headerLength];
+      if (in.read(bytes) != headerLength)
+        throw new UnsupportedFormatException("invalid NPY file");
       var header = new String(bytes, version.headerEncoding());
       return new Header(dataOffset, HeaderDictionary.parse(header));
-
     } catch (IOException e) {
       throw new RuntimeException("Failed to read header", e);
     }
