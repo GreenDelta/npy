@@ -2,22 +2,20 @@ package org.openlca.npy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.openlca.npy.dict.HeaderDictionary;
 
 class Header {
 
-  private final int version;
+  private final long dataOffset;
   private final HeaderDictionary dictionary;
-  private final int size;
 
-  private Header(int version, HeaderDictionary dictionary, int size) {
-    this.version = version;
+  private Header(long dataOffset, HeaderDictionary dictionary) {
+    this.dataOffset = dataOffset;
     this.dictionary = Objects.requireNonNull(dictionary);
-    this.size = size;
   }
 
   @Override
@@ -29,52 +27,101 @@ class Header {
     return dictionary;
   }
 
+  public long dataOffset() {
+    return dataOffset;
+  }
+
   static Header read(InputStream in) {
     try {
 
-      // The first 6 bytes are a magic string: exactly \x93NUMPY.
-      byte[] bytes = new byte[6];
+      // read the version
+      byte[] bytes = new byte[8];
       int n = in.read(bytes);
-      if (n != 6) {
-        throw new IllegalArgumentException("Not a npy file.");
+      if (n != 8)
+        throw new UnsupportedFormatException("invalid NPY header");
+      var version = Version.of(bytes);
+
+
+      // read the header length;
+      // 2 bytes for version 1;
+      // 4 bytes for versions > 1
+      long headerLength;
+      long dataOffset;
+      if (version.major == 1) {
+        bytes = new byte[2];
+        n = in.read(bytes);
+        if (n != 2)
+          throw new UnsupportedFormatException("invalid NPY header");
+        headerLength = Unsigned.shortOf(bytes);
+        dataOffset = 10 + headerLength;
+      } else {
+        bytes = new byte[4];
+        n = in.read(bytes);
+        if (n != 4)
+          throw new UnsupportedFormatException("invalid NPY header");
+        headerLength = Unsigned.intOf(bytes);
+        dataOffset = 12 + headerLength;
       }
-      String numpy = new String(bytes, 1, 5);
-      if (!numpy.equals("NUMPY")) {
-        throw new IllegalArgumentException("Not a npy file.");
-      }
 
-      // check the version
-      int version = in.read();
-      if (version < 1) {
-        throw new IllegalArgumentException(
-            "Invalid npy file, a major version >= 1 is required.");
-      }
-
-      // skip the minor version
-      in.read();
-
-      // read the header length
-      bytes = new byte[2];
-      n = in.read(bytes);
-      if (n != 2) {
-        throw new IllegalArgumentException("Not a npy file.");
-      }
-
-      // convert the unsigned short
-      ByteBuffer buff = ByteBuffer.wrap(bytes);
-      buff.order(ByteOrder.LITTLE_ENDIAN);
-      int headerLength = buff.getShort() & 0xffff;
-
-      // read the header string; hoping everything is ASCII
-      bytes = new byte[headerLength];
+      // read the header string
+      bytes = new byte[(int) headerLength];
       in.read(bytes);
-      var header = new String(bytes);
-
-
-      return new Header(version, HeaderDictionary.parse(header), headerLength);
+      var header = new String(bytes, version.headerEncoding());
+      return new Header(dataOffset, HeaderDictionary.parse(header));
 
     } catch (IOException e) {
       throw new RuntimeException("Failed to read header", e);
+    }
+  }
+
+  /**
+   * Contains the version information of the first bytes of an NPY file:
+   * <ul>
+   *   <li>the first 6 bytes are the magic string '\x93'</li>
+   *   <li>bytes 7 and 8 contain the major and minor version</li>
+   * </ul>
+   */
+  static class Version {
+
+    final int major;
+    final int minor;
+
+    private Version(int major, int minor) {
+      this.major = major;
+      this.minor = minor;
+
+    }
+
+    /**
+     * Reads the format version from the first 8 bytes of an NPY file. It checks
+     * that the array starts with the magic string {@code '\x93NUMPY'} and that
+     * the version is in a supported range. If this is not the case, it throws
+     * an {@code UnsupportedFormatException}.
+     *
+     * @param bytes at least, the first 8 bytes of an NPY file
+     * @return the NPY version of that file
+     */
+    static Version of(byte[] bytes) {
+      if (bytes.length < 8)
+        throw new UnsupportedFormatException("invalid NPY header");
+      if (Unsigned.byteOf(bytes[0]) != 0x93)
+        throw new UnsupportedFormatException("invalid NPY header");
+      var numpy = new String(bytes, 1, 5);
+      if (!numpy.equals("NUMPY"))
+        throw new UnsupportedFormatException("invalid NPY header");
+
+      int major = Unsigned.byteOf(bytes[6]);
+      int minor = Unsigned.byteOf(bytes[7]);
+      if (major != 1 && major != 2 && major != 3)
+        throw new UnsupportedFormatException(
+          "unsupported NPY version: " + major);
+      return new Version(major, minor);
+    }
+
+    Charset headerEncoding() {
+      return major >= 3
+        ? StandardCharsets.UTF_8
+        : StandardCharsets.US_ASCII;
     }
   }
 

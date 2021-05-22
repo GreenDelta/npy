@@ -27,14 +27,18 @@ public class HeaderTest {
     throws IOException {
     var testDir = new File("target/testdata");
     var fileName = type.name() + "_" + endianness + "_" + order + ".npy";
-    System.out.println(fileName);
     var file = new File(testDir, fileName);
     try (var stream = new FileInputStream(file)) {
       var header = Header.read(stream);
       var dict = header.dictionary();
       assertEquals(type, dict.dataType());
       assertEquals(order.equals("f"), dict.isInFortranOrder());
-      assertEquals(endianness.equals("be") ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN, dict.byteOrder());
+      if (type.size() > 1) {
+        var expectedByteOrder = endianness.equals("be")
+          ? ByteOrder.BIG_ENDIAN
+          : ByteOrder.LITTLE_ENDIAN;
+        assertEquals(expectedByteOrder, dict.byteOrder());
+      }
     }
   }
 
