@@ -2,44 +2,29 @@ package org.openlca.npy;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.List;
 
 import org.junit.Test;
 
 public class HeaderTest {
 
   @Test
-  public void testParseHeaders() throws IOException {
-    for (var type : DataType.values()) {
-      for (var endianness : List.of("be", "le")) {
-        for (var order : List.of("c", "f")) {
-          testHeaderOf(type, endianness, order);
+  public void testParseHeaders() {
+    Tests.eachNpy(testNpy -> {
+      try (var stream = new FileInputStream(testNpy.file())) {
+        var header = Header.read(stream);
+        var dict = header.dictionary();
+        assertEquals(testNpy.dataType(), dict.dataType());
+        if (testNpy.dataType().size() > 1) {
+          assertEquals(testNpy.byteOrder(), dict.byteOrder());
         }
+        assertEquals(testNpy.hasFortranOrder(), dict.isInFortranOrder());
+        assertEquals(2, dict.dimensions());
+        assertEquals(2, dict.sizeOfDimension(0));
+        assertEquals(3, dict.sizeOfDimension(1));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-    }
+    });
   }
-
-  private void testHeaderOf(DataType type, String endianness, String order)
-    throws IOException {
-    var testDir = new File("target/testdata");
-    var fileName = type.name() + "_" + endianness + "_" + order + ".npy";
-    var file = new File(testDir, fileName);
-    try (var stream = new FileInputStream(file)) {
-      var header = Header.read(stream);
-      var dict = header.dictionary();
-      assertEquals(type, dict.dataType());
-      assertEquals(order.equals("f"), dict.isInFortranOrder());
-      if (type.size() > 1) {
-        var expectedByteOrder = endianness.equals("be")
-          ? ByteOrder.BIG_ENDIAN
-          : ByteOrder.LITTLE_ENDIAN;
-        assertEquals(expectedByteOrder, dict.byteOrder());
-      }
-    }
-  }
-
 }
