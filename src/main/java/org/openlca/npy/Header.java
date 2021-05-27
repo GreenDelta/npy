@@ -34,13 +34,13 @@ class Header {
     return dataOffset;
   }
 
-  static Header read(InputStream in) throws IOException {
+  static Header read(InputStream in) throws IOException, NpyFormatException {
 
     // read the version
     byte[] bytes = new byte[8];
     int n = in.read(bytes);
     if (n != 8)
-      throw new UnsupportedFormatException("invalid NPY header");
+      throw new NpyFormatException("invalid NPY header");
     var version = Version.of(bytes);
 
     // read the header length; 2 bytes for version 1; 4 bytes for versions > 1
@@ -50,14 +50,14 @@ class Header {
       bytes = new byte[2];
       n = in.read(bytes);
       if (n != 2)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       headerLength = Unsigned.shortOf(bytes, ByteOrder.LITTLE_ENDIAN);
       dataOffset = 10 + headerLength;
     } else {
       bytes = new byte[4];
       n = in.read(bytes);
       if (n != 4)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       long len = Unsigned.intOf(bytes, ByteOrder.LITTLE_ENDIAN);
       dataOffset = 12 + len;
       headerLength = (int) len;
@@ -66,18 +66,19 @@ class Header {
     // read the header string
     bytes = new byte[headerLength];
     if (in.read(bytes) != headerLength)
-      throw new UnsupportedFormatException("invalid NPY file");
+      throw new NpyFormatException("invalid NPY file");
     var header = new String(bytes, version.headerEncoding());
     return new Header(dataOffset, HeaderDictionary.parse(header));
   }
 
-  static Header read(ReadableByteChannel channel) throws IOException {
+  static Header read(ReadableByteChannel channel)
+    throws IOException, NpyFormatException {
 
     // read the version
     var buffer = ByteBuffer.allocate(8)
       .order(ByteOrder.LITTLE_ENDIAN);
     if (channel.read(buffer) < 8) {
-      throw new UnsupportedFormatException("invalid NPY header");
+      throw new NpyFormatException("invalid NPY header");
     }
     buffer.flip();
     var version = Version.of(buffer.array());
@@ -88,14 +89,14 @@ class Header {
     if (version.major == 1) {
       buffer.limit(2);
       if (channel.read(buffer) != 2)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       buffer.flip();
       headerLength = Unsigned.shortOf(buffer);
       dataOffset = 10 + headerLength;
     } else {
       buffer.limit(4);
       if (channel.read(buffer) != 4)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       long len = Unsigned.intOf(buffer);
       dataOffset = 12 + len;
       headerLength = (int) len;
@@ -104,7 +105,7 @@ class Header {
     // read and parse the header
     buffer = ByteBuffer.allocate(headerLength);
     if (channel.read(buffer) != headerLength)
-      throw new UnsupportedFormatException("invalid NPY file");
+      throw new NpyFormatException("invalid NPY file");
     var header = new String(buffer.array(), version.headerEncoding());
     return new Header(dataOffset, HeaderDictionary.parse(header));
   }
@@ -136,19 +137,19 @@ class Header {
      * @param bytes at least, the first 8 bytes of an NPY file
      * @return the NPY version of that file
      */
-    static Version of(byte[] bytes) {
+    static Version of(byte[] bytes) throws NpyFormatException {
       if (bytes.length < 8)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       if (Unsigned.byteOf(bytes[0]) != 0x93)
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
       var numpy = new String(bytes, 1, 5);
       if (!numpy.equals("NUMPY"))
-        throw new UnsupportedFormatException("invalid NPY header");
+        throw new NpyFormatException("invalid NPY header");
 
       int major = Unsigned.byteOf(bytes[6]);
       int minor = Unsigned.byteOf(bytes[7]);
       if (major != 1 && major != 2 && major != 3)
-        throw new UnsupportedFormatException(
+        throw new NpyFormatException(
           "unsupported NPY version: " + major);
       return new Version(major, minor);
     }

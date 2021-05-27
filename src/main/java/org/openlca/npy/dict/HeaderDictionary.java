@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openlca.npy.DataType;
-import org.openlca.npy.UnsupportedFormatException;
+import org.openlca.npy.NpyFormatException;
 
 /**
  * Contains the values of the dictionary that is stored in the header of an NPY
@@ -76,13 +76,13 @@ public class HeaderDictionary {
       : Collections.unmodifiableMap(properties);
   }
 
-  public static HeaderDictionary parse(String s) {
+  public static HeaderDictionary parse(String s) throws NpyFormatException {
     var value = Parser.parse(s);
     if (value.isError())
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary: " + value.asError().message());
     if (!value.isDict())
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary; type is " + value.getClass());
 
     var dict = value.asDict();
@@ -90,16 +90,16 @@ public class HeaderDictionary {
     // read the data type
     var typeEntry = dict.get("descr");
     if (typeEntry.isNone())
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary; data type field 'descr' is missing");
     if (!typeEntry.isString())
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary; data type field " +
         "'descr' is not a string but: " + typeEntry);
     var dtype = typeEntry.asString().value();
     var dataType = DataType.of(dtype);
     if (dataType == null)
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "unsupported data type: " + dtype);
 
     var builder = of(dataType, getShape(dict))
@@ -121,12 +121,13 @@ public class HeaderDictionary {
     return builder.create();
   }
 
-  private static boolean getFortranOrder(PyDict dict) {
+  private static boolean getFortranOrder(PyDict dict)
+    throws NpyFormatException {
     var entry = dict.get("fortran_order");
     if (entry.isNone())
       return false;
     if (!entry.isIdentifier())
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary: fortran_order must be " +
         "True or False but was '" + entry + "'");
     var value = entry.asIdentifier().value();
@@ -136,20 +137,20 @@ public class HeaderDictionary {
       case "False":
         return false;
       default:
-        throw new UnsupportedFormatException(
+        throw new NpyFormatException(
           "invalid header dictionary: fortran_order must be " +
           "True or False but was '" + value + "'");
     }
   }
 
-  private static int[] getShape(PyDict dict) {
+  private static int[] getShape(PyDict dict) throws NpyFormatException {
     var entry = dict.get("shape");
     if (entry.isNone()) {
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary: property 'shape' is missing");
     }
     if (!entry.isTuple()) {
-      throw new UnsupportedFormatException(
+      throw new NpyFormatException(
         "invalid header dictionary: property 'shape' is not a tuple");
     }
 
@@ -158,7 +159,7 @@ public class HeaderDictionary {
     for (int i = 0; i < tuple.size(); i++) {
       var value = tuple.at(i);
       if (!value.isInt()) {
-        throw new UnsupportedFormatException(
+        throw new NpyFormatException(
           "invalid header dictionary: argument "
           + i + " of tuple 'shape' is not an integer");
       }
