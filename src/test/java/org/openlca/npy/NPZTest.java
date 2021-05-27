@@ -29,7 +29,7 @@ public class NPZTest {
         buffer.asDoubleBuffer().array();
         buffer.asFloatBuffer();
 
-      } catch (IOException e) {
+      } catch (Exception e) {
         throw new RuntimeException(e);
       }
     });

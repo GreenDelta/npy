@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.DoubleBuffer;
 
 import org.junit.Test;
 
@@ -42,7 +41,7 @@ public class HeaderTest {
     if (testNpy.dataType().size() > 1) {
       assertEquals(testNpy.byteOrder(), dict.byteOrder());
     }
-    assertEquals(testNpy.hasFortranOrder(), dict.isInFortranOrder());
+    assertEquals(testNpy.hasFortranOrder(), dict.hasFortranOrder());
     assertEquals(2, dict.dimensions());
     assertEquals(2, dict.sizeOfDimension(0));
     assertEquals(3, dict.sizeOfDimension(1));

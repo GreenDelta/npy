@@ -46,7 +46,7 @@ public class HeaderDictionary {
     return byteOrder;
   }
 
-  public boolean isInFortranOrder() {
+  public boolean hasFortranOrder() {
     return fortranOrder;
   }
 
@@ -68,6 +68,18 @@ public class HeaderDictionary {
     if (i < 0 || i >= shape.length)
       throw new IndexOutOfBoundsException(i);
     return shape[i];
+  }
+
+  /**
+   * Returns the shape of the stored array. Note that this returns a new
+   * allocated array each time you call this method. For just getting the
+   * dimensions it can be more efficient to use the {@link #dimensions()}
+   * and {@link #sizeOfDimension(int)} methods.
+   *
+   * @return the sizes of the dimensions of the stored array
+   */
+  public int[] shape() {
+    return Arrays.copyOf(shape, shape.length);
   }
 
   public Map<String, String> otherProperties() {

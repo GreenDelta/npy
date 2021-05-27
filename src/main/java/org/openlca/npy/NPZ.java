@@ -24,7 +24,7 @@ public class NPZ {
                 System.out.println(e.getName());
                 try (InputStream in = zip.getInputStream(e);
                      BufferedInputStream buf = new BufferedInputStream(in)) {
-                    System.out.println(Header.read(buf));
+                    //System.out.println(Header.read(buf));
                 }
             }
         } catch (IOException e) {
