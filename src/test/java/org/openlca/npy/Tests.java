@@ -3,6 +3,8 @@ package org.openlca.npy;
 import java.io.File;
 import java.nio.ByteOrder;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class Tests {
@@ -23,6 +25,21 @@ public class Tests {
         }
       }
     }
+  }
+
+  public static Optional<TestNpy> getNpy(
+    DataType type, ByteOrder byteOrder, boolean fortranOrder) {
+    var npy = new Object() {
+      TestNpy npy;
+    };
+    eachNpy(testNpy -> {
+      if (Objects.equals(type, testNpy.dataType)
+          && Objects.equals(byteOrder, testNpy.byteOrder)
+          && fortranOrder == testNpy.fortranOrder) {
+        npy.npy = testNpy;
+      }
+    });
+    return Optional.ofNullable(npy.npy);
   }
 
   public static class TestNpy {

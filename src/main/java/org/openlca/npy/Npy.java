@@ -8,7 +8,7 @@ import java.io.InputStream;
 public class Npy {
 
   public static NpyArray map(File file) {
-
+    return null;
   }
 
   public static void load(String path) {

@@ -27,7 +27,7 @@ public class NPZTest {
           dataSize);
         buffer.order(testNpy.byteOrder());
         buffer.asDoubleBuffer().array();
-        buffer.asFloatBuffer()
+        buffer.asFloatBuffer();
 
       } catch (IOException e) {
         throw new RuntimeException(e);
