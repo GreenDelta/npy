@@ -70,31 +70,6 @@ public class HeaderDictionary {
     return shape[i];
   }
 
-  /**
-   * Returns the shape of the stored array. Note that this returns a new
-   * allocated array each time you call this method. For just getting the
-   * dimensions it can be more efficient to use the {@link #dimensions()}
-   * and {@link #sizeOfDimension(int)} methods.
-   *
-   * @return the sizes of the dimensions of the stored array
-   */
-  public int[] shape() {
-    return Arrays.copyOf(shape, shape.length);
-  }
-
-  /**
-   * Returns the number of elements that are stored in the array.
-   *
-   * @return the number of elements which is the product of all dimension sizes.
-   */
-  public int numberOfElements() {
-    int count = 1;
-    for (int d : shape) {
-      count *= d;
-    }
-    return count;
-  }
-
   public Map<String, String> otherProperties() {
     return properties.isEmpty()
       ? Collections.emptyMap()

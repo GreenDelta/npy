@@ -161,6 +161,8 @@ public enum DataType {
   /**
    * Get the size of the data type in number of bytes. This is similar to
    * {@code numpy.dtype.itemsize}.
+   *
+   * @return the size of the data type in number of bytes.
    */
   public int size() {
     return size;

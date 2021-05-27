@@ -3,7 +3,6 @@ package org.openlca.npy;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class HeaderTest {
   public void testReadFromStream() {
     Tests.eachNpy(testNpy -> {
       try (var stream = new FileInputStream(testNpy.file())) {
-        var header = Header.read(stream);
+        var header = NpyHeader.read(stream);
         checkHeader(testNpy, header);
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -27,7 +26,7 @@ public class HeaderTest {
     Tests.eachNpy(testNpy -> {
       try (var file = new RandomAccessFile(testNpy.file(), "r");
            var channel = file.getChannel()) {
-        var header = Header.read(channel);
+        var header = NpyHeader.read(channel);
         checkHeader(testNpy, header);
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -35,15 +34,12 @@ public class HeaderTest {
     });
   }
 
-  private void checkHeader(Tests.TestNpy testNpy, Header header) {
-    var dict = header.dictionary();
-    assertEquals(testNpy.dataType(), dict.dataType());
+  private void checkHeader(Tests.TestNpy testNpy, NpyHeader header) {
+    assertEquals(testNpy.dataType(), header.dataType());
     if (testNpy.dataType().size() > 1) {
-      assertEquals(testNpy.byteOrder(), dict.byteOrder());
+      assertEquals(testNpy.byteOrder(), header.byteOrder());
     }
-    assertEquals(testNpy.hasFortranOrder(), dict.hasFortranOrder());
-    assertEquals(2, dict.dimensions());
-    assertEquals(2, dict.sizeOfDimension(0));
-    assertEquals(3, dict.sizeOfDimension(1));
+    assertEquals(testNpy.hasFortranOrder(), header.hasFortranOrder());
+    assertArrayEquals(new int[]{2, 3}, header.shape());
   }
 }

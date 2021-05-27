@@ -1,12 +1,7 @@
 package org.openlca.npy;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
@@ -17,7 +12,7 @@ public class NPZTest {
     Tests.eachNpy(testNpy -> {
       try (var file = new RandomAccessFile(testNpy.file(), "r");
            var channel = file.getChannel()) {
-        var header = Header.read(channel);
+        var header = NpyHeader.read(channel);
 
         var dataSize = 2 * 3 * testNpy.dataType().size();
 

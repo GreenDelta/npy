@@ -13,7 +13,7 @@ public class NpyTest {
         return; // TODO: currently only f8 is supported
 
       System.out.println(testNpy.file());
-      var array = Npy.mapUnchecked(testNpy.file());
+      var array = Npy.loadUnchecked(testNpy.file());
       assertTrue(array.isDoubleArray());
       assertTrue(Array2D.isValid(array));
       assertEquals(2, Array2D.rowCountOf(array));
