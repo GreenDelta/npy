@@ -1,24 +1,17 @@
 package org.openlca.npy;
 
-import java.util.Objects;
+public interface NpyArray {
 
-public abstract class NpyArray {
+  int[] shape();
 
-  protected final int[] shape;
-  protected final boolean fortranOrder;
-
-  protected NpyArray(int[] shape, boolean fortranOrder) {
-    this.shape = Objects.requireNonNull(shape);
-    this.fortranOrder = fortranOrder;
-  }
-
-  public final int[] shape() {
-    return shape;
-  }
-
-  public final boolean hasFortranOrder() {
-    return fortranOrder;
-  }
+  /**
+   * Returns if this array is stored in Fortran order (column-major order). If
+   * false is returned it is stored in C order (row-major order).
+   *
+   * @return {@code true} if the array is stored in Fortran order; {@code false}
+   * otherwise
+   */
+  boolean hasFortranOrder();
 
   /**
    * Returns the size of this array. That is the number of elements in this
@@ -26,5 +19,12 @@ public abstract class NpyArray {
    *
    * @return the number of elements of this array
    */
-  public abstract int size();
+  int size();
+
+  default boolean isDoubleArray() {
+    return false;
+  }
+
+  NpyDoubleArray asDoubleArray();
+
 }

@@ -18,29 +18,30 @@ public final class Array2D {
    * {@code > 1}.
    */
   public static boolean isValid(NpyArray array) {
-    if (array == null || array.shape == null || array.shape.length != 2)
+    if (array == null || array.shape() == null)
       return false;
-    int rowCount = array.shape[0];
-    int colCount = array.shape[1];
+    var shape = array.shape();
+    int rowCount = shape[0];
+    int colCount = shape[1];
     return rowCount > 0
            && colCount > 0
            && rowCount * colCount == array.size();
   }
 
   public static int rowCountOf(NpyArray array) {
-    return array.shape[0];
+    return array.shape()[0];
   }
 
   public static int columnCountOf(NpyArray array) {
-    return array.shape[1];
+    return array.shape()[1];
   }
 
   public static int indexOf(NpyArray array, int row, int col) {
     if (array.hasFortranOrder()) {
-      int rows = array.shape[0];
+      int rows = array.shape()[0];
       return col * rows + row;
     } else {
-      int cols = array.shape[1];
+      int cols = array.shape()[1];
       return row * cols + col;
     }
   }

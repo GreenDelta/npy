@@ -29,7 +29,7 @@ public class HeaderTest {
            var channel = file.getChannel()) {
         var header = Header.read(channel);
         checkHeader(testNpy, header);
-      } catch (IOException e) {
+      } catch (Exception e) {
         throw new RuntimeException(e);
       }
     });

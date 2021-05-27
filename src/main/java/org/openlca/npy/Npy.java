@@ -40,6 +40,21 @@ public class Npy {
     }
   }
 
+  /**
+   * Same like {@link #map(File)} but with checked exceptions wrapped into
+   * runtime exceptions.
+   *
+   * @param file the NPY file to read
+   * @return the mapped NPY array
+   */
+  public static NpyArray mapUnchecked(File file) {
+    try {
+      return map(file);
+    } catch (Exception e) {
+      throw new RuntimeException("failed to map NPY file: " + file, e);
+    }
+  }
+
   public static void load(String path) {
     File file = new File(path);
     if (!file.exists() | !file.isFile()) {
