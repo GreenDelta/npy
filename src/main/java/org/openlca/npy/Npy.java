@@ -33,7 +33,8 @@ public class Npy {
       buffer.order(dict.byteOrder());
 
       if (dict.dataType() == DataType.f8) {
-        double[] data = buffer.asDoubleBuffer().array();
+        double[] data = new double[dict.numberOfElements()];
+        buffer.asDoubleBuffer().get(data);
         return new NpyDoubleArray(dict.shape(), data, dict.hasFortranOrder());
       }
       throw new NpyFormatException("unsupported NPY format: " + dict);

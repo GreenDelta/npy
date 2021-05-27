@@ -82,6 +82,19 @@ public class HeaderDictionary {
     return Arrays.copyOf(shape, shape.length);
   }
 
+  /**
+   * Returns the number of elements that are stored in the array.
+   *
+   * @return the number of elements which is the product of all dimension sizes.
+   */
+  public int numberOfElements() {
+    int count = 1;
+    for (int d : shape) {
+      count *= d;
+    }
+    return count;
+  }
+
   public Map<String, String> otherProperties() {
     return properties.isEmpty()
       ? Collections.emptyMap()
