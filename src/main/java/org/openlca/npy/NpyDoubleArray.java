@@ -1,18 +1,9 @@
 package org.openlca.npy;
 
-import java.util.Objects;
-
-public final class NpyDoubleArray extends AbstractNpyArray {
-
-  protected final double[] data;
+public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
 
   public NpyDoubleArray(int[] shape, double[] data, boolean fortranOrder) {
-    super(shape, fortranOrder);
-    this.data = Objects.requireNonNull(data);
-  }
-
-  public double[] data() {
-    return data;
+    super(shape, data, fortranOrder);
   }
 
   @Override

@@ -1,6 +1,8 @@
 package org.openlca.npy;
 
-public interface NpyArray {
+public interface NpyArray<T> {
+
+  T data();
 
   int[] shape();
 
