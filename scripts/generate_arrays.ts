@@ -1,7 +1,7 @@
 function generateClass(type: string): string {
   const uName = type[0].toUpperCase() + type.substring(1);
   const text = `
-  package org.openlca.npy;
+  package org.openlca.npy.arrays;
 
   public final class Npy${uName}Array extends AbstractNpyArray<${type}[]> {
   
@@ -48,4 +48,4 @@ function generateClass(type: string): string {
   return text;
 }
 
-console.log(generateClass("int"));
+console.log(generateClass("char"));
