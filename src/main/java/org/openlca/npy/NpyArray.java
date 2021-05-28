@@ -27,6 +27,18 @@ public interface NpyArray<T> {
     return false;
   }
 
+  /**
+   * Convert this array into a double array. If this array is already a double
+   * array it is directly returned without making a copy of it.
+   *
+   * @return this array if it is a double array, otherwise a converted array
+   */
   NpyDoubleArray asDoubleArray();
+
+  default boolean isFloatArray() {
+    return false;
+  }
+
+  NpyFloatArray asFloatArray();
 
 }

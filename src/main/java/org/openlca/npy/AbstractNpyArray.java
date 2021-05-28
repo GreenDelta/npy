@@ -1,5 +1,6 @@
 package org.openlca.npy;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 abstract class AbstractNpyArray<T> implements NpyArray<T> {
@@ -27,5 +28,9 @@ abstract class AbstractNpyArray<T> implements NpyArray<T> {
   @Override
   public T data() {
     return data;
+  }
+
+  protected final int[] copyShape() {
+    return Arrays.copyOf(shape, shape.length);
   }
 }
