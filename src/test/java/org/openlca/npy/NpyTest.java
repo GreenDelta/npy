@@ -3,6 +3,8 @@ package org.openlca.npy;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.openlca.npy.arrays.Array2D;
+import org.openlca.npy.arrays.NpyDoubleArray;
 
 public class NpyTest {
 
@@ -47,9 +49,9 @@ public class NpyTest {
 
     // check by storage order
     if (array.hasFortranOrder()) {
-      assertArrayEquals(new double[]{0, 3, 1, 4, 2, 5}, array.data, 1e-16);
+      assertArrayEquals(new double[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-16);
     } else {
-      assertArrayEquals(new double[]{0, 1, 2, 3, 4, 5}, array.data, 1e-16);
+      assertArrayEquals(new double[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-16);
     }
   }
 }

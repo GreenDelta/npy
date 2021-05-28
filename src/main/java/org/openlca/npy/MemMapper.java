@@ -2,6 +2,8 @@ package org.openlca.npy;
 
 import java.nio.channels.FileChannel;
 
+import org.openlca.npy.arrays.NpyArray;
+
 class MemMapper {
 
   private final NpyHeader header;

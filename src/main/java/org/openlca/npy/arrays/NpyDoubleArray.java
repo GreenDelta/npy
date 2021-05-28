@@ -1,4 +1,4 @@
-package org.openlca.npy;
+package org.openlca.npy.arrays;
 
 public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
 
