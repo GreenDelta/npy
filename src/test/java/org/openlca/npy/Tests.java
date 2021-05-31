@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import org.openlca.npy.arrays.Array2D;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
+import org.openlca.npy.arrays.NpyIntArray;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -42,8 +43,8 @@ public class Tests {
     };
     eachNpy(testNpy -> {
       if (Objects.equals(type, testNpy.dataType)
-          && Objects.equals(byteOrder, testNpy.byteOrder)
-          && fortranOrder == testNpy.fortranOrder) {
+        && Objects.equals(byteOrder, testNpy.byteOrder)
+        && fortranOrder == testNpy.fortranOrder) {
         npy.npy = testNpy;
       }
     });
@@ -118,6 +119,40 @@ public class Tests {
     }
   }
 
+  static void checkInts(NpyIntArray array) {
+
+    assertTrue(Array2D.isValid(array));
+    assertEquals(2, Array2D.rowCountOf(array));
+    assertEquals(3, Array2D.columnCountOf(array));
+
+    // check each element
+    var expected = new int[][]{
+      new int[]{0, 1, 2},
+      new int[]{3, 4, 5},
+    };
+    for (int row = 0; row < 2; row++) {
+      for (int col = 0; col < 3; col++) {
+        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-16);
+      }
+    }
+
+    // check by rows
+    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+
+    // check by columns
+    assertArrayEquals(new int[]{0, 3}, Array2D.getColumn(array, 0));
+    assertArrayEquals(new int[]{1, 4}, Array2D.getColumn(array, 1));
+    assertArrayEquals(new int[]{2, 5}, Array2D.getColumn(array, 2));
+
+    // check by storage order
+    if (array.hasFortranOrder()) {
+      assertArrayEquals(new int[]{0, 3, 1, 4, 2, 5}, array.data());
+    } else {
+      assertArrayEquals(new int[]{0, 1, 2, 3, 4, 5}, array.data());
+    }
+  }
+
   public static class TestNpy {
     private final File file;
     private final DataType dataType;
@@ -138,8 +173,8 @@ public class Tests {
     private static TestNpy of(
       DataType dataType, String byteOrder, String storageOrder) {
       var fileName = dataType.name() + "_"
-                     + byteOrder + "_"
-                     + storageOrder + ".npy";
+        + byteOrder + "_"
+        + storageOrder + ".npy";
       var file = new File(testDir, fileName);
       if (!file.exists()) {
         System.err.println("test file is missing: " + file.getAbsolutePath());

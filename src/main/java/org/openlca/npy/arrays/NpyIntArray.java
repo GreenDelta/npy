@@ -10,18 +10,6 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
   public int size() {
     return data.length;
   }
-  
-    /*
-    @Override
-    public boolean isIntArray() {
-      return true;
-    }
-  
-    @Override
-    public NpyIntArray asIntArray() {
-      return this;
-    }
-    */
 
   @Override
   public NpyDoubleArray asDoubleArray() {
@@ -39,6 +27,16 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
       floats[i] = (float) data[i];
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
+  }
+
+  @Override
+  public boolean isIntArray() {
+    return true;
+  }
+
+  @Override
+  public NpyIntArray asIntArray() {
+    return this;
   }
 }
   

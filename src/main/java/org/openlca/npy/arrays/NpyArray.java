@@ -41,4 +41,10 @@ public interface NpyArray<T> {
 
   NpyFloatArray asFloatArray();
 
+  default boolean isIntArray() {
+    return false;
+  }
+
+  NpyIntArray asIntArray();
+
 }

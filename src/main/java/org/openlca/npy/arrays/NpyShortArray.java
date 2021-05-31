@@ -40,5 +40,14 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
+
+  @Override
+  public NpyIntArray asIntArray() {
+    var ints = new int[data.length];
+    for (int i = 0; i < data.length; i++) {
+      ints[i] = data[i];
+    }
+    return new NpyIntArray(copyShape(), ints, fortranOrder);
+  }
 }
   

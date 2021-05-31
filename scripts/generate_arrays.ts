@@ -140,4 +140,4 @@ function generateChecks(type: string): string {
   `;
 }
 
-console.log(generateChecks("float"));
+console.log(generateChecks("int"));

@@ -29,4 +29,13 @@ public class NpyFloatArray extends AbstractNpyArray<float[]> {
   public NpyFloatArray asFloatArray() {
     return this;
   }
+
+  @Override
+  public NpyIntArray asIntArray() {
+    var ints = new int[data.length];
+    for (int i = 0; i < data.length; i++) {
+      ints[i] = (int) data[i];
+    }
+    return new NpyIntArray(copyShape(), ints, fortranOrder);
+  }
 }
