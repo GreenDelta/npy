@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
+import org.openlca.npy.arrays.NpyIntArray;
 
 abstract class NpyArrayBuilder {
 
@@ -17,7 +18,7 @@ abstract class NpyArrayBuilder {
     this.header = header;
     this.size = header.numberOfElements();
     this.typeSize = header.dataType().size();
-    this.pos = pos;
+    this.pos = 0;
   }
 
   static NpyArrayBuilder allocate(NpyHeader header) throws NpyFormatException {
@@ -26,6 +27,8 @@ abstract class NpyArrayBuilder {
         return new F8Builder(header);
       case f4:
         return new F4Builder(header);
+      case i4:
+        return new I4Builder(header);
       default:
         throw new NpyFormatException(
           "unsupported data type: " + header.dataType());
@@ -80,6 +83,26 @@ abstract class NpyArrayBuilder {
     @Override
     NpyFloatArray build() {
       return new NpyFloatArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
+  private static final class I4Builder extends NpyArrayBuilder {
+
+    private final int[] data;
+
+    private I4Builder(NpyHeader header) {
+      super(header);
+      this.data = new int[header.numberOfElements()];
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = buffer.getInt();
+    }
+
+    @Override
+    NpyIntArray build() {
+      return new NpyIntArray(header.shape(), data, header.hasFortranOrder());
     }
   }
 
