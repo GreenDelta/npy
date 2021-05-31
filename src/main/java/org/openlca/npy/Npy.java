@@ -18,11 +18,16 @@ public class Npy {
    * @throws IOException        IO exceptions are rethrown
    * @throws NpyFormatException if the NPY format is invalid or unsupported
    */
-  public static NpyArray load(File file) throws IOException, NpyFormatException {
+  public static NpyArray<?> load(File file)
+    throws IOException, NpyFormatException {
+
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
 
       var header = NpyHeader.read(channel);
+      return ChannelReader.read(channel, header);
+
+      /*
       var offset = header.dataOffset();
       var size = channel.size() - offset;
 
@@ -36,6 +41,8 @@ public class Npy {
         return new NpyDoubleArray(header.shape(), data, header.hasFortranOrder());
       }
       throw new NpyFormatException("unsupported NPY format: " + header);
+
+       */
     }
   }
 
@@ -46,7 +53,7 @@ public class Npy {
    * @param file the NPY file to read
    * @return the mapped NPY array
    */
-  public static NpyArray loadUnchecked(File file) {
+  public static NpyArray<?> loadUnchecked(File file) {
     try {
       return load(file);
     } catch (Exception e) {
