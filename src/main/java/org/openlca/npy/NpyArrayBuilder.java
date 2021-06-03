@@ -1,7 +1,7 @@
 package org.openlca.npy;
 
 import java.nio.ByteBuffer;
-import java.util.function.LongFunction;
+import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
 import org.openlca.npy.arrays.NpyArray;
@@ -32,10 +32,12 @@ abstract class NpyArrayBuilder {
         return new F4Builder(header);
       case i8:
         return new LongBuilder(header, ByteBuffer::getLong);
+      case u2:
+        return new IntBuilder(header, Unsigned::u2ToSigned);
       case u4:
-        return new LongBuilder(header, b -> b.getInt() & 0xffffffffL);
+        return new LongBuilder(header, Unsigned::u4ToSigned);
       case i4:
-        return new I4Builder(header);
+        return new IntBuilder(header, ByteBuffer::getInt);
       default:
         throw new NpyFormatException(
           "unsupported data type: " + header.dataType());
@@ -93,18 +95,20 @@ abstract class NpyArrayBuilder {
     }
   }
 
-  private static final class I4Builder extends NpyArrayBuilder {
+  private static final class IntBuilder extends NpyArrayBuilder {
 
     private final int[] data;
+    private final ToIntFunction<ByteBuffer> fn;
 
-    private I4Builder(NpyHeader header) {
+    private IntBuilder(NpyHeader header, ToIntFunction<ByteBuffer> fn) {
       super(header);
       this.data = new int[header.numberOfElements()];
+      this.fn = fn;
     }
 
     @Override
     void fillNext(ByteBuffer buffer, int pos) {
-      data[pos] = buffer.getInt();
+      data[pos] = fn.applyAsInt(buffer);
     }
 
     @Override

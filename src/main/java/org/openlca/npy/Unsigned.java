@@ -8,27 +8,28 @@ class Unsigned {
   private Unsigned() {
   }
 
-  static int byteOf(byte b) {
-    return b & 0xff;
+  static short u1ToSigned(byte b) {
+    return (short) (b & (short) 0xff);
   }
 
-  static int shortOf(byte[] bytes, ByteOrder order) {
+  static int u2ToSigned(byte[] bytes, ByteOrder order) {
     var buffer = ByteBuffer.wrap(bytes, 0, 2)
       .order(order);
-    return shortOf(buffer);
+    return u2ToSigned(buffer);
   }
 
-  static int shortOf(ByteBuffer buffer) {
+  static int u2ToSigned(ByteBuffer buffer) {
     short s = buffer.getShort();
     return s & 0xffff;
   }
-  static long intOf(byte[] bytes, ByteOrder order) {
+
+  static long u4ToSigned(byte[] bytes, ByteOrder order) {
     var buffer = ByteBuffer.wrap(bytes, 0, 4)
       .order(order);
-    return intOf(buffer);
+    return u4ToSigned(buffer);
   }
 
-  static long intOf(ByteBuffer buffer) {
+  static long u4ToSigned(ByteBuffer buffer) {
     int i = buffer.getInt();
     return i & 0xffffffffL;
   }

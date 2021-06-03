@@ -16,6 +16,7 @@ public class NpyTest {
         DataType.f8,
         DataType.i4,
         DataType.i8,
+        DataType.u2,
         DataType.u4).contains(testNpy.dataType()))
         return; // TODO: currently not all types are supported
 
@@ -24,9 +25,11 @@ public class NpyTest {
 
       switch (testNpy.dataType()) {
         case i4:
+        case u2:
           assertTrue(array.isIntArray());
           break;
         case i8:
+        case u4:
           assertTrue(array.isLongArray());
           break;
         case f4:
@@ -34,9 +37,6 @@ public class NpyTest {
           break;
         case f8:
           assertTrue(array.isDoubleArray());
-          break;
-        case u4:
-          assertTrue(array.isLongArray());
           break;
       }
 
