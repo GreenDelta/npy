@@ -10,18 +10,16 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
   public int size() {
     return data.length;
   }
-  
-    /*
-    @Override
-    public boolean isLongArray() {
-      return true;
-    }
-  
-    @Override
-    public NpyLongArray asLongArray() {
-      return this;
-    }
-    */
+
+  @Override
+  public boolean isLongArray() {
+    return true;
+  }
+
+  @Override
+  public NpyLongArray asLongArray() {
+    return this;
+  }
 
   @Override
   public NpyDoubleArray asDoubleArray() {

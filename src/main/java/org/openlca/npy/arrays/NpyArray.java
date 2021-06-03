@@ -47,4 +47,10 @@ public interface NpyArray<T> {
 
   NpyIntArray asIntArray();
 
+  default boolean isLongArray() {
+    return false;
+  }
+
+  NpyLongArray asLongArray();
+
 }

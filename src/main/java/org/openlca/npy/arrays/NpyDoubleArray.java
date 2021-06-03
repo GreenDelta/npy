@@ -38,4 +38,13 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
+
+  @Override
+  public NpyLongArray asLongArray() {
+    var longs = new long[data.length];
+    for (int i = 0; i < data.length; i++) {
+      longs[i] = (long) data[i];
+    }
+    return new NpyLongArray(copyShape(), longs, fortranOrder);
+  }
 }

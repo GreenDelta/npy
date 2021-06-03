@@ -50,5 +50,14 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
+
+  @Override
+  public NpyLongArray asLongArray() {
+    var longs = new long[data.length];
+    for (int i = 0; i < data.length; i++) {
+      longs[i] = data[i] ? 1L : 0L;
+    }
+    return new NpyLongArray(copyShape(), longs, fortranOrder);
+  }
 }
   

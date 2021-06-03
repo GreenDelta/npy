@@ -3,10 +3,8 @@ package org.openlca.npy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 
 import org.openlca.npy.arrays.NpyArray;
-import org.openlca.npy.arrays.NpyDoubleArray;
 
 public class Npy {
 

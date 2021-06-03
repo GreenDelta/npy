@@ -19,7 +19,7 @@ class ChannelReader {
     this.header = header;
   }
 
-  public static NpyArray<?> read(ReadableByteChannel channel, NpyHeader header)
+  static NpyArray<?> read(ReadableByteChannel channel, NpyHeader header)
     throws IOException, NpyFormatException {
     return new ChannelReader(channel, header).read();
   }

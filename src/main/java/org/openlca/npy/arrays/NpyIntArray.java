@@ -12,6 +12,16 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
   }
 
   @Override
+  public boolean isIntArray() {
+    return true;
+  }
+
+  @Override
+  public NpyIntArray asIntArray() {
+    return this;
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
@@ -30,13 +40,12 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
   }
 
   @Override
-  public boolean isIntArray() {
-    return true;
-  }
-
-  @Override
-  public NpyIntArray asIntArray() {
-    return this;
+  public NpyLongArray asLongArray() {
+    var longs = new long[data.length];
+    for (int i = 0; i < data.length; i++) {
+      longs[i] = (long) data[i];
+    }
+    return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
 }
   

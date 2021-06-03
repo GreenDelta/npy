@@ -1,11 +1,14 @@
 package org.openlca.npy;
 
 import java.nio.ByteBuffer;
+import java.util.function.LongFunction;
+import java.util.function.ToLongFunction;
 
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
+import org.openlca.npy.arrays.NpyLongArray;
 
 abstract class NpyArrayBuilder {
 
@@ -27,6 +30,10 @@ abstract class NpyArrayBuilder {
         return new F8Builder(header);
       case f4:
         return new F4Builder(header);
+      case i8:
+        return new LongBuilder(header, ByteBuffer::getLong);
+      case u4:
+        return new LongBuilder(header, b -> b.getInt() & 0xffffffffL);
       case i4:
         return new I4Builder(header);
       default:
@@ -103,6 +110,28 @@ abstract class NpyArrayBuilder {
     @Override
     NpyIntArray build() {
       return new NpyIntArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
+  private static final class LongBuilder extends NpyArrayBuilder {
+
+    private final long[] data;
+    private final ToLongFunction<ByteBuffer> fn;
+
+    private LongBuilder(NpyHeader header, ToLongFunction<ByteBuffer> fn) {
+      super(header);
+      this.data = new long[header.numberOfElements()];
+      this.fn = fn;
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = fn.applyAsLong(buffer);
+    }
+
+    @Override
+    NpyLongArray build() {
+      return new NpyLongArray(header.shape(), data, header.hasFortranOrder());
     }
   }
 
