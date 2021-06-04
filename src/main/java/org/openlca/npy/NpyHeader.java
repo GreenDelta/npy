@@ -98,14 +98,14 @@ public final class NpyHeader {
       n = in.read(bytes);
       if (n != 2)
         throw new NpyFormatException("invalid NPY header");
-      headerLength = Unsigned.u2ToSigned(bytes, ByteOrder.LITTLE_ENDIAN);
+      headerLength = Util.u2ToInt(bytes, ByteOrder.LITTLE_ENDIAN);
       dataOffset = 10 + headerLength;
     } else {
       bytes = new byte[4];
       n = in.read(bytes);
       if (n != 4)
         throw new NpyFormatException("invalid NPY header");
-      long len = Unsigned.u4ToSigned(bytes, ByteOrder.LITTLE_ENDIAN);
+      long len = Util.u4ToLong(bytes, ByteOrder.LITTLE_ENDIAN);
       dataOffset = 12 + len;
       headerLength = (int) len;
     }
@@ -138,13 +138,13 @@ public final class NpyHeader {
       if (channel.read(buffer) != 2)
         throw new NpyFormatException("invalid NPY header");
       buffer.flip();
-      headerLength = Unsigned.u2ToSigned(buffer);
+      headerLength = Util.u2ToInt(buffer);
       dataOffset = 10 + headerLength;
     } else {
       buffer.limit(4);
       if (channel.read(buffer) != 4)
         throw new NpyFormatException("invalid NPY header");
-      long len = Unsigned.u4ToSigned(buffer);
+      long len = Util.u4ToLong(buffer);
       dataOffset = 12 + len;
       headerLength = (int) len;
     }
@@ -187,14 +187,14 @@ public final class NpyHeader {
     static Version of(byte[] bytes) throws NpyFormatException {
       if (bytes.length < 8)
         throw new NpyFormatException("invalid NPY header");
-      if (Unsigned.u1ToSigned(bytes[0]) != 0x93)
+      if (Util.u1ToShort(bytes[0]) != 0x93)
         throw new NpyFormatException("invalid NPY header");
       var numpy = new String(bytes, 1, 5);
       if (!numpy.equals("NUMPY"))
         throw new NpyFormatException("invalid NPY header");
 
-      int major = Unsigned.u1ToSigned(bytes[6]);
-      int minor = Unsigned.u1ToSigned(bytes[7]);
+      int major = Util.u1ToShort(bytes[6]);
+      int minor = Util.u1ToShort(bytes[7]);
       if (major != 1 && major != 2 && major != 3)
         throw new NpyFormatException(
           "unsupported NPY version: " + major);

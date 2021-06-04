@@ -26,16 +26,18 @@ abstract class NpyArrayBuilder {
 
   static NpyArrayBuilder allocate(NpyHeader header) throws NpyFormatException {
     switch (header.dataType()) {
-      case f8:
-        return new F8Builder(header);
+      case f2:
+        return new FloatBuilder(header, Util::f2ToFloat);
       case f4:
-        return new F4Builder(header);
+        return new FloatBuilder(header, ByteBuffer::getFloat);
+      case f8:
+        return new DoubleBuilder(header);
       case i8:
         return new LongBuilder(header, ByteBuffer::getLong);
       case u2:
-        return new IntBuilder(header, Unsigned::u2ToSigned);
+        return new IntBuilder(header, Util::u2ToInt);
       case u4:
-        return new LongBuilder(header, Unsigned::u4ToSigned);
+        return new LongBuilder(header, Util::u4ToLong);
       case i4:
         return new IntBuilder(header, ByteBuffer::getInt);
       default:
@@ -55,11 +57,11 @@ abstract class NpyArrayBuilder {
 
   abstract NpyArray<?> build();
 
-  private static final class F8Builder extends NpyArrayBuilder {
+  private static final class DoubleBuilder extends NpyArrayBuilder {
 
     private final double[] data;
 
-    private F8Builder(NpyHeader header) {
+    private DoubleBuilder(NpyHeader header) {
       super(header);
       this.data = new double[header.numberOfElements()];
     }
@@ -75,18 +77,20 @@ abstract class NpyArrayBuilder {
     }
   }
 
-  private static final class F4Builder extends NpyArrayBuilder {
+  private static final class FloatBuilder extends NpyArrayBuilder {
 
     private final float[] data;
+    private final ToFloatFunction<ByteBuffer> fn;
 
-    private F4Builder(NpyHeader header) {
+    private FloatBuilder(NpyHeader header, ToFloatFunction<ByteBuffer> fn) {
       super(header);
       this.data = new float[header.numberOfElements()];
+      this.fn = fn;
     }
 
     @Override
     void fillNext(ByteBuffer buffer, int pos) {
-      data[pos] = buffer.getFloat();
+      data[pos] = fn.applyAsFloat(buffer);
     }
 
     @Override

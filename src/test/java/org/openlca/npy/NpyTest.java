@@ -12,6 +12,7 @@ public class NpyTest {
   public void testLoad() {
     Tests.eachNpy(testNpy -> {
       if (!EnumSet.of(
+        DataType.f2,
         DataType.f4,
         DataType.f8,
         DataType.i4,
