@@ -33,6 +33,23 @@ public interface NpyArray<T> {
 
   NpyBooleanArray asBooleanArray();
 
+  /**
+   * Returns true if this array is an instance of {@link NpyByteArray}.
+   */
+  default boolean isByteArray() {
+    return false;
+  }
+
+  /**
+   * Converts this array into an instance of {@link NpyByteArray}. If this
+   * array is already such an instance it is directly returned without copying.
+   * Otherwise the values of this array are casted into a new
+   * {@link NpyByteArray}. Note that such casting can result in data loss.
+   *
+   * @return this array as an instance of {@link NpyByteArray}
+   */
+  NpyByteArray asByteArray();
+
   default boolean isDoubleArray() {
     return false;
   }

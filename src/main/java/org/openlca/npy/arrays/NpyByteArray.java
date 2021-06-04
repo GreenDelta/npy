@@ -10,18 +10,16 @@ public final class NpyByteArray extends AbstractNpyArray<byte[]> {
   public int size() {
     return data.length;
   }
-  
-    /*
-    @Override
-    public boolean isByteArray() {
-      return true;
-    }
-  
-    @Override
-    public NpyByteArray asByteArray() {
-      return this;
-    }
-    */
+
+  @Override
+  public boolean isByteArray() {
+    return true;
+  }
+
+  @Override
+  public NpyByteArray asByteArray() {
+    return this;
+  }
 
   @Override
   public NpyBooleanArray asBooleanArray() {

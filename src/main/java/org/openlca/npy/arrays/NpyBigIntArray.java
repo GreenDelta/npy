@@ -31,6 +31,18 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   }
 
   @Override
+  public NpyByteArray asByteArray() {
+    var bytes = new byte[data.length];
+    for (int i = 0; i < data.length; i++) {
+      var val = data[i];
+      if (val != null) {
+        bytes[i] = (byte) val.intValueExact();
+      }
+    }
+    return new NpyByteArray(copyShape(), bytes, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {

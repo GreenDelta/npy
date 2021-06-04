@@ -16,6 +16,7 @@ public class NpyTest {
         DataType.f2,
         DataType.f4,
         DataType.f8,
+        DataType.i1,
         DataType.i4,
         DataType.i8,
         DataType.u2,
@@ -29,6 +30,9 @@ public class NpyTest {
       switch (testNpy.dataType()) {
         case bool:
           assertTrue(array.isBooleanArray());
+          break;
+        case i1:
+          assertTrue(array.isByteArray());
           break;
         case i4:
         case u2:

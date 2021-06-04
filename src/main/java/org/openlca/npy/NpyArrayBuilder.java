@@ -8,6 +8,7 @@ import java.util.function.ToLongFunction;
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyBigIntArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
+import org.openlca.npy.arrays.NpyByteArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
@@ -37,6 +38,10 @@ abstract class NpyArrayBuilder {
         return new FloatBuilder(header, ByteBuffer::getFloat);
       case f8:
         return new DoubleBuilder(header);
+      case i1:
+        return new ByteBuilder(header);
+      case i4:
+        return new IntBuilder(header, ByteBuffer::getInt);
       case i8:
         return new LongBuilder(header, ByteBuffer::getLong);
       case u2:
@@ -45,8 +50,6 @@ abstract class NpyArrayBuilder {
         return new LongBuilder(header, Util::u4ToLong);
       case u8:
         return new BigIntBuilder(header);
-      case i4:
-        return new IntBuilder(header, ByteBuffer::getInt);
       default:
         throw new NpyFormatException(
           "unsupported data type: " + header.dataType());
@@ -81,6 +84,26 @@ abstract class NpyArrayBuilder {
     @Override
     NpyBooleanArray build() {
       return new NpyBooleanArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
+  private static final class ByteBuilder extends NpyArrayBuilder {
+
+    private final byte[] data;
+
+    private ByteBuilder(NpyHeader header) {
+      super(header);
+      this.data = new byte[header.numberOfElements()];
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = buffer.get();
+    }
+
+    @Override
+    NpyByteArray build() {
+      return new NpyByteArray(header.shape(), data, header.hasFortranOrder());
     }
   }
 

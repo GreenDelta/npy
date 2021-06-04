@@ -23,6 +23,17 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   }
 
   @Override
+  public NpyByteArray asByteArray() {
+    var bytes = new byte[data.length];
+    for (int i = 0; i < data.length; i++) {
+      if (data[i]) {
+        bytes[i] = 1;
+      }
+    }
+    return new NpyByteArray(copyShape(), bytes, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {

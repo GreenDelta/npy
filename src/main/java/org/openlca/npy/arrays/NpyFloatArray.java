@@ -26,6 +26,15 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
   }
 
   @Override
+  public NpyByteArray asByteArray() {
+    var bytes = new byte[data.length];
+    for (int i = 0; i < data.length; i++) {
+      bytes[i] = (byte) data[i];
+    }
+    return new NpyByteArray(copyShape(), bytes, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
