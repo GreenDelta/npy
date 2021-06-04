@@ -25,7 +25,7 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   public NpyBooleanArray asBooleanArray() {
     var booleans = new boolean[data.length];
     for (int i = 0; i < data.length; i++) {
-      booleans[i] = i != 0;
+      booleans[i] = data[i] != 0;
     }
     return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }

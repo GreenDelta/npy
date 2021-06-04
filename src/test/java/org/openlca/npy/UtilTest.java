@@ -1,5 +1,6 @@
 package org.openlca.npy;
 
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static org.junit.Assert.*;
@@ -21,5 +22,18 @@ public class UtilTest {
     assertEquals(65535, Util.u2ToInt(
       new byte[]{(byte) 0xff, (byte) 0xff},
       ByteOrder.LITTLE_ENDIAN));
+  }
+
+  @Test
+  public void testU8ToBigInteger() {
+    var bytes = new byte[] {
+      (byte) 0xff, (byte) 0xff,
+      (byte) 0xff, (byte) 0xff,
+      (byte) 0xff, (byte) 0xff,
+      (byte) 0xff, (byte) 0xff,
+    };
+    var buffer = ByteBuffer.wrap(bytes);
+    var u8Max = Util.u8ToBigInteger(buffer);
+    assertEquals("18446744073709551615", u8Max.toString());
   }
 }

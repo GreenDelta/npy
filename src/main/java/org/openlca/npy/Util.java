@@ -1,5 +1,6 @@
 package org.openlca.npy;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -32,6 +33,15 @@ class Util {
   static long u4ToLong(ByteBuffer buffer) {
     int i = buffer.getInt();
     return i & 0xffffffffL;
+  }
+
+  static BigInteger u8ToBigInteger(ByteBuffer buffer) {
+    long i = buffer.getLong();
+    if (i >= 0L)
+        return BigInteger.valueOf(i);
+    var upper = BigInteger.valueOf(Integer.toUnsignedLong((int) (i >>> 32)));
+    var lower = BigInteger.valueOf(Integer.toUnsignedLong((int) i));
+    return upper.shiftLeft(32).add(lower);
   }
 
   static float f2ToFloat(ByteBuffer buffer) {

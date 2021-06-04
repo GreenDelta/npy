@@ -1,9 +1,12 @@
 # npy
 
+* u8 -> BigInteger; BigIntegerBuilder; only conversion tests
+* i1, u1, i2 -> ByteArray + ShortArray methods + tests
+* memory mapping (if count < MaxInt) & range reading
+
+
 `npy` is a small Java library for reading and writing arrays in the NumPy 
 [NPY and NPZ](https://numpy.org/devdocs/reference/generated/numpy.lib.format.html) format.
-
-
 
 __Features__
 
