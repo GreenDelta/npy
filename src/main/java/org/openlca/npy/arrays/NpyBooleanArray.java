@@ -26,7 +26,9 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      doubles[i] = data[i] ? 1 : 0;
+      if (data[i]) {
+        doubles[i] = 1d;
+      }
     }
     return new NpyDoubleArray(copyShape(), doubles, fortranOrder);
   }
@@ -35,7 +37,9 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyFloatArray asFloatArray() {
     var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      floats[i] = data[i] ? 1f : 0f;
+      if (data[i]) {
+        floats[i] = 1f;
+      }
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
@@ -44,7 +48,9 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      ints[i] = data[i] ? 1 : 0;
+      if (data[i]) {
+        ints[i] = 1;
+      }
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
@@ -53,7 +59,9 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      longs[i] = data[i] ? 1L : 0L;
+      if (data[i]) {
+        longs[i] = 1L;
+      }
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }

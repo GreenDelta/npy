@@ -52,7 +52,7 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      longs[i] = (long) data[i];
+      longs[i] = data[i];
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }

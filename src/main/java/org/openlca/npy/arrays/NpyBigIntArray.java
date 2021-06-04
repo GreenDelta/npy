@@ -2,7 +2,7 @@ package org.openlca.npy.arrays;
 
 import java.math.BigInteger;
 
-public class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
+public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
 
   public NpyBigIntArray(int[] shape, BigInteger[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
@@ -11,6 +11,11 @@ public class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public boolean isBigIntegerArray() {
+    return true;
   }
 
   @Override
@@ -51,11 +56,25 @@ public class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
 
   @Override
   public NpyIntArray asIntArray() {
-    return null;
+    var ints = new int[data.length];
+    for (int i = 0; i < data.length; i++) {
+      var val = data[i];
+      if (val != null) {
+        ints[i] = val.intValueExact();
+      }
+    }
+    return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
 
   @Override
   public NpyLongArray asLongArray() {
-    return null;
+    var longs = new long[data.length];
+    for (int i = 0; i < data.length; i++) {
+      var val = data[i];
+      if (val != null) {
+        longs[i] = val.longValueExact();
+      }
+    }
+    return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
 }

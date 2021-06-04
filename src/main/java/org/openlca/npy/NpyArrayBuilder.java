@@ -1,10 +1,12 @@
 package org.openlca.npy;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
 import org.openlca.npy.arrays.NpyArray;
+import org.openlca.npy.arrays.NpyBigIntArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
@@ -41,6 +43,8 @@ abstract class NpyArrayBuilder {
         return new IntBuilder(header, Util::u2ToInt);
       case u4:
         return new LongBuilder(header, Util::u4ToLong);
+      case u8:
+        return new BigIntBuilder(header);
       case i4:
         return new IntBuilder(header, ByteBuffer::getInt);
       default:
@@ -163,6 +167,26 @@ abstract class NpyArrayBuilder {
     @Override
     NpyLongArray build() {
       return new NpyLongArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
+  private static final class BigIntBuilder extends NpyArrayBuilder {
+
+    private final BigInteger[] data;
+
+    private BigIntBuilder(NpyHeader header) {
+      super(header);
+      this.data = new BigInteger[header.numberOfElements()];
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = Util.u8ToBigInteger(buffer);
+    }
+
+    @Override
+    NpyBigIntArray build() {
+      return new NpyBigIntArray(header.shape(), data, header.hasFortranOrder());
     }
   }
 

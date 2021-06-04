@@ -1,6 +1,6 @@
 package org.openlca.npy.arrays;
 
-public class NpyFloatArray extends AbstractNpyArray<float[]> {
+public final class NpyFloatArray extends AbstractNpyArray<float[]> {
 
   public NpyFloatArray(int[] shape, float[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);

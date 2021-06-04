@@ -19,7 +19,8 @@ public class NpyTest {
         DataType.i4,
         DataType.i8,
         DataType.u2,
-        DataType.u4).contains(testNpy.dataType()))
+        DataType.u4,
+        DataType.u8).contains(testNpy.dataType()))
         return; // TODO: currently not all types are supported
 
       System.out.println(testNpy.file());
@@ -37,6 +38,10 @@ public class NpyTest {
         case u4:
           assertTrue(array.isLongArray());
           break;
+        case u8:
+          assertTrue(array.isBigIntegerArray());
+          break;
+        case f2:
         case f4:
           assertTrue(array.isFloatArray());
           break;

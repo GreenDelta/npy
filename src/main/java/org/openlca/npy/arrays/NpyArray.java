@@ -23,6 +23,10 @@ public interface NpyArray<T> {
    */
   int size();
 
+  default boolean isBigIntegerArray() {
+    return false;
+  }
+
   default boolean isBooleanArray() {
     return false;
   }
