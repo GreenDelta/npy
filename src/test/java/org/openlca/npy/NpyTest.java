@@ -68,9 +68,9 @@ public class NpyTest {
         Tests.checkFloats(array.asFloatArray());
         Tests.checkInts(array.asIntArray());
         Tests.checkLongs(array.asLongArray());
+        Tests.checkShorts(array.asShortArray());
       }
     });
-
   }
 
 }
