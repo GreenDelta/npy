@@ -89,4 +89,16 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
+
+  @Override
+  public NpyShortArray asShortArray() {
+    var shorts = new short[data.length];
+    for (int i = 0; i < data.length; i++) {
+      var val = data[i];
+      if (val != null) {
+        shorts[i] = (short) val.intValueExact();
+      }
+    }
+    return new NpyShortArray(copyShape(), shorts, fortranOrder);
+  }
 }

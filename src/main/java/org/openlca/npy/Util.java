@@ -13,6 +13,10 @@ class Util {
     return (short) (b & (short) 0xff);
   }
 
+  static short u1ToShort(ByteBuffer buffer) {
+    return (short) (buffer.get() & (short) 0xff);
+  }
+
   static int u2ToInt(byte[] bytes, ByteOrder order) {
     var buffer = ByteBuffer.wrap(bytes, 0, 2)
       .order(order);
@@ -38,7 +42,7 @@ class Util {
   static BigInteger u8ToBigInteger(ByteBuffer buffer) {
     long i = buffer.getLong();
     if (i >= 0L)
-        return BigInteger.valueOf(i);
+      return BigInteger.valueOf(i);
     var upper = BigInteger.valueOf(Integer.toUnsignedLong((int) (i >>> 32)));
     var lower = BigInteger.valueOf(Integer.toUnsignedLong((int) i));
     return upper.shiftLeft(32).add(lower);
@@ -53,7 +57,6 @@ class Util {
    * The 16 bits are stored in the given integer parameter, the higher 16 bits
    * are ignored. This function was directly taken from here:
    * https://stackoverflow.com/a/6162687.
-   *
    */
   private static float toFloat(int hbits) {
     int mant = hbits & 0x03ff;           // 10 bits mantissa

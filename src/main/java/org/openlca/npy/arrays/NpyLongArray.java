@@ -65,5 +65,14 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
+
+  @Override
+  public NpyShortArray asShortArray() {
+    var shorts = new short[data.length];
+    for (int i = 0; i < data.length; i++) {
+      shorts[i] = (short) data[i];
+    }
+    return new NpyShortArray(copyShape(), shorts, fortranOrder);
+  }
 }
   

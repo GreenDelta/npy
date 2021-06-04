@@ -17,8 +17,10 @@ public class NpyTest {
         DataType.f4,
         DataType.f8,
         DataType.i1,
+        DataType.i2,
         DataType.i4,
         DataType.i8,
+        DataType.u1,
         DataType.u2,
         DataType.u4,
         DataType.u8).contains(testNpy.dataType()))
@@ -33,6 +35,10 @@ public class NpyTest {
           break;
         case i1:
           assertTrue(array.isByteArray());
+          break;
+        case i2:
+        case u1:
+          assertTrue(array.isShortArray());
           break;
         case i4:
         case u2:
@@ -57,6 +63,7 @@ public class NpyTest {
       Tests.checkBooleans(array.asBooleanArray());
 
       if (!array.isBooleanArray()) {
+        Tests.checkBytes(array.asByteArray());
         Tests.checkDoubles(array.asDoubleArray());
         Tests.checkFloats(array.asFloatArray());
         Tests.checkInts(array.asIntArray());

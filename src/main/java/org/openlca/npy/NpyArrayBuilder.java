@@ -13,6 +13,7 @@ import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
 import org.openlca.npy.arrays.NpyLongArray;
+import org.openlca.npy.arrays.NpyShortArray;
 
 abstract class NpyArrayBuilder {
 
@@ -40,10 +41,14 @@ abstract class NpyArrayBuilder {
         return new DoubleBuilder(header);
       case i1:
         return new ByteBuilder(header);
+      case i2:
+        return new ShortBuilder(header, ByteBuffer::getShort);
       case i4:
         return new IntBuilder(header, ByteBuffer::getInt);
       case i8:
         return new LongBuilder(header, ByteBuffer::getLong);
+      case u1:
+        return new ShortBuilder(header, Util::u1ToShort);
       case u2:
         return new IntBuilder(header, Util::u2ToInt);
       case u4:
@@ -168,6 +173,28 @@ abstract class NpyArrayBuilder {
     @Override
     NpyIntArray build() {
       return new NpyIntArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
+  private static final class ShortBuilder extends NpyArrayBuilder {
+
+    private final short[] data;
+    private final ToShortFunction<ByteBuffer> fn;
+
+    private ShortBuilder(NpyHeader header, ToShortFunction<ByteBuffer> fn) {
+      super(header);
+      this.data = new short[header.numberOfElements()];
+      this.fn = fn;
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = fn.applyAsShort(buffer);
+    }
+
+    @Override
+    NpyShortArray build() {
+      return new NpyShortArray(header.shape(), data, header.hasFortranOrder());
     }
   }
 

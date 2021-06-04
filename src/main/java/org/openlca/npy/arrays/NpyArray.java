@@ -80,4 +80,10 @@ public interface NpyArray<T> {
 
   NpyLongArray asLongArray();
 
+  default boolean isShortArray() {
+    return false;
+  }
+
+  NpyShortArray asShortArray();
+
 }

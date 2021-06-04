@@ -10,18 +10,16 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   public int size() {
     return data.length;
   }
-  
-    /*
-    @Override
-    public boolean isShortArray() {
-      return true;
-    }
-  
-    @Override
-    public NpyShortArray asShortArray() {
-      return this;
-    }
-    */
+
+  @Override
+  public boolean isShortArray() {
+    return true;
+  }
+
+  @Override
+  public NpyShortArray asShortArray() {
+    return this;
+  }
 
   @Override
   public NpyBooleanArray asBooleanArray() {

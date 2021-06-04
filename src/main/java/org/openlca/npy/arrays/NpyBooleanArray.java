@@ -76,5 +76,16 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
+
+  @Override
+  public NpyShortArray asShortArray() {
+    var shorts = new short[data.length];
+    for (int i = 0; i < data.length; i++) {
+      if (data[i]) {
+        shorts[i] = 1;
+      }
+    }
+    return new NpyShortArray(copyShape(), shorts, fortranOrder);
+  }
 }
   
