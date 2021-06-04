@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.openlca.npy.arrays.Array2D;
+import org.openlca.npy.arrays.NpyArray;
+import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
@@ -44,8 +46,8 @@ public class Tests {
     };
     eachNpy(testNpy -> {
       if (Objects.equals(type, testNpy.dataType)
-        && Objects.equals(byteOrder, testNpy.byteOrder)
-        && fortranOrder == testNpy.fortranOrder) {
+          && Objects.equals(byteOrder, testNpy.byteOrder)
+          && fortranOrder == testNpy.fortranOrder) {
         npy.npy = testNpy;
       }
     });
@@ -65,24 +67,24 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-16);
+        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-3);
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-16);
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-16);
+    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-3);
+    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-3);
 
     // check by columns
-    assertArrayEquals(new double[]{0, 3}, Array2D.getColumn(array, 0), 1e-16);
-    assertArrayEquals(new double[]{1, 4}, Array2D.getColumn(array, 1), 1e-16);
-    assertArrayEquals(new double[]{2, 5}, Array2D.getColumn(array, 2), 1e-16);
+    assertArrayEquals(new double[]{0, 3}, Array2D.getColumn(array, 0), 1e-3);
+    assertArrayEquals(new double[]{1, 4}, Array2D.getColumn(array, 1), 1e-3);
+    assertArrayEquals(new double[]{2, 5}, Array2D.getColumn(array, 2), 1e-3);
 
     // check by storage order
     if (array.hasFortranOrder()) {
-      assertArrayEquals(new double[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-16);
+      assertArrayEquals(new double[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-3);
     } else {
-      assertArrayEquals(new double[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-16);
+      assertArrayEquals(new double[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-3);
     }
   }
 
@@ -99,24 +101,58 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-16);
+        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-3);
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-16f);
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-16f);
+    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-3f);
+    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-3f);
 
     // check by columns
-    assertArrayEquals(new float[]{0, 3}, Array2D.getColumn(array, 0), 1e-16f);
-    assertArrayEquals(new float[]{1, 4}, Array2D.getColumn(array, 1), 1e-16f);
-    assertArrayEquals(new float[]{2, 5}, Array2D.getColumn(array, 2), 1e-16f);
+    assertArrayEquals(new float[]{0, 3}, Array2D.getColumn(array, 0), 1e-3f);
+    assertArrayEquals(new float[]{1, 4}, Array2D.getColumn(array, 1), 1e-3f);
+    assertArrayEquals(new float[]{2, 5}, Array2D.getColumn(array, 2), 1e-3f);
 
     // check by storage order
     if (array.hasFortranOrder()) {
-      assertArrayEquals(new float[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-16f);
+      assertArrayEquals(new float[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-3f);
     } else {
-      assertArrayEquals(new float[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-16f);
+      assertArrayEquals(new float[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-3f);
+    }
+  }
+
+  static void checkBooleans(NpyBooleanArray array) {
+
+    assertTrue(Array2D.isValid(array));
+    assertEquals(2, Array2D.rowCountOf(array));
+    assertEquals(3, Array2D.columnCountOf(array));
+
+    // check each element
+    var expected = new boolean[][]{
+      new boolean[]{false, true, true},
+      new boolean[]{true, true, true},
+    };
+    for (int row = 0; row < 2; row++) {
+      for (int col = 0; col < 3; col++) {
+        assertEquals(expected[row][col], Array2D.get(array, row, col));
+      }
+    }
+
+    // check by rows
+    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+
+    // check by columns
+    assertArrayEquals(new boolean[]{false, true}, Array2D.getColumn(array, 0));
+    assertArrayEquals(new boolean[]{true, true}, Array2D.getColumn(array, 1));
+    assertArrayEquals(new boolean[]{true, true}, Array2D.getColumn(array, 2));
+
+    // check by storage order
+    if (array.hasFortranOrder()) {
+      assertArrayEquals(new boolean[]{false, true, true, true, true, true}, array.data());
+    } else {
+      assertArrayEquals(new boolean[]{false, true, true, true, true, true}, array.data());
     }
   }
 
@@ -133,7 +169,7 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-16);
+        assertEquals(expected[row][col], Array2D.get(array, row, col));
       }
     }
 
@@ -167,7 +203,7 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-16);
+        assertEquals(expected[row][col], Array2D.get(array, row, col));
       }
     }
 
@@ -208,8 +244,8 @@ public class Tests {
     private static TestNpy of(
       DataType dataType, String byteOrder, String storageOrder) {
       var fileName = dataType.name() + "_"
-        + byteOrder + "_"
-        + storageOrder + ".npy";
+                     + byteOrder + "_"
+                     + storageOrder + ".npy";
       var file = new File(testDir, fileName);
       if (!file.exists()) {
         System.err.println("test file is missing: " + file.getAbsolutePath());

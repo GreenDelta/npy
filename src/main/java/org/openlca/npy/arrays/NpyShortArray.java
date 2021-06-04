@@ -24,6 +24,15 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
     */
 
   @Override
+  public NpyBooleanArray asBooleanArray() {
+    var booleans = new boolean[data.length];
+    for (int i = 0; i < data.length; i++) {
+      booleans[i] = i != 0;
+    }
+    return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {

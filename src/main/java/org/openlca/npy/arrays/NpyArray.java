@@ -23,6 +23,12 @@ public interface NpyArray<T> {
    */
   int size();
 
+  default boolean isBooleanArray() {
+    return false;
+  }
+
+  NpyBooleanArray asBooleanArray();
+
   default boolean isDoubleArray() {
     return false;
   }

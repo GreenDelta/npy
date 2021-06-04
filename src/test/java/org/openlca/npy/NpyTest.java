@@ -41,6 +41,7 @@ public class NpyTest {
           break;
       }
 
+      Tests.checkBooleans(array.asBooleanArray());
       Tests.checkDoubles(array.asDoubleArray());
       Tests.checkFloats(array.asFloatArray());
       Tests.checkInts(array.asIntArray());

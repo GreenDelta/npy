@@ -11,18 +11,16 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public int size() {
     return data.length;
   }
-  
-    /*
-    @Override
-    public boolean isBooleanArray() {
-      return true;
-    }
-  
-    @Override
-    public NpyBooleanArray asBooleanArray() {
-      return this;
-    }
-    */
+
+  @Override
+  public boolean isBooleanArray() {
+    return true;
+  }
+
+  @Override
+  public NpyBooleanArray asBooleanArray() {
+    return this;
+  }
 
   @Override
   public NpyDoubleArray asDoubleArray() {
