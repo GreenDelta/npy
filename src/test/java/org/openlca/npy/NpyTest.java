@@ -12,6 +12,7 @@ public class NpyTest {
   public void testLoad() {
     Tests.eachNpy(testNpy -> {
       if (!EnumSet.of(
+        DataType.bool,
         DataType.f2,
         DataType.f4,
         DataType.f8,
@@ -25,6 +26,9 @@ public class NpyTest {
       var array = Npy.loadUnchecked(testNpy.file());
 
       switch (testNpy.dataType()) {
+        case bool:
+          assertTrue(array.isBooleanArray());
+          break;
         case i4:
         case u2:
           assertTrue(array.isIntArray());
@@ -42,10 +46,13 @@ public class NpyTest {
       }
 
       Tests.checkBooleans(array.asBooleanArray());
-      Tests.checkDoubles(array.asDoubleArray());
-      Tests.checkFloats(array.asFloatArray());
-      Tests.checkInts(array.asIntArray());
-      Tests.checkLongs(array.asLongArray());
+
+      if (!array.isBooleanArray()) {
+        Tests.checkDoubles(array.asDoubleArray());
+        Tests.checkFloats(array.asFloatArray());
+        Tests.checkInts(array.asIntArray());
+        Tests.checkLongs(array.asLongArray());
+      }
     });
 
   }

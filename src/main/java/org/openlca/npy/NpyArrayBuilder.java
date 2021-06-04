@@ -5,6 +5,7 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
 import org.openlca.npy.arrays.NpyArray;
+import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
@@ -26,6 +27,8 @@ abstract class NpyArrayBuilder {
 
   static NpyArrayBuilder allocate(NpyHeader header) throws NpyFormatException {
     switch (header.dataType()) {
+      case bool:
+        return new BooleanBuilder(header);
       case f2:
         return new FloatBuilder(header, Util::f2ToFloat);
       case f4:
@@ -56,6 +59,26 @@ abstract class NpyArrayBuilder {
   abstract void fillNext(ByteBuffer buffer, int pos);
 
   abstract NpyArray<?> build();
+
+  private static final class BooleanBuilder extends NpyArrayBuilder {
+
+    private final boolean[] data;
+
+    private BooleanBuilder(NpyHeader header) {
+      super(header);
+      this.data = new boolean[header.numberOfElements()];
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = buffer.get() != 0;
+    }
+
+    @Override
+    NpyBooleanArray build() {
+      return new NpyBooleanArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
 
   private static final class DoubleBuilder extends NpyArrayBuilder {
 
