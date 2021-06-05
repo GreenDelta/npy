@@ -3,6 +3,7 @@ package org.openlca.npy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 
 import org.openlca.npy.arrays.NpyArray;
 
@@ -18,29 +19,10 @@ public class Npy {
    */
   public static NpyArray<?> load(File file)
     throws IOException, NpyFormatException {
-
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
-
       var header = NpyHeader.read(channel);
       return ChannelReader.read(channel, header);
-
-      /*
-      var offset = header.dataOffset();
-      var size = channel.size() - offset;
-
-      var buffer = channel.map(
-        FileChannel.MapMode.READ_ONLY, header.dataOffset(), size);
-      buffer.order(header.byteOrder());
-
-      if (header.dataType() == DataType.f8) {
-        double[] data = new double[header.numberOfElements()];
-        buffer.asDoubleBuffer().get(data);
-        return new NpyDoubleArray(header.shape(), data, header.hasFortranOrder());
-      }
-      throw new NpyFormatException("unsupported NPY format: " + header);
-
-       */
     }
   }
 
@@ -55,7 +37,45 @@ public class Npy {
     try {
       return load(file);
     } catch (Exception e) {
-      throw new RuntimeException("failed to map NPY file: " + file, e);
+      throw new RuntimeException("failed to load NPY file: " + file, e);
     }
   }
+
+  public static NpyArray<?> memmap(File file)
+    throws IOException, NpyFormatException {
+    try (var f = new RandomAccessFile(file, "r");
+         var channel = f.getChannel()) {
+      var header = NpyHeader.read(channel);
+      long dataSize = header.dataSize();
+
+      // only a buffer of size < Integer.MAX_VALUE can be mapped
+      // into memory. if the size of the stored array is larger
+      // we take the normal reader currently
+      long max = Integer.MAX_VALUE;
+      if (dataSize >= max)
+        return ChannelReader.read(channel, header);
+
+      var buffer = channel.map(
+        FileChannel.MapMode.READ_ONLY, header.dataOffset(), dataSize);
+      buffer.order(header.byteOrder());
+      var builder = NpyArrayBuilder.allocate(header);
+
+      long typeSize = header.dataType().size();
+      long readBytes = 0;
+      while (readBytes < dataSize) {
+        builder.next(buffer);
+        readBytes += typeSize;
+      }
+      return builder.build();
+    }
+  }
+
+  public static NpyArray<?> memmapUnchecked(File file) {
+    try {
+      return memmap(file);
+    } catch (Exception e) {
+      throw new RuntimeException("failed to memmap NPY file: " + file, e);
+    }
+  }
+
 }

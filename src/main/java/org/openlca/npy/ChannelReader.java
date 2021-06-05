@@ -25,9 +25,7 @@ class ChannelReader {
   }
 
   private NpyArray<?> read() throws IOException, NpyFormatException{
-    long totalBytes =
-      (long) header.numberOfElements()
-      * (long) header.dataType().size();
+    long totalBytes = header.dataSize();
     int bufferSize = totalBytes > 0 && totalBytes < ((long) MAX_BUFFER_SIZE)
       ? (int) totalBytes
       : MAX_BUFFER_SIZE;

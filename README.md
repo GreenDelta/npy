@@ -1,7 +1,5 @@
 # npy
 
-* u8 -> BigInteger; BigIntegerBuilder; only conversion tests
-* i1, u1, i2 -> ByteArray + ShortArray methods + tests
 * memory mapping (if count < MaxInt) & range reading
 
 

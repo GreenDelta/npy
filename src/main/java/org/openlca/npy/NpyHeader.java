@@ -41,6 +41,19 @@ public final class NpyHeader {
   }
 
   /**
+   * Returns the size of the stored array in number of bytes. That is the
+   * number of elements of the stored array times the size of the data type in
+   * bytes.
+   *
+   * @return the size of the stored array in bytes
+   */
+  public long dataSize() {
+    long elemCount = numberOfElements();
+    long typeSize = dataType().size();
+    return elemCount * typeSize;
+  }
+
+  /**
    * Returns {@code true} when the array is stored in Fortran order.
    */
   public boolean hasFortranOrder() {
