@@ -1,6 +1,13 @@
 # npy
 
-* memory mapping (if count < MaxInt) & range reading
+* range reading
+* Array2d.loadColumn; Array2d.loadRow  
+* compare with openLCA npy  
+* support writing
+* Npz reading and writing  
+* document the conversion table
+* decide of we keep the NpyCharArray class
+* decide if we support BigInt writing
 
 
 `npy` is a small Java library for reading and writing arrays in the NumPy 
