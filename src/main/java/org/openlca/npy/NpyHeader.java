@@ -93,6 +93,10 @@ public final class NpyHeader {
     return count;
   }
 
+  public String property(String key) {
+    return dictionary.otherProperties().get(key);
+  }
+
   public static NpyHeader read(InputStream in)
     throws IOException, NpyFormatException {
 

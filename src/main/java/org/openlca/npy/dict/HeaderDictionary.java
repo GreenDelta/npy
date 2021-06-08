@@ -242,17 +242,17 @@ public class HeaderDictionary {
 
 
     // calculate the length and padding
-    int len = version == 1
+    int filled = version == 1
       ? 11 + dictBytes.length
       : 13 + dictBytes.length;
-    int padding = 64 - (len % 64);
-    int totalLen = len + padding;
+    int padding = 64 - (filled % 64);
+    int totalLen = filled + padding;
 
     if (version == 1 && totalLen > 65535) {
       version = 2;
-      len = 12 + dictBytes.length;
-      padding = 64 - (len % 64);
-      totalLen = len + padding;
+      filled = 13 + dictBytes.length;
+      padding = 64 - (filled % 64);
+      totalLen = filled + padding;
     }
 
     var buf = ByteBuffer.allocate(totalLen);
@@ -268,9 +268,9 @@ public class HeaderDictionary {
 
     // header length
     if (version == 1) {
-      buf.putShort((short) totalLen);
+      buf.putShort((short) (totalLen - 10));
     } else {
-      buf.putInt(totalLen);
+      buf.putInt(totalLen - 12);
     }
 
     // write the padding
