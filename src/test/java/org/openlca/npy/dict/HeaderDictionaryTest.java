@@ -73,4 +73,24 @@ public class HeaderDictionaryTest {
     assertEquals(0, header.dataOffset() % 64);
   }
 
+  @Test
+  public void testNonAsciiToNpyHeader() throws Exception {
+    var bytes = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+      .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+      .withFortranOrder(true)
+      .withOtherProperty("_key", "Überstraße")
+      .create()
+      .toNpyHeader();
+    var stream = new ByteArrayInputStream(bytes);
+    var header = NpyHeader.read(stream);
+    assertEquals(DataType.i4, header.dataType());
+    assertTrue(header.hasFortranOrder());
+    assertEquals(ByteOrder.LITTLE_ENDIAN, header.byteOrder());
+    assertEquals(2 * 3 * 4, header.dataSize());
+    assertEquals(2 * 3, header.numberOfElements());
+    assertEquals("Überstraße", header.property("_key"));
+    assertArrayEquals(new int[] {2, 3}, header.shape());
+    assertEquals(0, header.dataOffset() % 64);
+  }
+
 }
