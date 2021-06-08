@@ -95,7 +95,7 @@ public class HeaderDictionary {
     if (!typeEntry.isString())
       throw new NpyFormatException(
         "invalid header dictionary; data type field " +
-        "'descr' is not a string but: " + typeEntry);
+          "'descr' is not a string but: " + typeEntry);
     var dtype = typeEntry.asString().value();
     var dataType = DataType.of(dtype);
     if (dataType == null)
@@ -111,8 +111,8 @@ public class HeaderDictionary {
       if (!val.isString())
         return;
       if (key.equals("descr")
-          || key.equals("shape")
-          || key.equals("fortran_order"))
+        || key.equals("shape")
+        || key.equals("fortran_order"))
         return;
       builder.withOtherProperty(
         key, val.asString().value());
@@ -129,7 +129,7 @@ public class HeaderDictionary {
     if (!entry.isIdentifier())
       throw new NpyFormatException(
         "invalid header dictionary: fortran_order must be " +
-        "True or False but was '" + entry + "'");
+          "True or False but was '" + entry + "'");
     var value = entry.asIdentifier().value();
     switch (value) {
       case "True":
@@ -139,7 +139,7 @@ public class HeaderDictionary {
       default:
         throw new NpyFormatException(
           "invalid header dictionary: fortran_order must be " +
-          "True or False but was '" + value + "'");
+            "True or False but was '" + value + "'");
     }
   }
 
@@ -161,11 +161,67 @@ public class HeaderDictionary {
       if (!value.isInt()) {
         throw new NpyFormatException(
           "invalid header dictionary: argument "
-          + i + " of tuple 'shape' is not an integer");
+            + i + " of tuple 'shape' is not an integer");
       }
       shape[i] = (int) value.asInt().value();
     }
     return shape;
+  }
+
+  @Override
+  public String toString() {
+
+    // data type
+    var buffer = new StringBuilder("{'descr': '");
+    if (dataType != null) {
+      if (dataType.size() > 1) {
+        var orderSymbol = Objects.equals(ByteOrder.BIG_ENDIAN, byteOrder)
+          ? '>'
+          : '<';
+        buffer.append(orderSymbol);
+      }
+      buffer.append(dataType.symbol());
+    }
+
+    // fortran order
+    buffer.append("', 'fortran_order': ");
+    if (fortranOrder) {
+      buffer.append("True");
+    } else {
+      buffer.append("False");
+    }
+
+    // shape
+    buffer.append(", 'shape': (");
+    if (shape != null) {
+      for (int i = 0; i < shape.length; i++) {
+        if (i > 0) {
+          buffer.append(", ");
+        }
+        buffer.append(shape[i]);
+      }
+    }
+    buffer.append(")");
+
+    // other properties
+    for (var prop : properties.entrySet()) {
+      var key = prop.getKey();
+      var val = prop.getValue();
+      if (key == null || val == null
+        || "descr".equals(key)
+        || "shape".equals(key)
+        || "fortran_order".equals(key))
+        continue;
+      buffer.append(", '")
+        .append(key.replace('\'', '"'))
+        .append("': '")
+        .append(val.replace('\'', '"'))
+        .append('\'');
+    }
+
+    buffer.append('}');
+    return buffer.toString();
+
   }
 
   public static class Builder {
