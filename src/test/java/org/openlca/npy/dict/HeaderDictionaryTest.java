@@ -2,11 +2,13 @@ package org.openlca.npy.dict;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.nio.ByteOrder;
 
 import org.junit.Test;
 import org.openlca.npy.DataType;
 import org.openlca.npy.NpyFormatException;
+import org.openlca.npy.NpyHeader;
 
 public class HeaderDictionaryTest {
 
@@ -42,13 +44,25 @@ public class HeaderDictionaryTest {
 
   @Test
   public void testToStringWithProps() {
-    var dict = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+    var s = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
       .withByteOrder(ByteOrder.LITTLE_ENDIAN)
       .withOtherProperty("_key", "123abc")
-      .create();
-    assertEquals(
-      "{'descr': '<i4', 'fortran_order': False, 'shape': (2, 3), '_key': '123abc'}",
-      dict.toString());
+      .create()
+      .toString();
+    assertEquals("{'descr': '<i4', 'fortran_order': False, " +
+      "'shape': (2, 3), '_key': '123abc'}", s);
+  }
+
+  @Test
+  public void testToNpyHeader() throws Exception {
+    var bytes = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+      .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+      .withOtherProperty("_key", "123abc")
+      .create()
+      .toNpyHeader();
+    var stream = new ByteArrayInputStream(bytes);
+    var header = NpyHeader.read(stream);
+    assertEquals(DataType.i4, header.dataType());
   }
 
 }

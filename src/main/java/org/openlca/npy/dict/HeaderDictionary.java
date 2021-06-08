@@ -1,6 +1,8 @@
 package org.openlca.npy.dict;
 
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -222,6 +224,62 @@ public class HeaderDictionary {
     buffer.append('}');
     return buffer.toString();
 
+  }
+
+  public byte[] toNpyHeader() {
+
+    int version = 1;
+
+    // dictionary bytes
+    var s = toString();
+    var allAscii = StandardCharsets.US_ASCII.newEncoder().canEncode(s);
+    if (!allAscii) {
+      version = 3;
+    }
+    var dictBytes = allAscii
+      ? s.getBytes(StandardCharsets.US_ASCII)
+      : s.getBytes(StandardCharsets.UTF_8);
+
+
+    // calculate the length and padding
+    int len = version == 1
+      ? 11 + dictBytes.length
+      : 13 + dictBytes.length;
+    int padding = 64 - (len % 64);
+    int totalLen = len + padding;
+
+    if (version == 1 && totalLen > 65535) {
+      version = 2;
+      len = 12 + dictBytes.length;
+      padding = 64 - (len % 64);
+      totalLen = len + padding;
+    }
+
+    var buf = ByteBuffer.allocate(totalLen);
+    buf.order(ByteOrder.LITTLE_ENDIAN);
+
+    // magic
+    buf.put((byte) 0x93);
+    buf.put("NUMPY".getBytes());
+
+    // version
+    buf.put((byte) version);
+    buf.put((byte) 0);
+
+    // header length
+    if (version == 1) {
+      buf.putShort((short) totalLen);
+    } else {
+      buf.putInt(totalLen);
+    }
+
+    // write the padding
+    buf.put(dictBytes);
+    for (int i = 0; i < padding; i++) {
+      buf.put((byte) ' ');
+    }
+    buf.put((byte) '\n');
+    return buf.array();
   }
 
   public static class Builder {

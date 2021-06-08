@@ -41,6 +41,10 @@ public class Npy {
     }
   }
 
+  public static void save(NpyArray<?> array, File file) {
+
+  }
+
   public static NpyArray<?> memmap(File file)
     throws IOException, NpyFormatException {
     try (var f = new RandomAccessFile(file, "r");
