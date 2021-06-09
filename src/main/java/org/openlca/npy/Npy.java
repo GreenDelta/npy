@@ -3,9 +3,12 @@ package org.openlca.npy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 import org.openlca.npy.arrays.NpyArray;
+import org.openlca.npy.dict.HeaderDictionary;
 
 public class Npy {
 
@@ -41,8 +44,39 @@ public class Npy {
     }
   }
 
-  public static void write(File file, NpyArray<?> array) {
+  public static void write(File file, NpyArray<?> array) throws IOException {
+    try (var f = new RandomAccessFile(file, "rw");
+        var channel = f.getChannel()) {
 
+      var dataType = array.dataType();
+      var header = HeaderDictionary.of(dataType, array.shape())
+        .withFortranOrder(array.hasFortranOrder())
+        .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+        .create()
+        .toNpyHeader();
+      channel.write(ByteBuffer.wrap(header));
+
+      long totalBytes = (long) dataType.size() * (long) array.size();
+      int maxBufferSize = 8 * 1024;
+      int bufferSize = totalBytes < maxBufferSize
+        ? (int) totalBytes
+        : maxBufferSize;
+
+      var buffer = ByteBuffer.allocate(bufferSize)
+        .order(ByteOrder.LITTLE_ENDIAN);
+      for (int i = 0; i < array.size(); i++) {
+        array.writeElementTo(i, buffer);
+        if (!buffer.hasRemaining()) {
+          buffer.flip();
+          channel.write(buffer);
+          buffer.clear();
+        }
+      }
+      if (buffer.position() > 0) {
+        buffer.flip();
+        channel.write(buffer);
+      }
+    }
   }
 
   public static NpyArray<?> memmap(File file)

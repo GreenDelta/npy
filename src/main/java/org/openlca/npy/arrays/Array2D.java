@@ -120,43 +120,6 @@ public final class Array2D {
     return values;
   }
 
-  public static char get(NpyCharArray array, int row, int col) {
-    int i = indexOf(array, row, col);
-    return array.data[i];
-  }
-
-  public static char[] getRow(NpyCharArray array, int row) {
-    int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
-      int offset = row * cols;
-      return Arrays.copyOfRange(array.data, offset, offset + cols);
-    }
-    int rows = array.shape[0];
-    char[] values = new char[cols];
-    int offset = 0;
-    for (int col = 0; col < cols; col++) {
-      values[col] = array.data[offset + row];
-      offset += rows;
-    }
-    return values;
-  }
-
-  public static char[] getColumn(NpyCharArray array, int col) {
-    int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
-      int offset = col * rows;
-      return Arrays.copyOfRange(array.data, offset, offset + rows);
-    }
-    int cols = array.shape[1];
-    char[] values = new char[rows];
-    int offset = 0;
-    for (int row = 0; row < rows; row++) {
-      values[row] = array.data[offset + col];
-      offset += cols;
-    }
-    return values;
-  }
-
   public static double get(NpyDoubleArray array, int row, int col) {
     int i = indexOf(array, row, col);
     return array.data[i];

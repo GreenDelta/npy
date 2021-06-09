@@ -32,7 +32,7 @@ public interface NpyArray<T> {
   void writeElementTo(int i, ByteBuffer buffer);
 
   /**
-   * Returns the size of this array. That is the number of elements in this
+   * Returns the size of this array. That is the number of elements of this
    * array.
    *
    * @return the number of elements of this array
