@@ -10,7 +10,7 @@ public class NpyTest {
   @Test
   public void testLoad() {
     Tests.eachNpy(testNpy -> {
-      var array = Npy.loadUnchecked(testNpy.file());
+      var array = Npy.readUnchecked(testNpy.file());
       runChecks(testNpy, array);
     });
   }

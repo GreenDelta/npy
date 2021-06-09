@@ -1,5 +1,9 @@
 package org.openlca.npy.arrays;
 
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
+
 public interface NpyArray<T> {
 
   T data();
@@ -14,6 +18,18 @@ public interface NpyArray<T> {
    * otherwise
    */
   boolean hasFortranOrder();
+
+  DataType dataType();
+
+  /**
+   * Writes the element {@code i} of this array to the given buffer.
+   *
+   * @param i      the 0-based position of the element in this array that should
+   *               be written to the buffer; must have a value between {@code 0}
+   *               inclusively and {@link #size()} exclusively.
+   * @param buffer the byte buffer to which the element should be written
+   */
+  void writeElementTo(int i, ByteBuffer buffer);
 
   /**
    * Returns the size of this array. That is the number of elements in this

@@ -1,6 +1,10 @@
 
 package org.openlca.npy.arrays;
 
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
+
 public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
 
   public NpyBooleanArray(int[] shape, boolean[] data, boolean fortranOrder) {
@@ -8,8 +12,19 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   }
 
   @Override
+  public DataType dataType() {
+    return DataType.bool;
+  }
+
+  @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public void writeElementTo(int i, ByteBuffer buffer) {
+    byte b = data[i] ? (byte) 1 : (byte) 0;
+    buffer.put(b);
   }
 
   @Override

@@ -1,5 +1,9 @@
 package org.openlca.npy.arrays;
 
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
+
 public final class NpyShortArray extends AbstractNpyArray<short[]> {
 
   public NpyShortArray(int[] shape, short[] data, boolean fortranOrder) {
@@ -7,8 +11,18 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   }
 
   @Override
+  public DataType dataType() {
+    return DataType.i2;
+  }
+
+  @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public void writeElementTo(int i, ByteBuffer buffer) {
+    buffer.putShort(data[i]);
   }
 
   @Override

@@ -1,5 +1,9 @@
 package org.openlca.npy.arrays;
 
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
+
 public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
 
   public NpyDoubleArray(int[] shape, double[] data, boolean fortranOrder) {
@@ -7,8 +11,18 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   }
 
   @Override
+  public DataType dataType() {
+    return DataType.f8;
+  }
+
+  @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public void writeElementTo(int i, ByteBuffer buffer) {
+    buffer.putDouble(data[i]);
   }
 
   @Override

@@ -17,7 +17,7 @@ public class Npy {
    * @throws IOException        IO exceptions are rethrown
    * @throws NpyFormatException if the NPY format is invalid or unsupported
    */
-  public static NpyArray<?> load(File file)
+  public static NpyArray<?> read(File file)
     throws IOException, NpyFormatException {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
@@ -27,21 +27,21 @@ public class Npy {
   }
 
   /**
-   * Same like {@link #load(File)} but with checked exceptions wrapped into
+   * Same like {@link #read(File)} but with checked exceptions wrapped into
    * runtime exceptions.
    *
    * @param file the NPY file to read
    * @return the mapped NPY array
    */
-  public static NpyArray<?> loadUnchecked(File file) {
+  public static NpyArray<?> readUnchecked(File file) {
     try {
-      return load(file);
+      return read(file);
     } catch (Exception e) {
       throw new RuntimeException("failed to load NPY file: " + file, e);
     }
   }
 
-  public static void save(NpyArray<?> array, File file) {
+  public static void write(File file, NpyArray<?> array) {
 
   }
 

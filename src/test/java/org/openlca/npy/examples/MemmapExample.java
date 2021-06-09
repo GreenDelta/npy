@@ -1,7 +1,6 @@
 package org.openlca.npy.examples;
 
 import java.io.File;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.openlca.npy.Npy;
@@ -14,7 +13,7 @@ public class MemmapExample {
     System.out.println("test memmap");
     benchmark(() ->  Npy.memmapUnchecked(file), 5);
     System.out.println("test load");
-    benchmark(() ->  Npy.loadUnchecked(file), 5);
+    benchmark(() ->  Npy.readUnchecked(file), 5);
   }
 
   private static void benchmark(Supplier<NpyArray<?>> fn, int n) {

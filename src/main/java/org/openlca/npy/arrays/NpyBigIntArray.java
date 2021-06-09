@@ -1,6 +1,9 @@
 package org.openlca.npy.arrays;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
 
 public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
 
@@ -9,8 +12,23 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   }
 
   @Override
+  public DataType dataType() {
+    return DataType.u8;
+  }
+
+  @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public void writeElementTo(int i, ByteBuffer buffer) {
+    var value = data[i];
+    if (value == null) {
+      buffer.putLong(0);
+    } else {
+      buffer.putLong(value.longValueExact());
+    }
   }
 
   @Override

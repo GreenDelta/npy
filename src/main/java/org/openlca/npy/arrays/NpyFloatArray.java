@@ -1,5 +1,9 @@
 package org.openlca.npy.arrays;
 
+import java.nio.ByteBuffer;
+
+import org.openlca.npy.DataType;
+
 public final class NpyFloatArray extends AbstractNpyArray<float[]> {
 
   public NpyFloatArray(int[] shape, float[] data, boolean fortranOrder) {
@@ -7,8 +11,18 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
   }
 
   @Override
+  public DataType dataType() {
+    return DataType.f4;
+  }
+
+  @Override
   public int size() {
     return data.length;
+  }
+
+  @Override
+  public void writeElementTo(int i, ByteBuffer buffer) {
+    buffer.putFloat(data[i]);
   }
 
   @Override
