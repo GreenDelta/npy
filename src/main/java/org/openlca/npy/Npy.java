@@ -1,11 +1,14 @@
 package org.openlca.npy;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.dict.HeaderDictionary;
@@ -44,9 +47,43 @@ public class Npy {
     }
   }
 
+  public static String readString(File file) throws IOException,
+    NpyFormatException {
+    try (var f = new RandomAccessFile(file, "r");
+         var channel = f.getChannel()) {
+      var header = NpyHeader.read(channel);
+      if (header.dataType() != DataType.S && header.dataType() != DataType.U)
+        throw new NpyFormatException(
+          "file does not contain an NPY string type: " + header.dataType());
+      long start = header.dataOffset();
+      int n = (int) (channel.size() - start);
+      var buffer = ByteBuffer.allocate(n);
+      n = channel.read(buffer);
+      var array = buffer.array();
+      return new String(array, 0, n, StandardCharsets.UTF_8);
+    }
+  }
+
+  public static String readString(ReadableByteChannel channel) throws IOException,
+    NpyFormatException {
+    var header = NpyHeader.read(channel);
+    if (header.dataType() != DataType.S && header.dataType() != DataType.U)
+      throw new NpyFormatException(
+        "file does not contain an NPY string type: " + header.dataType());
+    var buff = ByteBuffer.allocate(1024);
+    var bout = new ByteArrayOutputStream();
+    int n;
+    while ((n = channel.read(buff)) > 0) {
+      buff.flip();
+      bout.write(buff.array(), 0, n);
+      buff.clear();
+    }
+    return bout.toString(StandardCharsets.UTF_8);
+  }
+
   public static void write(File file, NpyArray<?> array) throws IOException {
     try (var f = new RandomAccessFile(file, "rw");
-        var channel = f.getChannel()) {
+         var channel = f.getChannel()) {
 
       var dataType = array.dataType();
       var header = HeaderDictionary.of(dataType, array.shape())

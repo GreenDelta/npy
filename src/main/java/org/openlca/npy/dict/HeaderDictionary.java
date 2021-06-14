@@ -293,8 +293,6 @@ public class HeaderDictionary {
     private Builder(DataType dataType, int[] dimensions) {
       this.dataType = Objects.requireNonNull(dataType);
       this.dimensions = Objects.requireNonNull(dimensions);
-      if (dimensions.length == 0)
-        throw new IllegalArgumentException("no dimensions");
     }
 
     public Builder withByteOrder(ByteOrder byteOrder) {
