@@ -10,7 +10,7 @@ public class DataTypeTest {
 
   @Test
   public void testByteOrder() {
-    var dtypes = new String[] {
+    var dtypes = new String[]{
       null,
       "",
       "i4",
@@ -19,7 +19,7 @@ public class DataTypeTest {
       ">i4",
       "|?"
     };
-    var expected = new ByteOrder[] {
+    var expected = new ByteOrder[]{
       ByteOrder.nativeOrder(),
       ByteOrder.nativeOrder(),
       ByteOrder.nativeOrder(),
@@ -36,9 +36,9 @@ public class DataTypeTest {
   @Test
   public void testGetType() {
 
-    var expected = new Expected[] {
+    var expected = new Expected[]{
 
-      Expected.of(DataType.bool, 1, new String[] {
+      Expected.of(DataType.bool, 1, new String[]{
         "|b1",
         "?",
         "b1",
@@ -47,7 +47,7 @@ public class DataTypeTest {
         "bool_",
       }),
 
-      Expected.of(DataType.i1, 1, new String[] {
+      Expected.of(DataType.i1, 1, new String[]{
         "|i1",
         "b",
         "byte",
@@ -55,7 +55,7 @@ public class DataTypeTest {
         "int8",
       }),
 
-      Expected.of(DataType.u1, 1, new String[] {
+      Expected.of(DataType.u1, 1, new String[]{
         "|u1",
         "B",
         "u1",
@@ -63,7 +63,7 @@ public class DataTypeTest {
         "uint8",
       }),
 
-      Expected.of(DataType.i2, 2, new String[] {
+      Expected.of(DataType.i2, 2, new String[]{
         "<i2",
         "h",
         "i2",
@@ -71,7 +71,7 @@ public class DataTypeTest {
         "short",
       }),
 
-      Expected.of(DataType.u2, 2, new String[] {
+      Expected.of(DataType.u2, 2, new String[]{
         "<u2",
         "H",
         "u2",
@@ -79,7 +79,7 @@ public class DataTypeTest {
         "ushort",
       }),
 
-      Expected.of(DataType.i4, 4, new String[] {
+      Expected.of(DataType.i4, 4, new String[]{
         "<i4",
         "i",
         "i4",
@@ -91,7 +91,7 @@ public class DataTypeTest {
         "long",
       }),
 
-      Expected.of(DataType.i4, 4, new String[] {
+      Expected.of(DataType.i4, 4, new String[]{
         "<i4",
         "i",
         "i4",
@@ -103,7 +103,7 @@ public class DataTypeTest {
         "long",
       }),
 
-      Expected.of(DataType.u4, 4, new String[] {
+      Expected.of(DataType.u4, 4, new String[]{
         "<u4",
         "I",
         "L",
@@ -113,7 +113,7 @@ public class DataTypeTest {
         "uintc",
       }),
 
-      Expected.of(DataType.i8, 8, new String[] {
+      Expected.of(DataType.i8, 8, new String[]{
         "<i8",
         "i8",
         "int0",
@@ -124,7 +124,7 @@ public class DataTypeTest {
         "q",
       }),
 
-      Expected.of(DataType.u8, 8, new String[] {
+      Expected.of(DataType.u8, 8, new String[]{
         "<u8",
         "P",
         "Q",
@@ -136,7 +136,7 @@ public class DataTypeTest {
         "ulonglong",
       }),
 
-      Expected.of(DataType.f2, 2, new String[] {
+      Expected.of(DataType.f2, 2, new String[]{
         "<f2",
         "e",
         "f2",
@@ -144,7 +144,7 @@ public class DataTypeTest {
         "half",
       }),
 
-      Expected.of(DataType.f4, 4, new String[] {
+      Expected.of(DataType.f4, 4, new String[]{
         "<f4",
         "f",
         "f4",
@@ -152,7 +152,7 @@ public class DataTypeTest {
         "single",
       }),
 
-      Expected.of(DataType.f8, 8, new String[] {
+      Expected.of(DataType.f8, 8, new String[]{
         "<f8",
         "d",
         "double",
@@ -164,6 +164,28 @@ public class DataTypeTest {
         "longdouble",
         "longfloat",
       }),
+
+      Expected.of(DataType.S, 0, new String[]{
+        "|S0",
+        "Bytes0",
+        "S",
+        "a",
+        "bytes",
+        "bytes0",
+        "bytes_",
+        "string_",
+      }),
+
+      Expected.of(DataType.U, 0, new String[]{
+        "<U0",
+        "Str0",
+        "U",
+        "str",
+        "str0",
+        "str_",
+        "unicode",
+        "unicode_",
+      })
     };
 
     for (var e : expected) {

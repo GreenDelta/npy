@@ -130,8 +130,25 @@ public enum DataType {
     "uint64",
     "uintp",
     "ulonglong",
-  });
+  }),
 
+  S("S", 0, new String[]{
+    "Bytes0",
+    "a",
+    "bytes",
+    "bytes0",
+    "bytes_",
+    "string_",
+  }),
+
+  U("U", 0, new String[]{
+    "Str0",
+    "str",
+    "str0",
+    "str_",
+    "unicode",
+    "unicode_",
+  });
 
   private final String symbol;
 
@@ -181,12 +198,13 @@ public enum DataType {
       return null;
     char first = dtype.charAt(0);
     boolean hasOrderMark = first == '<'
-                           || first == '>'
-                           || first == '='
-                           || first == '|';
+      || first == '>'
+      || first == '='
+      || first == '|';
     var symbol = hasOrderMark
       ? dtype.substring(1)
       : dtype;
+
     for (var type : DataType.values()) {
       if (symbol.equals(type.symbol()))
         return type;
@@ -195,6 +213,21 @@ public enum DataType {
           return type;
       }
     }
+
+    // string types have their length added to their symbol
+    if (symbol.startsWith("S"))
+      return S;
+    for (var syn : S.synonyms) {
+      if (symbol.startsWith(syn))
+        return S;
+    }
+    if (symbol.startsWith("U"))
+      return U;
+    for (var syn : U.synonyms) {
+      if (symbol.startsWith(syn))
+        return U;
+    }
+
     return null;
   }
 

@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.openlca.npy.arrays.Array2D;
-import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyByteArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
@@ -30,6 +29,8 @@ public class Tests {
 
   public static void eachNpy(Consumer<TestNpy> fn) {
     for (var type : DataType.values()) {
+      if (type.size() == 0)
+        continue;
       for (var byteOrder : List.of("be", "le")) {
         for (var storageOrder : List.of("c", "f")) {
           var npy = TestNpy.of(type, byteOrder, storageOrder);
