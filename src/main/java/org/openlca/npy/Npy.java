@@ -70,12 +70,17 @@ public class Npy {
     if (header.dataType() != DataType.S && header.dataType() != DataType.U)
       throw new NpyFormatException(
         "file does not contain an NPY string type: " + header.dataType());
-    var buff = ByteBuffer.allocate(1024);
+    int buffSize = 1024;
+    var buff = ByteBuffer.allocate(buffSize);
     var bout = new ByteArrayOutputStream();
-    int n;
-    while ((n = channel.read(buff)) > 0) {
-      buff.flip();
+    while (true) {
+      int n = channel.read(buff);
+      if (n <= 0)
+        break;
       bout.write(buff.array(), 0, n);
+      if (n < buffSize)
+        break;
+      buff.flip();
       buff.clear();
     }
     return bout.toString(StandardCharsets.UTF_8);
