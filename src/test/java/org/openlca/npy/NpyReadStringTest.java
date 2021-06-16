@@ -2,17 +2,14 @@ package org.openlca.npy;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 import org.junit.Test;
+import org.openlca.npy.dict.HeaderDictionary;
 
 public class NpyReadStringTest {
 
@@ -38,20 +35,17 @@ public class NpyReadStringTest {
   }
 
   @Test
-  public void testNULL() throws Exception {
-    // var stream = getClass().getResourceAsStream("scipy_csc_format.npy");
-    
-    var stream = new FileInputStream("C:/Users/ms/Projects/dev/npy/src/test/resources/org/openlca/npy/scipy_csc_format.npy");
-    
-    assertNotNull(stream);
-    var bytes = new byte[1024];
-    int n = stream.read(bytes);
-    for (int i = 0; i < n; i++) {
-      System.out.println(i + " :: " + (char) bytes[i]);
+  public void testReadNullTerminated() throws Exception {
+    var file = Files.createTempFile("str_", ".npy").toFile();
+    var dict = HeaderDictionary.of(DataType.S).create();
+    var data = new byte[]{'c', 's', 'c', 0};
+    Npy.write(file, dict, data);
+    assertEquals("csc", Npy.readString(file));
+    try (var stream = new FileInputStream(file);
+         var channel = Channels.newChannel(stream)) {
+      assertEquals("csc", Npy.readString(channel));
     }
-
-    System.out.println(new String(bytes, n - 4, 4, StandardCharsets.UTF_8));
-    stream.close();
+    Files.delete(file.toPath());
   }
 
 }

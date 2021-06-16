@@ -120,12 +120,30 @@ public class Npy {
     }
   }
 
-  public static void write(File file, NpyArray<?> array) throws IOException {
+  public static void write(File file, HeaderDictionary dict, byte[] data) {
+    try (var f = new RandomAccessFile(file, "rw");
+         var channel = f.getChannel()) {
+      var header = dict.toNpyHeader();
+      channel.write(ByteBuffer.wrap(header));
+      channel.write(ByteBuffer.wrap(data));
+    } catch (IOException e) {
+      throw new RuntimeException("failed to write NPY data to file " + file, e);
+    }
+  }
+
+  public static void writeString(File file, String string) {
+    //TODO: the data type should be "U" + length here?
+    var dict = HeaderDictionary.of(DataType.U).create();
+    write(file, dict, string.getBytes(StandardCharsets.UTF_8));
+  }
+
+  public static void write(File file, NpyArray<?> array) {
     try (var f = new RandomAccessFile(file, "rw");
          var channel = f.getChannel()) {
 
       var dataType = array.dataType();
-      var header = HeaderDictionary.of(dataType, array.shape())
+      var header = HeaderDictionary.of(dataType)
+        .withShape(array.shape())
         .withFortranOrder(array.hasFortranOrder())
         .withByteOrder(ByteOrder.LITTLE_ENDIAN)
         .create()
@@ -152,6 +170,8 @@ public class Npy {
         buffer.flip();
         channel.write(buffer);
       }
+    } catch (IOException e) {
+      throw new RuntimeException("failed to write array to file " + file, e);
     }
   }
 

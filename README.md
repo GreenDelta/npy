@@ -1,5 +1,6 @@
 # npy
 
+* support types like `|S3` for the header dict...
 * range reading
 * Array2d.loadColumn; Array2d.loadRow  
 * compare with openLCA npy  

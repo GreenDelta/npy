@@ -34,7 +34,8 @@ public class HeaderDictionaryTest {
 
   @Test
   public void testToString() {
-    var dict = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+    var dict = HeaderDictionary.of(DataType.i4)
+      .withShape(new int[]{2, 3})
       .withByteOrder(ByteOrder.LITTLE_ENDIAN)
       .create();
     assertEquals(
@@ -44,7 +45,8 @@ public class HeaderDictionaryTest {
 
   @Test
   public void testToStringWithProps() {
-    var s = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+    var s = HeaderDictionary.of(DataType.i4)
+      .withShape(new int[]{2, 3})
       .withByteOrder(ByteOrder.LITTLE_ENDIAN)
       .withOtherProperty("_key", "123abc")
       .create()
@@ -55,7 +57,8 @@ public class HeaderDictionaryTest {
 
   @Test
   public void testToNpyHeader() throws Exception {
-    var bytes = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+    var bytes = HeaderDictionary.of(DataType.i4)
+      .withShape(new int[]{2, 3})
       .withByteOrder(ByteOrder.LITTLE_ENDIAN)
       .withFortranOrder(true)
       .withOtherProperty("_key", "123abc")
@@ -75,7 +78,8 @@ public class HeaderDictionaryTest {
 
   @Test
   public void testNonAsciiToNpyHeader() throws Exception {
-    var bytes = HeaderDictionary.of(DataType.i4, new int[]{2, 3})
+    var bytes = HeaderDictionary.of(DataType.i4)
+      .withShape(new int[]{2, 3})
       .withByteOrder(ByteOrder.LITTLE_ENDIAN)
       .withFortranOrder(true)
       .withOtherProperty("_key", "Überstraße")

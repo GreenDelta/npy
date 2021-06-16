@@ -26,7 +26,9 @@ public class HeaderDictionary {
 
   private HeaderDictionary(Builder builder) {
     this.dataType = builder.dataType;
-    this.shape = Arrays.copyOf(builder.dimensions, builder.dimensions.length);
+    this.shape = builder.shape == null
+      ? new int[0]
+      : Arrays.copyOf(builder.shape, builder.shape.length);
     this.byteOrder = builder.byteOrder == null
       ? ByteOrder.nativeOrder()
       : builder.byteOrder;
@@ -36,8 +38,8 @@ public class HeaderDictionary {
       : Collections.emptyMap();
   }
 
-  public static Builder of(DataType dataType, int[] dimensions) {
-    return new Builder(dataType, dimensions);
+  public static Builder of(DataType dataType) {
+    return new Builder(dataType);
   }
 
   public DataType dataType() {
@@ -97,14 +99,15 @@ public class HeaderDictionary {
     if (!typeEntry.isString())
       throw new NpyFormatException(
         "invalid header dictionary; data type field " +
-          "'descr' is not a string but: " + typeEntry);
+        "'descr' is not a string but: " + typeEntry);
     var dtype = typeEntry.asString().value();
     var dataType = DataType.of(dtype);
     if (dataType == null)
       throw new NpyFormatException(
         "unsupported data type: " + dtype);
 
-    var builder = of(dataType, getShape(dict))
+    var builder = of(dataType)
+      .withShape(getShape(dict))
       .withFortranOrder(getFortranOrder(dict))
       .withByteOrder(DataType.byteOrderOf(dtype));
 
@@ -113,8 +116,8 @@ public class HeaderDictionary {
       if (!val.isString())
         return;
       if (key.equals("descr")
-        || key.equals("shape")
-        || key.equals("fortran_order"))
+          || key.equals("shape")
+          || key.equals("fortran_order"))
         return;
       builder.withOtherProperty(
         key, val.asString().value());
@@ -131,7 +134,7 @@ public class HeaderDictionary {
     if (!entry.isIdentifier())
       throw new NpyFormatException(
         "invalid header dictionary: fortran_order must be " +
-          "True or False but was '" + entry + "'");
+        "True or False but was '" + entry + "'");
     var value = entry.asIdentifier().value();
     switch (value) {
       case "True":
@@ -141,7 +144,7 @@ public class HeaderDictionary {
       default:
         throw new NpyFormatException(
           "invalid header dictionary: fortran_order must be " +
-            "True or False but was '" + value + "'");
+          "True or False but was '" + value + "'");
     }
   }
 
@@ -163,7 +166,7 @@ public class HeaderDictionary {
       if (!value.isInt()) {
         throw new NpyFormatException(
           "invalid header dictionary: argument "
-            + i + " of tuple 'shape' is not an integer");
+          + i + " of tuple 'shape' is not an integer");
       }
       shape[i] = (int) value.asInt().value();
     }
@@ -210,9 +213,9 @@ public class HeaderDictionary {
       var key = prop.getKey();
       var val = prop.getValue();
       if (key == null || val == null
-        || "descr".equals(key)
-        || "shape".equals(key)
-        || "fortran_order".equals(key))
+          || "descr".equals(key)
+          || "shape".equals(key)
+          || "fortran_order".equals(key))
         continue;
       buffer.append(", '")
         .append(key.replace('\'', '"'))
@@ -285,14 +288,18 @@ public class HeaderDictionary {
   public static class Builder {
 
     private final DataType dataType;
-    private final int[] dimensions;
+    private int[] shape;
     private ByteOrder byteOrder;
     private boolean fortranOrder;
     private Map<String, String> properties;
 
-    private Builder(DataType dataType, int[] dimensions) {
+    private Builder(DataType dataType) {
       this.dataType = Objects.requireNonNull(dataType);
-      this.dimensions = Objects.requireNonNull(dimensions);
+    }
+
+    public Builder withShape(int[] shape) {
+      this.shape = shape;
+      return this;
     }
 
     public Builder withByteOrder(ByteOrder byteOrder) {
