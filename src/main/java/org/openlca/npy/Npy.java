@@ -20,70 +20,104 @@ public class Npy {
    *
    * @param file the NPY file to read
    * @return the mapped NPY array
-   * @throws IOException        IO exceptions are rethrown
    * @throws NpyFormatException if the NPY format is invalid or unsupported
+   * @throws RuntimeException   IO exceptions are wrapped in runtime exceptions
    */
-  public static NpyArray<?> read(File file)
-    throws IOException, NpyFormatException {
+  public static NpyArray<?> read(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
       var header = NpyHeader.read(channel);
       return ChannelReader.read(channel, header);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to read file: " + file, e);
     }
   }
 
   /**
-   * Same like {@link #read(File)} but with checked exceptions wrapped into
-   * runtime exceptions.
+   * Reads a string from the given NPY file. The NumPy type of the stored data
+   * must be {@link DataType#S} or {@link DataType#U}, otherwise an
+   * {@link NpyFormatException} is thrown.
    *
-   * @param file the NPY file to read
-   * @return the mapped NPY array
+   * @param file the NPY file with the stored string
+   * @return the stored string
    */
-  public static NpyArray<?> readUnchecked(File file) {
-    try {
-      return read(file);
-    } catch (Exception e) {
-      throw new RuntimeException("failed to load NPY file: " + file, e);
-    }
-  }
-
-  public static String readString(File file) throws IOException,
-    NpyFormatException {
+  public static String readString(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
+
+      // read the header and check that the file contains a string type
       var header = NpyHeader.read(channel);
-      if (header.dataType() != DataType.S && header.dataType() != DataType.U)
+      var type = header.dataType();
+      if (type != DataType.S && type != DataType.U)
         throw new NpyFormatException(
-          "file does not contain an NPY string type: " + header.dataType());
-      long start = header.dataOffset();
-      int n = (int) (channel.size() - start);
+          "file '" + file + "' does not contain an NPY string type: "
+          + header.dataType());
+
+      // read the n data bytes
+      int n = (int) (channel.size() - header.dataOffset());
+      if (n <= 0)
+        return "";
       var buffer = ByteBuffer.allocate(n);
       n = channel.read(buffer);
+      if (n <= 0)
+        return "";
+
       var array = buffer.array();
+
+      // exclude the last byte for 0-terminated strings
+      if (type == DataType.S && array[n - 1] == 0) {
+        if (n == 1)
+          return "";
+        n -= 1;
+      }
+
       return new String(array, 0, n, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to read string from file: " + file, e);
     }
   }
 
-  public static String readString(ReadableByteChannel channel) throws IOException,
-    NpyFormatException {
-    var header = NpyHeader.read(channel);
-    if (header.dataType() != DataType.S && header.dataType() != DataType.U)
-      throw new NpyFormatException(
-        "file does not contain an NPY string type: " + header.dataType());
-    int buffSize = 1024;
-    var buff = ByteBuffer.allocate(buffSize);
-    var bout = new ByteArrayOutputStream();
-    while (true) {
-      int n = channel.read(buff);
-      if (n <= 0)
-        break;
-      bout.write(buff.array(), 0, n);
-      if (n < buffSize)
-        break;
-      buff.flip();
-      buff.clear();
+  public static String readString(ReadableByteChannel channel) {
+    try {
+
+      // read the header and check the type
+      var header = NpyHeader.read(channel);
+      var type = header.dataType();
+      if (type != DataType.S && type != DataType.U)
+        throw new NpyFormatException(
+          type + " is not a supported string type");
+
+      // read the data from the channel
+      int buffSize = 1024;
+      var buff = ByteBuffer.allocate(buffSize);
+      var bout = new ByteArrayOutputStream();
+      while (true) {
+        int n = channel.read(buff);
+        if (n <= 0)
+          break;
+        bout.write(buff.array(), 0, n);
+        if (n < buffSize)
+          break;
+        buff.flip();
+        buff.clear();
+      }
+
+      var bytes = bout.toByteArray();
+      if (bytes.length == 0)
+        return "";
+
+      // exclude the last byte for 0-terminated strings
+      var n = bytes.length;
+      if (type == DataType.S && bytes[n - 1] == 0) {
+        if (n == 1)
+          return "";
+        n -= 1;
+      }
+
+      return new String(bytes, 0, n, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to read string from NPY data", e);
     }
-    return bout.toString(StandardCharsets.UTF_8);
   }
 
   public static void write(File file, NpyArray<?> array) throws IOException {
