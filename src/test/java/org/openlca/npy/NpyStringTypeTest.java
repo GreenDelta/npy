@@ -20,7 +20,33 @@ public class NpyStringTypeTest {
     assertTrue(s3.isPresent());
     assertEquals(3, s3.get().size());
 
+    var s0 = NpyAsciiType.parse("S");
+    assertTrue(s0.isPresent());
+    assertEquals(0, s0.get().size());
+
     var empty = NpyAsciiType.parse("<i4");
+    assertTrue(empty.isEmpty());
+  }
+
+  @Test
+  public void testParseUnicode() {
+    var str42 = NpyUnicodeType.parse("str42");
+    assertTrue(str42.isPresent());
+    assertEquals(42, str42.get().size());
+
+    var unicode0 = NpyUnicodeType.parse("unicode0");
+    assertTrue(unicode0.isPresent());
+    assertEquals(0, unicode0.get().size());
+
+    var u3 = NpyUnicodeType.parse("|U3");
+    assertTrue(u3.isPresent());
+    assertEquals(3, u3.get().size());
+
+    var u0 = NpyUnicodeType.parse("U");
+    assertTrue(u0.isPresent());
+    assertEquals(0, u0.get().size());
+
+    var empty = NpyUnicodeType.parse("<i4");
     assertTrue(empty.isEmpty());
   }
 
