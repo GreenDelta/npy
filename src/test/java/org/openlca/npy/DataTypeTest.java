@@ -165,27 +165,27 @@ public class DataTypeTest {
         "longfloat",
       }),
 
-      Expected.of(NpyDataTypes.S, 0, new String[]{
-        "|S0",
-        "Bytes0",
-        "S",
-        "a",
-        "bytes",
-        "bytes0",
-        "bytes_",
-        "string_",
+      Expected.of(new NpyAsciiType(42), 42, new String[]{
+        "|S42",
+        "Bytes42",
+        "S42",
+        "a42",
+        "bytes42",
+        "bytes_42",
+        "string_42",
       }),
 
-      Expected.of(NpyDataTypes.U, 0, new String[]{
-        "<U0",
-        "Str0",
-        "U",
-        "str",
-        "str0",
-        "str_",
-        "unicode",
-        "unicode_",
+      Expected.of(new NpyUnicodeType(42), 168, new String[]{
+        "<U42",
+        "Str42",
+        "U42",
+        "str42",
+        "str42",
+        "str_42",
+        "unicode42",
+        "unicode_42",
       })
+
     };
 
     for (var e : expected) {
@@ -198,17 +198,17 @@ public class DataTypeTest {
   }
 
   static private class Expected {
-    final NpyDataTypes type;
+    final NpyDataType type;
     final int size;
     final String[] symbols;
 
-    Expected(NpyDataTypes type, int size, String[] symbols) {
+    Expected(NpyDataType type, int size, String[] symbols) {
       this.type = type;
       this.size = size;
       this.symbols = symbols;
     }
 
-    static Expected of(NpyDataTypes type, int size, String[] symbols) {
+    static Expected of(NpyDataType type, int size, String[] symbols) {
       return new Expected(type, size, symbols);
     }
   }

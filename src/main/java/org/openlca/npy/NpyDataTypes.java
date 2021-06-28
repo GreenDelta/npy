@@ -133,24 +133,6 @@ public enum NpyDataTypes implements NpyDataType {
     "uint64",
     "uintp",
     "ulonglong",
-  }),
-
-  S("S", 0, new String[]{
-    "Bytes0",
-    "a",
-    "bytes",
-    "bytes0",
-    "bytes_",
-    "string_",
-  }),
-
-  U("U", 0, new String[]{
-    "Str0",
-    "str",
-    "str0",
-    "str_",
-    "unicode",
-    "unicode_",
   });
 
   private final String symbol;
@@ -187,7 +169,7 @@ public enum NpyDataTypes implements NpyDataType {
    * @param dtype the data type symbol (e.g. {@code i4, int32, <i4})
    * @return the data type or {@code null} if there is no matching type defined.
    */
-  public static NpyDataTypes of(String dtype) {
+  public static NpyDataType of(String dtype) {
     if (dtype == null || dtype.length() == 0)
       return null;
     char first = dtype.charAt(0);
@@ -208,21 +190,13 @@ public enum NpyDataTypes implements NpyDataType {
       }
     }
 
-    // string types have their length added to their symbol
-    if (symbol.startsWith("S"))
-      return S;
-    for (var syn : S.synonyms) {
-      if (symbol.startsWith(syn))
-        return S;
-    }
-    if (symbol.startsWith("U"))
-      return U;
-    for (var syn : U.synonyms) {
-      if (symbol.startsWith(syn))
-        return U;
-    }
+    // string types
+    var ascii = NpyAsciiType.parse(dtype);
+    if (ascii.isPresent())
+      return ascii.get();
+    var unicode = NpyUnicodeType.parse(dtype);
+    return unicode.orElse(null);
 
-    return null;
   }
 
   /**

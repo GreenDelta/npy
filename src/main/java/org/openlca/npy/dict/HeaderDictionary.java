@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openlca.npy.NpyDataType;
 import org.openlca.npy.NpyDataTypes;
 import org.openlca.npy.NpyFormatException;
 
@@ -18,7 +19,7 @@ import org.openlca.npy.NpyFormatException;
  */
 public class HeaderDictionary {
 
-  private final NpyDataTypes dataType;
+  private final NpyDataType dataType;
   private final ByteOrder byteOrder;
   private final boolean fortranOrder;
   private final int[] shape;
@@ -38,11 +39,11 @@ public class HeaderDictionary {
       : Collections.emptyMap();
   }
 
-  public static Builder of(NpyDataTypes dataType) {
+  public static Builder of(NpyDataType dataType) {
     return new Builder(dataType);
   }
 
-  public NpyDataTypes dataType() {
+  public NpyDataType dataType() {
     return dataType;
   }
 
@@ -287,13 +288,13 @@ public class HeaderDictionary {
 
   public static class Builder {
 
-    private final NpyDataTypes dataType;
+    private final NpyDataType dataType;
     private int[] shape;
     private ByteOrder byteOrder;
     private boolean fortranOrder;
     private Map<String, String> properties;
 
-    private Builder(NpyDataTypes dataType) {
+    private Builder(NpyDataType dataType) {
       this.dataType = Objects.requireNonNull(dataType);
     }
 

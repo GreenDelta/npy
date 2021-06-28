@@ -4,10 +4,10 @@ import java.util.Optional;
 
 public class NpyUnicodeType implements NpyDataType {
 
-  private final int size;
+  private final int numberOfCharacters;
 
-  public NpyUnicodeType(int size) {
-    this.size = size;
+  public NpyUnicodeType(int numberOfCharacters) {
+    this.numberOfCharacters = numberOfCharacters;
   }
 
   /**
@@ -67,12 +67,12 @@ public class NpyUnicodeType implements NpyDataType {
 
   @Override
   public String symbol() {
-    return "U" + size;
+    return "U" + numberOfCharacters;
   }
 
   @Override
   public int size() {
-    return size;
+    return numberOfCharacters * 4;
   }
 
   @Override
