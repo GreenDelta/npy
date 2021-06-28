@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openlca.npy.DataType;
+import org.openlca.npy.NpyDataTypes;
 import org.openlca.npy.NpyFormatException;
 
 /**
@@ -18,7 +18,7 @@ import org.openlca.npy.NpyFormatException;
  */
 public class HeaderDictionary {
 
-  private final DataType dataType;
+  private final NpyDataTypes dataType;
   private final ByteOrder byteOrder;
   private final boolean fortranOrder;
   private final int[] shape;
@@ -38,11 +38,11 @@ public class HeaderDictionary {
       : Collections.emptyMap();
   }
 
-  public static Builder of(DataType dataType) {
+  public static Builder of(NpyDataTypes dataType) {
     return new Builder(dataType);
   }
 
-  public DataType dataType() {
+  public NpyDataTypes dataType() {
     return dataType;
   }
 
@@ -101,7 +101,7 @@ public class HeaderDictionary {
         "invalid header dictionary; data type field " +
         "'descr' is not a string but: " + typeEntry);
     var dtype = typeEntry.asString().value();
-    var dataType = DataType.of(dtype);
+    var dataType = NpyDataTypes.of(dtype);
     if (dataType == null)
       throw new NpyFormatException(
         "unsupported data type: " + dtype);
@@ -109,7 +109,7 @@ public class HeaderDictionary {
     var builder = of(dataType)
       .withShape(getShape(dict))
       .withFortranOrder(getFortranOrder(dict))
-      .withByteOrder(DataType.byteOrderOf(dtype));
+      .withByteOrder(NpyDataTypes.byteOrderOf(dtype));
 
     // collect other string properties
     dict.forEach((key, val) -> {
@@ -287,13 +287,13 @@ public class HeaderDictionary {
 
   public static class Builder {
 
-    private final DataType dataType;
+    private final NpyDataTypes dataType;
     private int[] shape;
     private ByteOrder byteOrder;
     private boolean fortranOrder;
     private Map<String, String> properties;
 
-    private Builder(DataType dataType) {
+    private Builder(NpyDataTypes dataType) {
       this.dataType = Objects.requireNonNull(dataType);
     }
 

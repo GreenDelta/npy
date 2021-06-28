@@ -3,7 +3,7 @@ package org.openlca.npy.arrays;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.DataType;
+import org.openlca.npy.NpyDataTypes;
 
 public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
 
@@ -12,8 +12,8 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   }
 
   @Override
-  public DataType dataType() {
-    return DataType.u8;
+  public NpyDataTypes dataType() {
+    return NpyDataTypes.u8;
   }
 
   @Override

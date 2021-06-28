@@ -27,7 +27,7 @@ public final class NpyHeader {
     return dictionary.toString();
   }
 
-  public DataType dataType() {
+  public NpyDataTypes dataType() {
     return dictionary.dataType();
   }
 

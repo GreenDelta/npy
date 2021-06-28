@@ -3,12 +3,12 @@ package org.openlca.npy;
 import java.nio.ByteOrder;
 
 /**
- * An enumeration of the supported NumPy data types.
+ * An enumeration of some fixed size NumPy data types.
  *
  * @see <a href="https://numpy.org/doc/stable/reference/arrays.dtypes.html">
  * https://numpy.org/doc/stable/reference/arrays.dtypes.html</a>
  */
-public enum DataType {
+public enum NpyDataTypes implements NpyDataType {
 
   /**
    * Booleans
@@ -19,6 +19,9 @@ public enum DataType {
     "bool8",
     "bool_",}),
 
+  /**
+   * 16 bit floating point numbers
+   */
   f2("f2", 2, new String[]{
     "e",
     "float16",
@@ -155,7 +158,7 @@ public enum DataType {
   private final int size;
   private final String[] synonyms;
 
-  DataType(String symbol, int size, String[] synonyms) {
+  NpyDataTypes(String symbol, int size, String[] synonyms) {
     this.symbol = symbol;
     this.size = size;
     this.synonyms = synonyms;
@@ -166,21 +169,12 @@ public enum DataType {
     return symbol;
   }
 
-  /**
-   * Get the NPY symbol of the data type.
-   *
-   * @return the NPY symbol of the data type, e.g. {@code i4}
-   */
+  @Override
   public String symbol() {
     return symbol;
   }
 
-  /**
-   * Get the size of the data type in number of bytes. This is similar to
-   * {@code numpy.dtype.itemsize}.
-   *
-   * @return the size of the data type in number of bytes.
-   */
+  @Override
   public int size() {
     return size;
   }
@@ -193,7 +187,7 @@ public enum DataType {
    * @param dtype the data type symbol (e.g. {@code i4, int32, <i4})
    * @return the data type or {@code null} if there is no matching type defined.
    */
-  public static DataType of(String dtype) {
+  public static NpyDataTypes of(String dtype) {
     if (dtype == null || dtype.length() == 0)
       return null;
     char first = dtype.charAt(0);
@@ -205,7 +199,7 @@ public enum DataType {
       ? dtype.substring(1)
       : dtype;
 
-    for (var type : DataType.values()) {
+    for (var type : NpyDataTypes.values()) {
       if (symbol.equals(type.symbol()))
         return type;
       for (var name : type.synonyms) {

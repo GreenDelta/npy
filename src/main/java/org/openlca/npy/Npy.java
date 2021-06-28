@@ -35,7 +35,7 @@ public class Npy {
 
   /**
    * Reads a string from the given NPY file. The NumPy type of the stored data
-   * must be {@link DataType#S} or {@link DataType#U}, otherwise an
+   * must be {@link NpyDataTypes#S} or {@link NpyDataTypes#U}, otherwise an
    * {@link NpyFormatException} is thrown.
    *
    * @param file the NPY file with the stored string
@@ -48,7 +48,7 @@ public class Npy {
       // read the header and check that the file contains a string type
       var header = NpyHeader.read(channel);
       var type = header.dataType();
-      if (type != DataType.S && type != DataType.U)
+      if (type != NpyDataTypes.S && type != NpyDataTypes.U)
         throw new NpyFormatException(
           "file '" + file + "' does not contain an NPY string type: "
           + header.dataType());
@@ -65,7 +65,7 @@ public class Npy {
       var array = buffer.array();
 
       // exclude the last byte for 0-terminated strings
-      if (type == DataType.S && array[n - 1] == 0) {
+      if (type == NpyDataTypes.S && array[n - 1] == 0) {
         if (n == 1)
           return "";
         n -= 1;
@@ -83,7 +83,7 @@ public class Npy {
       // read the header and check the type
       var header = NpyHeader.read(channel);
       var type = header.dataType();
-      if (type != DataType.S && type != DataType.U)
+      if (type != NpyDataTypes.S && type != NpyDataTypes.U)
         throw new NpyFormatException(
           type + " is not a supported string type");
 
@@ -108,7 +108,7 @@ public class Npy {
 
       // exclude the last byte for 0-terminated strings
       var n = bytes.length;
-      if (type == DataType.S && bytes[n - 1] == 0) {
+      if (type == NpyDataTypes.S && bytes[n - 1] == 0) {
         if (n == 1)
           return "";
         n -= 1;
@@ -133,7 +133,7 @@ public class Npy {
 
   public static void writeString(File file, String string) {
     //TODO: the data type should be "U" + length here?
-    var dict = HeaderDictionary.of(DataType.U).create();
+    var dict = HeaderDictionary.of(NpyDataTypes.U).create();
     write(file, dict, string.getBytes(StandardCharsets.UTF_8));
   }
 

@@ -29,7 +29,7 @@ public class DataTypeTest {
       ByteOrder.nativeOrder(),
     };
     for (int i = 0; i < dtypes.length; i++) {
-      assertEquals(expected[i], DataType.byteOrderOf(dtypes[i]));
+      assertEquals(expected[i], NpyDataTypes.byteOrderOf(dtypes[i]));
     }
   }
 
@@ -38,7 +38,7 @@ public class DataTypeTest {
 
     var expected = new Expected[]{
 
-      Expected.of(DataType.bool, 1, new String[]{
+      Expected.of(NpyDataTypes.bool, 1, new String[]{
         "|b1",
         "?",
         "b1",
@@ -47,7 +47,7 @@ public class DataTypeTest {
         "bool_",
       }),
 
-      Expected.of(DataType.i1, 1, new String[]{
+      Expected.of(NpyDataTypes.i1, 1, new String[]{
         "|i1",
         "b",
         "byte",
@@ -55,7 +55,7 @@ public class DataTypeTest {
         "int8",
       }),
 
-      Expected.of(DataType.u1, 1, new String[]{
+      Expected.of(NpyDataTypes.u1, 1, new String[]{
         "|u1",
         "B",
         "u1",
@@ -63,7 +63,7 @@ public class DataTypeTest {
         "uint8",
       }),
 
-      Expected.of(DataType.i2, 2, new String[]{
+      Expected.of(NpyDataTypes.i2, 2, new String[]{
         "<i2",
         "h",
         "i2",
@@ -71,7 +71,7 @@ public class DataTypeTest {
         "short",
       }),
 
-      Expected.of(DataType.u2, 2, new String[]{
+      Expected.of(NpyDataTypes.u2, 2, new String[]{
         "<u2",
         "H",
         "u2",
@@ -79,7 +79,7 @@ public class DataTypeTest {
         "ushort",
       }),
 
-      Expected.of(DataType.i4, 4, new String[]{
+      Expected.of(NpyDataTypes.i4, 4, new String[]{
         "<i4",
         "i",
         "i4",
@@ -91,7 +91,7 @@ public class DataTypeTest {
         "long",
       }),
 
-      Expected.of(DataType.i4, 4, new String[]{
+      Expected.of(NpyDataTypes.i4, 4, new String[]{
         "<i4",
         "i",
         "i4",
@@ -103,7 +103,7 @@ public class DataTypeTest {
         "long",
       }),
 
-      Expected.of(DataType.u4, 4, new String[]{
+      Expected.of(NpyDataTypes.u4, 4, new String[]{
         "<u4",
         "I",
         "L",
@@ -113,7 +113,7 @@ public class DataTypeTest {
         "uintc",
       }),
 
-      Expected.of(DataType.i8, 8, new String[]{
+      Expected.of(NpyDataTypes.i8, 8, new String[]{
         "<i8",
         "i8",
         "int0",
@@ -124,7 +124,7 @@ public class DataTypeTest {
         "q",
       }),
 
-      Expected.of(DataType.u8, 8, new String[]{
+      Expected.of(NpyDataTypes.u8, 8, new String[]{
         "<u8",
         "P",
         "Q",
@@ -136,7 +136,7 @@ public class DataTypeTest {
         "ulonglong",
       }),
 
-      Expected.of(DataType.f2, 2, new String[]{
+      Expected.of(NpyDataTypes.f2, 2, new String[]{
         "<f2",
         "e",
         "f2",
@@ -144,7 +144,7 @@ public class DataTypeTest {
         "half",
       }),
 
-      Expected.of(DataType.f4, 4, new String[]{
+      Expected.of(NpyDataTypes.f4, 4, new String[]{
         "<f4",
         "f",
         "f4",
@@ -152,7 +152,7 @@ public class DataTypeTest {
         "single",
       }),
 
-      Expected.of(DataType.f8, 8, new String[]{
+      Expected.of(NpyDataTypes.f8, 8, new String[]{
         "<f8",
         "d",
         "double",
@@ -165,7 +165,7 @@ public class DataTypeTest {
         "longfloat",
       }),
 
-      Expected.of(DataType.S, 0, new String[]{
+      Expected.of(NpyDataTypes.S, 0, new String[]{
         "|S0",
         "Bytes0",
         "S",
@@ -176,7 +176,7 @@ public class DataTypeTest {
         "string_",
       }),
 
-      Expected.of(DataType.U, 0, new String[]{
+      Expected.of(NpyDataTypes.U, 0, new String[]{
         "<U0",
         "Str0",
         "U",
@@ -190,7 +190,7 @@ public class DataTypeTest {
 
     for (var e : expected) {
       for (var symbol : e.symbols) {
-        var dtype = DataType.of(symbol);
+        var dtype = NpyDataTypes.of(symbol);
         assertEquals(e.type, dtype);
         assertEquals(e.size, dtype.size());
       }
@@ -198,17 +198,17 @@ public class DataTypeTest {
   }
 
   static private class Expected {
-    final DataType type;
+    final NpyDataTypes type;
     final int size;
     final String[] symbols;
 
-    Expected(DataType type, int size, String[] symbols) {
+    Expected(NpyDataTypes type, int size, String[] symbols) {
       this.type = type;
       this.size = size;
       this.symbols = symbols;
     }
 
-    static Expected of(DataType type, int size, String[] symbols) {
+    static Expected of(NpyDataTypes type, int size, String[] symbols) {
       return new Expected(type, size, symbols);
     }
   }
