@@ -165,25 +165,26 @@ public class DataTypeTest {
         "longfloat",
       }),
 
-      Expected.of(new NpyAsciiType(42), 42, new String[]{
-        "|S42",
-        "Bytes42",
-        "S42",
-        "a42",
-        "bytes42",
-        "bytes_42",
-        "string_42",
+      Expected.of(NpyDataType.S, 0, new String[]{
+        "|S0",
+        "Bytes0",
+        "S",
+        "a",
+        "bytes",
+        "bytes0",
+        "bytes_",
+        "string_",
       }),
 
-      Expected.of(new NpyUnicodeType(42), 168, new String[]{
-        "<U42",
-        "Str42",
-        "U42",
-        "str42",
-        "str42",
-        "str_42",
-        "unicode42",
-        "unicode_42",
+      Expected.of(NpyDataType.U, 0, new String[]{
+        "<U0",
+        "Str0",
+        "U",
+        "str",
+        "str0",
+        "str_",
+        "unicode",
+        "unicode_",
       })
 
     };

@@ -48,8 +48,7 @@ public class Npy {
       // read the header and check that the file contains a string type
       var header = NpyHeader.read(channel);
       var type = header.dataType();
-      var isAscii = type instanceof NpyAsciiType;
-      if (!isAscii && !(type instanceof NpyUnicodeType))
+      if (type != NpyDataType.S && type != NpyDataType.U)
         throw new NpyFormatException(
           "file '" + file + "' does not contain an NPY string type: "
           + header.dataType());
@@ -66,7 +65,7 @@ public class Npy {
       var array = buffer.array();
 
       // exclude the last byte for 0-terminated strings
-      if (isAscii && array[n - 1] == 0) {
+      if (type == NpyDataType.S && array[n - 1] == 0) {
         if (n == 1)
           return "";
         n -= 1;
@@ -84,9 +83,7 @@ public class Npy {
       // read the header and check the type
       var header = NpyHeader.read(channel);
       var type = header.dataType();
-      var isAscii = type instanceof NpyAsciiType;
-      var isUnicode = type instanceof NpyUnicodeType;
-      if (!isAscii && !isUnicode)
+      if (type != NpyDataType.S && type != NpyDataType.U)
         throw new NpyFormatException(
           type + " is not a supported string type");
 
@@ -111,7 +108,7 @@ public class Npy {
 
       // exclude the last byte for 0-terminated strings
       var n = bytes.length;
-      if (isAscii && bytes[n - 1] == 0) {
+      if (type == NpyDataType.S && bytes[n - 1] == 0) {
         if (n == 1)
           return "";
         n -= 1;
