@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openlca.npy.NpyDataType;
-import org.openlca.npy.NpyDataTypes;
 import org.openlca.npy.NpyFormatException;
 
 /**
@@ -102,7 +101,7 @@ public class HeaderDictionary {
         "invalid header dictionary; data type field " +
         "'descr' is not a string but: " + typeEntry);
     var dtype = typeEntry.asString().value();
-    var dataType = NpyDataTypes.of(dtype);
+    var dataType = NpyDataType.of(dtype);
     if (dataType == null)
       throw new NpyFormatException(
         "unsupported data type: " + dtype);
@@ -110,7 +109,7 @@ public class HeaderDictionary {
     var builder = of(dataType)
       .withShape(getShape(dict))
       .withFortranOrder(getFortranOrder(dict))
-      .withByteOrder(NpyDataTypes.byteOrderOf(dtype));
+      .withByteOrder(NpyDataType.byteOrderOf(dtype));
 
     // collect other string properties
     dict.forEach((key, val) -> {

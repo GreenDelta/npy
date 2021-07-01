@@ -2,7 +2,7 @@ package org.openlca.npy.arrays;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataTypes;
+import org.openlca.npy.NpyDataType;
 
 public final class NpyByteArray extends AbstractNpyArray<byte[]> {
 
@@ -11,8 +11,8 @@ public final class NpyByteArray extends AbstractNpyArray<byte[]> {
   }
 
   @Override
-  public NpyDataTypes dataType() {
-    return NpyDataTypes.i1;
+  public NpyDataType dataType() {
+    return NpyDataType.i1;
   }
 
   @Override

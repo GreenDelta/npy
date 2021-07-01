@@ -28,7 +28,7 @@ public class Tests {
   }
 
   public static void eachNpy(Consumer<TestNpy> fn) {
-    for (var type : NpyDataTypes.values()) {
+    for (var type : NpyDataType.values()) {
       if (type.size() == 0)
         continue;
       for (var byteOrder : List.of("be", "le")) {
@@ -43,7 +43,7 @@ public class Tests {
   }
 
   public static Optional<TestNpy> getNpy(
-		  NpyDataTypes type, ByteOrder byteOrder, boolean fortranOrder) {
+		  NpyDataType type, ByteOrder byteOrder, boolean fortranOrder) {
     var npy = new Object() {
       TestNpy npy;
     };
@@ -297,13 +297,13 @@ public class Tests {
 
   public static class TestNpy {
     private final File file;
-    private final NpyDataTypes dataType;
+    private final NpyDataType dataType;
     private final ByteOrder byteOrder;
     private final boolean fortranOrder;
 
     private TestNpy(
       File file,
-      NpyDataTypes dataType,
+      NpyDataType dataType,
       ByteOrder byteOrder,
       boolean fortranOrder) {
       this.file = file;
@@ -313,7 +313,7 @@ public class Tests {
     }
 
     private static TestNpy of(
-			NpyDataTypes dataType, String byteOrder, String storageOrder) {
+			NpyDataType dataType, String byteOrder, String storageOrder) {
       var fileName = dataType.name() + "_"
                      + byteOrder + "_"
                      + storageOrder + ".npy";
@@ -336,7 +336,7 @@ public class Tests {
       return file;
     }
 
-    public NpyDataTypes dataType() {
+    public NpyDataType dataType() {
       return dataType;
     }
 

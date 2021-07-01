@@ -2,7 +2,7 @@ package org.openlca.npy.arrays;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataTypes;
+import org.openlca.npy.NpyDataType;
 
 public interface NpyArray<T> {
 
@@ -19,7 +19,7 @@ public interface NpyArray<T> {
    */
   boolean hasFortranOrder();
 
-  NpyDataTypes dataType();
+  NpyDataType dataType();
 
   /**
    * Writes the element {@code i} of this array to the given buffer.

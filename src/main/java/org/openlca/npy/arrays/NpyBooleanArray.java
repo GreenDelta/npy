@@ -3,7 +3,7 @@ package org.openlca.npy.arrays;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataTypes;
+import org.openlca.npy.NpyDataType;
 
 public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
 
@@ -12,8 +12,8 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   }
 
   @Override
-  public NpyDataTypes dataType() {
-    return NpyDataTypes.bool;
+  public NpyDataType dataType() {
+    return NpyDataType.bool;
   }
 
   @Override

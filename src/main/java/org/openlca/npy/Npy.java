@@ -35,7 +35,7 @@ public class Npy {
 
   /**
    * Reads a string from the given NPY file. The NumPy type of the stored data
-   * must be {@link NpyDataTypes#S} or {@link NpyDataTypes#U}, otherwise an
+   * must be an ASCII ({@code S}) or unicode string ({@code U}), otherwise an
    * {@link NpyFormatException} is thrown.
    *
    * @param file the NPY file with the stored string
@@ -84,7 +84,9 @@ public class Npy {
       // read the header and check the type
       var header = NpyHeader.read(channel);
       var type = header.dataType();
-      if (type != NpyDataTypes.S && type != NpyDataTypes.U)
+      var isAscii = type instanceof NpyAsciiType;
+      var isUnicode = type instanceof NpyUnicodeType;
+      if (!isAscii && !isUnicode)
         throw new NpyFormatException(
           type + " is not a supported string type");
 
@@ -109,7 +111,7 @@ public class Npy {
 
       // exclude the last byte for 0-terminated strings
       var n = bytes.length;
-      if (type == NpyDataTypes.S && bytes[n - 1] == 0) {
+      if (isAscii && bytes[n - 1] == 0) {
         if (n == 1)
           return "";
         n -= 1;
@@ -132,9 +134,26 @@ public class Npy {
     }
   }
 
+  /**
+   * Writes the given string to an NPY file. It will use the ASCII NPY type if
+   * the string can be encoded in that type, otherwise it will take the unicode
+   * type.
+   *
+   * @param file the NPY file to save the string
+   * @param string the string to save
+   */
   public static void writeString(File file, String string) {
+    var isAsciiOnly = StandardCharsets.US_ASCII
+      .newEncoder()
+      .canEncode(string);
+    if (isAsciiOnly) {
+
+      var bytes = string.getBytes(StandardCharsets.US_ASCII);
+
+    }
+
     //TODO: the data type should be "U" + length here?
-    var dict = HeaderDictionary.of(NpyDataTypes.U).create();
+    var dict = HeaderDictionary.of(NpyDataType.U).create();
     write(file, dict, string.getBytes(StandardCharsets.UTF_8));
   }
 
