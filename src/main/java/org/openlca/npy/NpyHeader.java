@@ -93,6 +93,10 @@ public final class NpyHeader {
     return count;
   }
 
+  public int typeSize() {
+    return dictionary.typeSize();
+  }
+
   public String property(String key) {
     return dictionary.otherProperties().get(key);
   }

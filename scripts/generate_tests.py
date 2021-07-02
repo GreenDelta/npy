@@ -14,6 +14,7 @@ def main():
     for f in os.listdir(TESTDIR):
         os.remove(TESTDIR + "/" + f)
 
+    # numeric types
     types = [
         ('bool', '?'),
         ('i1', 'b'),
@@ -43,6 +44,9 @@ def main():
                 prefix = '<' if endianness == 'le' else '>'
                 np.save(TESTDIR + file_name,
                         np.array(data, order=order, dtype=prefix+t2))
+
+    np.save(TESTDIR + '/S.npy', np.array('uebergross', dtype='S'))
+    np.save(TESTDIR + '/U.npy', 'übergroß')
 
     # create the npz file with all generated npy files
     with zipfile.ZipFile(TESTDIR + "/all.npz", 'w') as z:

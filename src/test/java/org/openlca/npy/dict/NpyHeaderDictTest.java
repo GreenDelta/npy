@@ -113,5 +113,6 @@ public class NpyHeaderDictTest {
     assertEquals(NpyDataType.S, dict.dataType());
     assertEquals(NpyByteOrder.NOT_APPLICABLE, dict.byteOrder());
     assertEquals(42, dict.typeSize());
+    assertEquals(0, dict.dimensions());
   }
 }

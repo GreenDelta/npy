@@ -2,6 +2,7 @@ package org.openlca.npy;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
@@ -9,6 +10,7 @@ import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyBigIntArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyByteArray;
+import org.openlca.npy.arrays.NpyCharArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
 import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
@@ -18,14 +20,18 @@ import org.openlca.npy.arrays.NpyShortArray;
 abstract class NpyArrayBuilder {
 
   protected final NpyHeader header;
-  private final int size;
-  private final int typeSize;
+  protected final int elementCount;
+  private final int elementSize;
   private int pos;
 
   private NpyArrayBuilder(NpyHeader header) {
     this.header = header;
-    this.size = header.numberOfElements();
-    this.typeSize = header.dataType().size();
+    var type = header.dataType();
+    this.elementCount = type == NpyDataType.S || type == NpyDataType.U
+      ? header.typeSize()
+      : header.numberOfElements();
+    this.elementSize = type == NpyDataType.S ? 1
+      : type == NpyDataType.U ? 4 : type.size();
     this.pos = 0;
   }
 
@@ -55,6 +61,8 @@ abstract class NpyArrayBuilder {
         return new LongBuilder(header, Util::u4ToLong);
       case u8:
         return new BigIntBuilder(header);
+      case S:
+        return new AsciiBuilder(header);
       default:
         throw new NpyFormatException(
           "unsupported data type: " + header.dataType());
@@ -62,7 +70,7 @@ abstract class NpyArrayBuilder {
   }
 
   final void next(ByteBuffer buffer) {
-    while (pos != size && buffer.remaining() >= typeSize) {
+    while (pos != elementCount && buffer.remaining() >= elementSize) {
       fillNext(buffer, pos);
       pos++;
     }
@@ -78,7 +86,7 @@ abstract class NpyArrayBuilder {
 
     private BooleanBuilder(NpyHeader header) {
       super(header);
-      this.data = new boolean[header.numberOfElements()];
+      this.data = new boolean[elementCount];
     }
 
     @Override
@@ -98,7 +106,7 @@ abstract class NpyArrayBuilder {
 
     private ByteBuilder(NpyHeader header) {
       super(header);
-      this.data = new byte[header.numberOfElements()];
+      this.data = new byte[elementCount];
     }
 
     @Override
@@ -118,7 +126,7 @@ abstract class NpyArrayBuilder {
 
     private DoubleBuilder(NpyHeader header) {
       super(header);
-      this.data = new double[header.numberOfElements()];
+      this.data = new double[elementCount];
     }
 
     @Override
@@ -139,7 +147,7 @@ abstract class NpyArrayBuilder {
 
     private FloatBuilder(NpyHeader header, ToFloatFunction<ByteBuffer> fn) {
       super(header);
-      this.data = new float[header.numberOfElements()];
+      this.data = new float[elementCount];
       this.fn = fn;
     }
 
@@ -161,7 +169,7 @@ abstract class NpyArrayBuilder {
 
     private IntBuilder(NpyHeader header, ToIntFunction<ByteBuffer> fn) {
       super(header);
-      this.data = new int[header.numberOfElements()];
+      this.data = new int[elementCount];
       this.fn = fn;
     }
 
@@ -183,7 +191,7 @@ abstract class NpyArrayBuilder {
 
     private ShortBuilder(NpyHeader header, ToShortFunction<ByteBuffer> fn) {
       super(header);
-      this.data = new short[header.numberOfElements()];
+      this.data = new short[elementCount];
       this.fn = fn;
     }
 
@@ -205,7 +213,7 @@ abstract class NpyArrayBuilder {
 
     private LongBuilder(NpyHeader header, ToLongFunction<ByteBuffer> fn) {
       super(header);
-      this.data = new long[header.numberOfElements()];
+      this.data = new long[elementCount];
       this.fn = fn;
     }
 
@@ -226,7 +234,7 @@ abstract class NpyArrayBuilder {
 
     private BigIntBuilder(NpyHeader header) {
       super(header);
-      this.data = new BigInteger[header.numberOfElements()];
+      this.data = new BigInteger[elementCount];
     }
 
     @Override
@@ -239,5 +247,42 @@ abstract class NpyArrayBuilder {
       return new NpyBigIntArray(header.shape(), data, header.hasFortranOrder());
     }
   }
-  
+
+  private static final class AsciiBuilder extends NpyArrayBuilder {
+
+    private final CharBuffer chars;
+    private boolean terminated = false;
+
+    private AsciiBuilder(NpyHeader header) {
+      super(header);
+      this.chars = CharBuffer.allocate(elementCount);
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      if (terminated)
+        return;
+      var next = (char)buffer.get();
+      if (next == 0) {
+        terminated = true;
+        return;
+      }
+      chars.put(next);
+    }
+
+    @Override
+    NpyCharArray build() {
+      char[] data;
+      if (chars.remaining() == 0) {
+        data = chars.array();
+      } else {
+        chars.flip();
+        data = new char[chars.limit()];
+        chars.get(data, 0, chars.limit());
+      }
+
+      return new NpyCharArray(header.shape(), data, header.hasFortranOrder());
+    }
+  }
+
 }
