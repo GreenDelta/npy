@@ -2,6 +2,7 @@ package org.openlca.npy.arrays;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.openlca.npy.NpyDataType;
@@ -52,8 +53,18 @@ public class NpyCharArray extends AbstractNpyArray<char[]> {
 
   @Override
   public NpyBooleanArray asBooleanArray() {
+    var booleans = new boolean[data.length];
+    for (int i = 0; i < data.length; i++) {
+      booleans[i] = data[i] != 0;
+    }
+    return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
+  }
 
-    return null;
+  @Override
+  public NpyByteArray asByteArray() {
+    var bytes = String.valueOf(data)
+      .getBytes(StandardCharsets.UTF_8);
+    return new NpyByteArray(new int[0], bytes, false);
   }
 
   @Override
@@ -62,33 +73,43 @@ public class NpyCharArray extends AbstractNpyArray<char[]> {
   }
 
   @Override
-  public NpyByteArray asByteArray() {
-    CharBuffer.wrap(data).codePoints().
-    return null;
-  }
-
-  @Override
   public NpyDoubleArray asDoubleArray() {
-    return null;
+    return asIntArray().asDoubleArray();
   }
 
   @Override
   public NpyFloatArray asFloatArray() {
-    return null;
+    return asIntArray().asFloatArray();
   }
 
   @Override
   public NpyIntArray asIntArray() {
-    return null;
+    var buffer = IntBuffer.allocate(data.length);
+    int pos = 0;
+    while (pos < data.length) {
+      int codePoint = Character.codePointAt(data, pos);
+      buffer.put(codePoint);
+      pos += Character.charCount(codePoint);
+    }
+
+    int[] ints;
+    if (buffer.remaining() == 0) {
+      ints = buffer.array();
+    } else {
+      buffer.flip();
+      ints = new int[buffer.limit()];
+      buffer.get(ints, 0, buffer.limit());
+    }
+    return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
 
   @Override
   public NpyLongArray asLongArray() {
-    return null;
+    return asIntArray().asLongArray();
   }
 
   @Override
   public NpyShortArray asShortArray() {
-    return null;
+    return asIntArray().asShortArray();
   }
 }

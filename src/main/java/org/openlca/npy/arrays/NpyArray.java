@@ -106,6 +106,8 @@ public interface NpyArray<T> {
     return false;
   }
 
-  NpyCharArray asCharArray();
+  default NpyCharArray asCharArray() {
+    return asIntArray().asCharArray();
+  }
 
 }
