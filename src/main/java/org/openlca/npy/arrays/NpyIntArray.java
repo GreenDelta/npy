@@ -1,6 +1,7 @@
 package org.openlca.npy.arrays;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 import org.openlca.npy.NpyDataType;
 
@@ -54,6 +55,47 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
   }
 
   @Override
+  public NpyCharArray asCharArray() {
+    var bufferSize = Math.max(data.length, 10);
+    var buffer = CharBuffer.allocate(bufferSize);
+    for (int i : data) {
+      var next = Character.toChars(i);
+
+      // because a code point can result in multiple
+      // characters, we may need to allocate a larger
+      // buffer here
+      if (buffer.remaining() < next.length) {
+        bufferSize = Math.max(
+          bufferSize + next.length,
+          bufferSize + (bufferSize >> 1));
+        if (bufferSize < 0)
+          throw new OutOfMemoryError();
+        var chars = new char[bufferSize];
+        buffer.flip();
+        int nextPos = buffer.limit();
+        buffer.get(chars, 0, nextPos);
+        buffer = CharBuffer.wrap(chars);
+        buffer.position(nextPos);
+      }
+
+      for (char c : next) {
+        buffer.put(c);
+      }
+    }
+
+    char[] chars;
+    if (buffer.remaining() == 0) {
+      chars = buffer.array();
+    } else {
+      buffer.flip();
+      chars = new char[buffer.limit()];
+      buffer.get(chars, 0, buffer.limit());
+    }
+
+    return new NpyCharArray(copyShape(), chars, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
@@ -88,5 +130,6 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
     }
     return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }
+
 }
   

@@ -102,4 +102,10 @@ public interface NpyArray<T> {
 
   NpyShortArray asShortArray();
 
+  default boolean isCharArray() {
+    return false;
+  }
+
+  NpyCharArray asCharArray();
+
 }
