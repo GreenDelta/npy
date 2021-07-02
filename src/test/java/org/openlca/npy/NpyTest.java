@@ -1,6 +1,9 @@
 package org.openlca.npy;
 
+import java.io.File;
+
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import org.junit.Test;
 import org.openlca.npy.arrays.NpyArray;
@@ -65,6 +68,26 @@ public class NpyTest {
       Tests.checkLongs(array.asLongArray());
       Tests.checkShorts(array.asShortArray());
     }
+  }
+
+  @Test
+  public void testReadAscii() {
+    var file = new File(Tests.testDir, "S.npy");
+    assumeTrue(file.exists());
+    var array = Npy.read(file);
+    assertTrue(array.isCharArray());
+    assertEquals(NpyDataType.S, array.dataType());
+    assertEquals("uebergross", array.toString());
+  }
+
+  @Test
+  public void testReadUnicode() {
+    var file = new File(Tests.testDir, "U.npy");
+    assumeTrue(file.exists());
+    var array = Npy.read(file);
+    assertTrue(array.isCharArray());
+    assertEquals(NpyDataType.U, array.dataType());
+    assertEquals("übergroß", array.toString());
   }
 
 }

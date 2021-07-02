@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 public class Tests {
 
-  private static final File testDir = new File("target/testdata");
+  static final File testDir = new File("target/testdata");
 
   private Tests() {
   }

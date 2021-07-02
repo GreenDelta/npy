@@ -52,6 +52,11 @@ public class NpyCharArray extends AbstractNpyArray<char[]> {
   }
 
   @Override
+  public boolean isCharArray() {
+    return true;
+  }
+
+  @Override
   public NpyBooleanArray asBooleanArray() {
     var booleans = new boolean[data.length];
     for (int i = 0; i < data.length; i++) {
@@ -111,5 +116,10 @@ public class NpyCharArray extends AbstractNpyArray<char[]> {
   @Override
   public NpyShortArray asShortArray() {
     return asIntArray().asShortArray();
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(data);
   }
 }

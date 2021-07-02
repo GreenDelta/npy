@@ -47,8 +47,7 @@ public final class NpyHeader {
    */
   public long dataSize() {
     long elemCount = numberOfElements();
-    long typeSize = dataType().size();
-    return elemCount * typeSize;
+    return elemCount * typeSize();
   }
 
   /**

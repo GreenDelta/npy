@@ -63,6 +63,8 @@ abstract class NpyArrayBuilder {
         return new BigIntBuilder(header);
       case S:
         return new AsciiBuilder(header);
+      case U:
+        return new UnicodeBuilder(header);
       default:
         throw new NpyFormatException(
           "unsupported data type: " + header.dataType());
@@ -262,7 +264,7 @@ abstract class NpyArrayBuilder {
     void fillNext(ByteBuffer buffer, int pos) {
       if (terminated)
         return;
-      var next = (char)buffer.get();
+      char next = (char)buffer.get();
       if (next == 0) {
         terminated = true;
         return;
@@ -285,4 +287,24 @@ abstract class NpyArrayBuilder {
     }
   }
 
+  private static final class UnicodeBuilder extends NpyArrayBuilder {
+
+    private final int[] data;
+
+    private UnicodeBuilder(NpyHeader header) {
+      super(header);
+      this.data = new int[elementCount];
+    }
+
+    @Override
+    void fillNext(ByteBuffer buffer, int pos) {
+      data[pos] = buffer.getInt();
+    }
+
+    @Override
+    NpyCharArray build() {
+      var ints = new NpyIntArray(header.shape(), data, header.hasFortranOrder());
+      return ints.asCharArray();
+    }
+  }
 }
