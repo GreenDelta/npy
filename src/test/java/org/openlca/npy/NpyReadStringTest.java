@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 import org.junit.Test;
-import org.openlca.npy.dict.HeaderDictionary;
+import org.openlca.npy.dict.NpyHeaderDict;
 
 public class NpyReadStringTest {
 
@@ -37,7 +37,7 @@ public class NpyReadStringTest {
   @Test
   public void testReadNullTerminated() throws Exception {
     var file = Files.createTempFile("str_", ".npy").toFile();
-    var dict = HeaderDictionary.of(NpyDataType.S).create();
+    var dict = NpyHeaderDict.of(NpyDataType.S).create();
     var data = new byte[]{'c', 's', 'c', 0};
     Npy.write(file, dict, data);
     assertEquals("csc", Npy.readString(file));

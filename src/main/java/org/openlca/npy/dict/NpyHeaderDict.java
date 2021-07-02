@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openlca.npy.NpyByteOrder;
 import org.openlca.npy.NpyDataType;
 import org.openlca.npy.NpyFormatException;
 
@@ -16,23 +17,35 @@ import org.openlca.npy.NpyFormatException;
  * Contains the values of the dictionary that is stored in the header of an NPY
  * file.
  */
-public class HeaderDictionary {
+public class NpyHeaderDict {
 
   private final NpyDataType dataType;
-  private final ByteOrder byteOrder;
+  private final NpyByteOrder byteOrder;
   private final boolean fortranOrder;
   private final int[] shape;
   private final Map<String, String> properties;
+  private final int typeSize;
 
-  private HeaderDictionary(Builder builder) {
-    this.dataType = builder.dataType;
+  private NpyHeaderDict(Builder builder) {
+    this.dataType = Objects.requireNonNull(builder.dataType);
+    this.fortranOrder = builder.fortranOrder;
+
+    // shape
     this.shape = builder.shape == null
       ? new int[0]
       : Arrays.copyOf(builder.shape, builder.shape.length);
+
+    // byte order
     this.byteOrder = builder.byteOrder == null
-      ? ByteOrder.nativeOrder()
+      ? NpyByteOrder.NOT_APPLICABLE
       : builder.byteOrder;
-    this.fortranOrder = builder.fortranOrder;
+
+    // type size
+    this.typeSize = dataType.size() != 0
+      ? dataType.size()
+      : builder.typeSize;
+
+    // additional properties
     this.properties = builder.properties != null
       ? builder.properties
       : Collections.emptyMap();
@@ -46,8 +59,22 @@ public class HeaderDictionary {
     return dataType;
   }
 
-  public ByteOrder byteOrder() {
+  public NpyByteOrder byteOrder() {
     return byteOrder;
+  }
+
+  /**
+   * Describes the size of the stored type. The meaning of this field depends
+   * on the respective storage type. For numeric types it is in general the
+   * number of bytes which are required to store a single value. For strings,
+   * it is the number of characters of the string (note that for unicode strings
+   * 4 bytes are used to store a single character in NPY and that ASCII strings
+   * are stored with an additional null-termination byte).
+   *
+   * @return the size of the stored type.
+   */
+  public int typeSize() {
+    return typeSize;
   }
 
   public boolean hasFortranOrder() {
@@ -80,7 +107,7 @@ public class HeaderDictionary {
       : Collections.unmodifiableMap(properties);
   }
 
-  public static HeaderDictionary parse(String s) throws NpyFormatException {
+  public static NpyHeaderDict parse(String s) throws NpyFormatException {
     var value = Parser.parse(s);
     if (value.isError())
       throw new NpyFormatException(
@@ -110,6 +137,21 @@ public class HeaderDictionary {
       .withShape(getShape(dict))
       .withFortranOrder(getFortranOrder(dict))
       .withByteOrder(NpyDataType.byteOrderOf(dtype));
+
+    // try to set the type size for string types
+    if (dataType.size() == 0) {
+      for (int i = 0; i < dtype.length(); i++) {
+        if (!Character.isDigit(dtype.charAt(i)))
+          continue;
+        try {
+          var lenStr = dtype.substring(i);
+          var typeSize = Integer.parseInt(lenStr);
+          builder.withTypeSize(typeSize);
+        } catch (Exception ignored) {
+        }
+        break;
+      }
+    }
 
     // collect other string properties
     dict.forEach((key, val) -> {
@@ -179,13 +221,13 @@ public class HeaderDictionary {
     // data type
     var buffer = new StringBuilder("{'descr': '");
     if (dataType != null) {
-      if (dataType.size() > 1) {
-        var orderSymbol = Objects.equals(ByteOrder.BIG_ENDIAN, byteOrder)
-          ? '>'
-          : '<';
-        buffer.append(orderSymbol);
+      if (dataType.size() != 1) {
+        buffer.append(byteOrder.symbol());
       }
       buffer.append(dataType.symbol());
+      if (dataType.size() == 0) {
+        buffer.append(typeSize);
+      }
     }
 
     // fortran order
@@ -289,9 +331,10 @@ public class HeaderDictionary {
 
     private final NpyDataType dataType;
     private int[] shape;
-    private ByteOrder byteOrder;
+    private NpyByteOrder byteOrder;
     private boolean fortranOrder;
     private Map<String, String> properties;
+    private int typeSize;
 
     private Builder(NpyDataType dataType) {
       this.dataType = Objects.requireNonNull(dataType);
@@ -302,13 +345,26 @@ public class HeaderDictionary {
       return this;
     }
 
-    public Builder withByteOrder(ByteOrder byteOrder) {
+    public Builder withByteOrder(NpyByteOrder byteOrder) {
       this.byteOrder = byteOrder;
       return this;
     }
 
     public Builder withFortranOrder(boolean b) {
       this.fortranOrder = b;
+      return this;
+    }
+
+    /**
+     * Set the size of the stored type. This field must be set when the stored
+     * data type is a string. In this case the size of the type is the number
+     * of characters of the string.
+     *
+     * @param typeSize the size of the stored type
+     * @return this builder
+     */
+    public Builder withTypeSize(int typeSize) {
+      this.typeSize = typeSize;
       return this;
     }
 
@@ -322,8 +378,8 @@ public class HeaderDictionary {
       return this;
     }
 
-    public HeaderDictionary create() {
-      return new HeaderDictionary(this);
+    public NpyHeaderDict create() {
+      return new NpyHeaderDict(this);
     }
   }
 }

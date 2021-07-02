@@ -11,7 +11,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 import org.openlca.npy.arrays.NpyArray;
-import org.openlca.npy.dict.HeaderDictionary;
+import org.openlca.npy.dict.NpyHeaderDict;
 
 public class Npy {
 
@@ -120,7 +120,7 @@ public class Npy {
     }
   }
 
-  public static void write(File file, HeaderDictionary dict, byte[] data) {
+  public static void write(File file, NpyHeaderDict dict, byte[] data) {
     try (var f = new RandomAccessFile(file, "rw");
          var channel = f.getChannel()) {
       var header = dict.toNpyHeader();
@@ -150,7 +150,7 @@ public class Npy {
     }
 
     //TODO: the data type should be "U" + length here?
-    var dict = HeaderDictionary.of(NpyDataType.U).create();
+    var dict = NpyHeaderDict.of(NpyDataType.U).create();
     write(file, dict, string.getBytes(StandardCharsets.UTF_8));
   }
 
@@ -159,10 +159,10 @@ public class Npy {
          var channel = f.getChannel()) {
 
       var dataType = array.dataType();
-      var header = HeaderDictionary.of(dataType)
+      var header = NpyHeaderDict.of(dataType)
         .withShape(array.shape())
         .withFortranOrder(array.hasFortranOrder())
-        .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+        .withByteOrder(NpyByteOrder.LITTLE_ENDIAN)
         .create()
         .toNpyHeader();
       channel.write(ByteBuffer.wrap(header));

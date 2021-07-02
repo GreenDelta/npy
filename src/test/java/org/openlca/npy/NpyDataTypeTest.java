@@ -2,11 +2,9 @@ package org.openlca.npy;
 
 import static org.junit.Assert.*;
 
-import java.nio.ByteOrder;
-
 import org.junit.Test;
 
-public class DataTypeTest {
+public class NpyDataTypeTest {
 
   @Test
   public void testByteOrder() {
@@ -19,14 +17,14 @@ public class DataTypeTest {
       ">i4",
       "|?"
     };
-    var expected = new ByteOrder[]{
-      ByteOrder.nativeOrder(),
-      ByteOrder.nativeOrder(),
-      ByteOrder.nativeOrder(),
-      ByteOrder.nativeOrder(),
-      ByteOrder.LITTLE_ENDIAN,
-      ByteOrder.BIG_ENDIAN,
-      ByteOrder.nativeOrder(),
+    var expected = new NpyByteOrder[]{
+      NpyByteOrder.NOT_APPLICABLE,
+      NpyByteOrder.NOT_APPLICABLE,
+      NpyByteOrder.NOT_APPLICABLE,
+      NpyByteOrder.HARDWARE_NATIVE,
+      NpyByteOrder.LITTLE_ENDIAN,
+      NpyByteOrder.BIG_ENDIAN,
+      NpyByteOrder.NOT_APPLICABLE,
     };
     for (int i = 0; i < dtypes.length; i++) {
       assertEquals(expected[i], NpyDataType.byteOrderOf(dtypes[i]));

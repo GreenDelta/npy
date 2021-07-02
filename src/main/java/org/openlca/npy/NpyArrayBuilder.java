@@ -239,5 +239,5 @@ abstract class NpyArrayBuilder {
       return new NpyBigIntArray(header.shape(), data, header.hasFortranOrder());
     }
   }
-
+  
 }

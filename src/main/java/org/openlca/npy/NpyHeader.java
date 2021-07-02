@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Objects;
 
-import org.openlca.npy.dict.HeaderDictionary;
+import org.openlca.npy.dict.NpyHeaderDict;
 
 /**
  * The NPY header contains the meta data of the stored array and the NPY file.
@@ -15,9 +15,9 @@ import org.openlca.npy.dict.HeaderDictionary;
 public final class NpyHeader {
 
   private final long dataOffset;
-  private final HeaderDictionary dictionary;
+  private final NpyHeaderDict dictionary;
 
-  private NpyHeader(long dataOffset, HeaderDictionary dictionary) {
+  private NpyHeader(long dataOffset, NpyHeaderDict dictionary) {
     this.dataOffset = dataOffset;
     this.dictionary = Objects.requireNonNull(dictionary);
   }
@@ -74,7 +74,9 @@ public final class NpyHeader {
   }
 
   public ByteOrder byteOrder() {
-    return dictionary.byteOrder();
+    return dictionary.byteOrder() == null
+      ? ByteOrder.nativeOrder()
+      : dictionary.byteOrder().toJava();
   }
 
   /**
@@ -130,7 +132,7 @@ public final class NpyHeader {
     if (in.read(bytes) != headerLength)
       throw new NpyFormatException("invalid NPY file");
     var header = new String(bytes, version.headerEncoding());
-    return new NpyHeader(dataOffset, HeaderDictionary.parse(header));
+    return new NpyHeader(dataOffset, NpyHeaderDict.parse(header));
   }
 
   static NpyHeader read(ReadableByteChannel channel) throws IOException {
@@ -168,7 +170,7 @@ public final class NpyHeader {
     if (channel.read(buffer) != headerLength)
       throw new NpyFormatException("invalid NPY file");
     var header = new String(buffer.array(), version.headerEncoding());
-    return new NpyHeader(dataOffset, HeaderDictionary.parse(header));
+    return new NpyHeader(dataOffset, NpyHeaderDict.parse(header));
   }
 
 }

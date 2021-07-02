@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 
 import org.junit.Test;
 
-public class HeaderTest {
+public class NpyHeaderTest {
 
   @Test
   public void testReadFromStream() {

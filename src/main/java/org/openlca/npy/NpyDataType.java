@@ -1,6 +1,5 @@
 package org.openlca.npy;
 
-import java.nio.ByteOrder;
 import java.util.EnumSet;
 
 /**
@@ -180,10 +179,21 @@ public enum NpyDataType {
   }
 
   /**
-   * Get the size of the data type in number of bytes. This is similar to
-   * {@code numpy.dtype.itemsize}.
+   * For fixed sized data types, returns the number of bytes that are required
+   * to store a value of this type. Returns {@code 0} for variable sized types
+   * (the string types {@link #S} and {@link #U}). This method is similar to
+   * the NumPy method {@code numpy.dtype.itemsize}.
    *
-   * @return the size of the data type in number of bytes.
+   * <pre>{@code
+   * >>> import numpy as np
+   * >>> np.dtype('i4').itemsize
+   * 4
+   * >>> np.dtype('U').itemsize
+   * 0
+   * }</pre>
+   *
+   * @return for fixed sized types the number of bytes to store a single value,
+   * for variable sized types like strings {@code 0}.
    */
   public int size() {
     return size;
@@ -250,8 +260,9 @@ public enum NpyDataType {
   }
 
   /**
-   * Get the byte order of the given data type string. It tries to identify it
-   * from the first character of that type string:
+   * Get the byte order of the given data type description. It tries to identify
+   * it from the first character of that type description:
+   *
    * <ul>
    *   <li>{@code =} hardware native</li>
    *   <li>{@code <} little-endian</li>
@@ -259,22 +270,24 @@ public enum NpyDataType {
    *   <li>{@code |} not applicable</li>
    * </ul>
    *
-   * @param dtype the data type string (e.g. {@code <i4})
-   * @return the identified byte-order or the platform native order if it is
-   * not specified in the given type string
+   * @param dtype the data type description (e.g. {@code <i4})
+   * @return the identified byte-order or {@link NpyByteOrder#NOT_APPLICABLE} if
+   * it is not specified in the given type string
    * @see <a href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.byteorder.html">
    * https://numpy.org/doc/stable/reference/generated/numpy.dtype.byteorder.html</a>
    */
-  public static ByteOrder byteOrderOf(String dtype) {
+  public static NpyByteOrder byteOrderOf(String dtype) {
     if (dtype == null || dtype.length() == 0)
-      return ByteOrder.nativeOrder();
+      return NpyByteOrder.NOT_APPLICABLE;
     switch (dtype.charAt(0)) {
+      case '=':
+        return NpyByteOrder.HARDWARE_NATIVE;
       case '>':
-        return ByteOrder.BIG_ENDIAN;
+        return NpyByteOrder.BIG_ENDIAN;
       case '<':
-        return ByteOrder.LITTLE_ENDIAN;
+        return NpyByteOrder.LITTLE_ENDIAN;
       default:
-        return ByteOrder.nativeOrder();
+        return NpyByteOrder.NOT_APPLICABLE;
     }
   }
 }
