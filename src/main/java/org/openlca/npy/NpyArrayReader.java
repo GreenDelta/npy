@@ -18,14 +18,14 @@ import org.openlca.npy.arrays.NpyLongArray;
 import org.openlca.npy.arrays.NpyShortArray;
 import org.openlca.npy.dict.NpyHeaderDict;
 
-abstract class NpyArrayBuilder {
+abstract class NpyArrayReader {
 
   protected final NpyHeaderDict dict;
   protected final int elementCount;
   private final int elementSize;
   private int pos;
 
-  private NpyArrayBuilder(NpyHeaderDict dict) {
+  private NpyArrayReader(NpyHeaderDict dict) {
     this.dict = dict;
     var type = dict.dataType();
     this.elementCount = type == NpyDataType.S || type == NpyDataType.U
@@ -36,7 +36,7 @@ abstract class NpyArrayBuilder {
     this.pos = 0;
   }
 
-  static NpyArrayBuilder allocate(NpyHeaderDict dict) throws NpyFormatException {
+  static NpyArrayReader allocate(NpyHeaderDict dict) throws NpyFormatException {
     switch (dict.dataType()) {
       case bool:
         return new BooleanBuilder(dict);
@@ -81,9 +81,9 @@ abstract class NpyArrayBuilder {
 
   abstract void readNextAt(ByteBuffer buffer, int pos);
 
-  abstract NpyArray<?> build();
+  abstract NpyArray<?> finish();
 
-  private static final class BooleanBuilder extends NpyArrayBuilder {
+  private static final class BooleanBuilder extends NpyArrayReader {
 
     private final boolean[] data;
 
@@ -98,12 +98,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyBooleanArray build() {
+    NpyBooleanArray finish() {
       return new NpyBooleanArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class ByteBuilder extends NpyArrayBuilder {
+  private static final class ByteBuilder extends NpyArrayReader {
 
     private final byte[] data;
 
@@ -118,12 +118,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyByteArray build() {
+    NpyByteArray finish() {
       return new NpyByteArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class DoubleBuilder extends NpyArrayBuilder {
+  private static final class DoubleBuilder extends NpyArrayReader {
 
     private final double[] data;
 
@@ -138,12 +138,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyDoubleArray build() {
+    NpyDoubleArray finish() {
       return new NpyDoubleArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class FloatBuilder extends NpyArrayBuilder {
+  private static final class FloatBuilder extends NpyArrayReader {
 
     private final float[] data;
     private final ToFloatFunction<ByteBuffer> fn;
@@ -160,12 +160,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyFloatArray build() {
+    NpyFloatArray finish() {
       return new NpyFloatArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class IntBuilder extends NpyArrayBuilder {
+  private static final class IntBuilder extends NpyArrayReader {
 
     private final int[] data;
     private final ToIntFunction<ByteBuffer> fn;
@@ -182,12 +182,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyIntArray build() {
+    NpyIntArray finish() {
       return new NpyIntArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class ShortBuilder extends NpyArrayBuilder {
+  private static final class ShortBuilder extends NpyArrayReader {
 
     private final short[] data;
     private final ToShortFunction<ByteBuffer> fn;
@@ -204,12 +204,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyShortArray build() {
+    NpyShortArray finish() {
       return new NpyShortArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class LongBuilder extends NpyArrayBuilder {
+  private static final class LongBuilder extends NpyArrayReader {
 
     private final long[] data;
     private final ToLongFunction<ByteBuffer> fn;
@@ -226,12 +226,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyLongArray build() {
+    NpyLongArray finish() {
       return new NpyLongArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class BigIntBuilder extends NpyArrayBuilder {
+  private static final class BigIntBuilder extends NpyArrayReader {
 
     private final BigInteger[] data;
 
@@ -246,12 +246,12 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyBigIntArray build() {
+    NpyBigIntArray finish() {
       return new NpyBigIntArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
-  private static final class AsciiBuilder extends NpyArrayBuilder {
+  private static final class AsciiBuilder extends NpyArrayReader {
 
     private final CharBuffer chars;
     private boolean terminated = false;
@@ -274,7 +274,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyCharArray build() {
+    NpyCharArray finish() {
       char[] data;
       if (chars.remaining() == 0) {
         data = chars.array();
@@ -288,7 +288,7 @@ abstract class NpyArrayBuilder {
     }
   }
 
-  private static final class UnicodeBuilder extends NpyArrayBuilder {
+  private static final class UnicodeBuilder extends NpyArrayReader {
 
     private final int[] data;
 
@@ -303,7 +303,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    NpyCharArray build() {
+    NpyCharArray finish() {
       var ints = new NpyIntArray(dict.shape(), data, dict.hasFortranOrder());
       return ints.asCharArray();
     }

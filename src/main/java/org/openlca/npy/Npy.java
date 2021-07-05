@@ -10,6 +10,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.function.BiConsumer;
 
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.dict.NpyHeaderDict;
@@ -40,6 +41,71 @@ public class Npy {
       return ChannelReader.read(channel, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to read NPY array from channel", e);
+    }
+  }
+
+  /**
+   * Reads a range of {@code n} array elements from an NPY file.
+   *
+   * @param file   a NPY file
+   * @param offset the position of the first of the range
+   * @param n      the number of elements that should be read from the file
+   * @return an one-dimensional array with {@code n} elements
+   */
+  public static NpyArray<?> readRange(File file, int offset, int n) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.read(channel);
+      return readRange(raf, header, offset, n);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to read a range of " + n +
+        " elements from NPY file " + file, e);
+    }
+  }
+
+  public static void use(File file, BiConsumer<RandomAccessFile, NpyHeader> fn) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.read(channel);
+      fn.accept(raf, header);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to use NPY file: " + file, e);
+    }
+  }
+
+  public static NpyArray<?> readRange(
+    RandomAccessFile file, NpyHeader header, int offset, int n) {
+
+    var dict = header.dict();
+    int elemSize = dict.dataType() == NpyDataType.U
+      ? 4
+      : Math.max(dict.dataType().size(), 1);
+
+    try {
+
+      // seek to the reading position and read the data
+      long start = header.dataOffset();
+      if (offset > 0) {
+        start += (long) elemSize * (long) offset;
+      }
+      file.seek(start);
+      var buffer = ByteBuffer.allocate(n * elemSize);
+      file.getChannel().read(buffer);
+
+      // build the range array
+      var rangeDict = NpyHeaderDict.of(dict.dataType())
+        .withTypeSize(dict.typeSize())
+        .withByteOrder(dict.byteOrder())
+        .withFortranOrder(dict.hasFortranOrder())
+        .withShape(new int[]{n})
+        .create();
+      var reader = NpyArrayReader.allocate(rangeDict);
+      reader.readAllFrom(buffer);
+      return reader.finish();
+
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read range from NPY file: " + file, e);
     }
   }
 
@@ -127,9 +193,9 @@ public class Npy {
       var buffer = channel.map(
         FileChannel.MapMode.READ_ONLY, header.dataOffset(), dataSize);
       buffer.order(header.byteOrder());
-      var builder = NpyArrayBuilder.allocate(header.dict());
+      var builder = NpyArrayReader.allocate(header.dict());
       builder.readAllFrom(buffer);
-      return builder.build();
+      return builder.finish();
     } catch (IOException e) {
       throw new RuntimeException("failed to memmap NPY file: " + file, e);
     }

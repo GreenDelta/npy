@@ -45,4 +45,14 @@ public class NpyTest {
     assertEquals("übergroß", array.toString());
   }
 
+  @Test
+  public void testReadRange() {
+    var file = new File(Tests.testDir, "i4_le_c.npy");
+    assumeTrue(file.exists());
+    var array = Npy.readRange(file, 1, 4);
+    assertTrue(array.isIntArray());
+    var intArray = array.asIntArray();
+    assertArrayEquals(new int[]{1, 2, 3, 4}, intArray.data());
+  }
+
 }
