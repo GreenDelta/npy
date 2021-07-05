@@ -11,7 +11,7 @@ public class MemmapExample {
   public static void main(String[] args) {
     var file = new File("C:/Users/Win10/openLCA-data-1.4/libraries/ei2_00.00.001/INV.npy");
     System.out.println("test memmap");
-    benchmark(() ->  Npy.memmapUnchecked(file), 5);
+    benchmark(() ->  Npy.memmap(file), 5);
     System.out.println("test load");
     benchmark(() ->  Npy.read(file), 5);
   }

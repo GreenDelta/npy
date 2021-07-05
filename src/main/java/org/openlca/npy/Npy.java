@@ -1,6 +1,5 @@
 package org.openlca.npy;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -8,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.StandardCharsets;
 
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.dict.NpyHeaderDict;
@@ -33,90 +31,12 @@ public class Npy {
     }
   }
 
-  /**
-   * Reads a string from the given NPY file. The NumPy type of the stored data
-   * must be an ASCII ({@code S}) or unicode string ({@code U}), otherwise an
-   * {@link NpyFormatException} is thrown.
-   *
-   * @param file the NPY file with the stored string
-   * @return the stored string
-   */
-  public static String readString(File file) {
-    try (var f = new RandomAccessFile(file, "r");
-         var channel = f.getChannel()) {
-
-      // read the header and check that the file contains a string type
-      var header = NpyHeader.read(channel);
-      var type = header.dataType();
-      if (type != NpyDataType.S && type != NpyDataType.U)
-        throw new NpyFormatException(
-          "file '" + file + "' does not contain an NPY string type: "
-          + header.dataType());
-
-      // read the n data bytes
-      int n = (int) (channel.size() - header.dataOffset());
-      if (n <= 0)
-        return "";
-      var buffer = ByteBuffer.allocate(n);
-      n = channel.read(buffer);
-      if (n <= 0)
-        return "";
-
-      var array = buffer.array();
-
-      // exclude the last byte for 0-terminated strings
-      if (type == NpyDataType.S && array[n - 1] == 0) {
-        if (n == 1)
-          return "";
-        n -= 1;
-      }
-
-      return new String(array, 0, n, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new RuntimeException("failed to read string from file: " + file, e);
-    }
-  }
-
-  public static String readString(ReadableByteChannel channel) {
+  public static NpyArray<?> read(ReadableByteChannel channel) {
     try {
-
-      // read the header and check the type
       var header = NpyHeader.read(channel);
-      var type = header.dataType();
-      if (type != NpyDataType.S && type != NpyDataType.U)
-        throw new NpyFormatException(
-          type + " is not a supported string type");
-
-      // read the data from the channel
-      int buffSize = 1024;
-      var buff = ByteBuffer.allocate(buffSize);
-      var bout = new ByteArrayOutputStream();
-      while (true) {
-        int n = channel.read(buff);
-        if (n <= 0)
-          break;
-        bout.write(buff.array(), 0, n);
-        if (n < buffSize)
-          break;
-        buff.flip();
-        buff.clear();
-      }
-
-      var bytes = bout.toByteArray();
-      if (bytes.length == 0)
-        return "";
-
-      // exclude the last byte for 0-terminated strings
-      var n = bytes.length;
-      if (type == NpyDataType.S && bytes[n - 1] == 0) {
-        if (n == 1)
-          return "";
-        n -= 1;
-      }
-
-      return new String(bytes, 0, n, StandardCharsets.UTF_8);
+      return ChannelReader.read(channel, header);
     } catch (IOException e) {
-      throw new RuntimeException("failed to read string from NPY data", e);
+      throw new RuntimeException("failed to read NPY array from channel", e);
     }
   }
 
@@ -129,29 +49,6 @@ public class Npy {
     } catch (IOException e) {
       throw new RuntimeException("failed to write NPY data to file " + file, e);
     }
-  }
-
-  /**
-   * Writes the given string to an NPY file. It will use the ASCII NPY type if
-   * the string can be encoded in that type, otherwise it will take the unicode
-   * type.
-   *
-   * @param file the NPY file to save the string
-   * @param string the string to save
-   */
-  public static void writeString(File file, String string) {
-    var isAsciiOnly = StandardCharsets.US_ASCII
-      .newEncoder()
-      .canEncode(string);
-    if (isAsciiOnly) {
-
-      var bytes = string.getBytes(StandardCharsets.US_ASCII);
-
-    }
-
-    //TODO: the data type should be "U" + length here?
-    var dict = NpyHeaderDict.of(NpyDataType.U).create();
-    write(file, dict, string.getBytes(StandardCharsets.UTF_8));
   }
 
   public static void write(File file, NpyArray<?> array) {
@@ -192,8 +89,7 @@ public class Npy {
     }
   }
 
-  public static NpyArray<?> memmap(File file)
-    throws IOException, NpyFormatException {
+  public static NpyArray<?> memmap(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
       var header = NpyHeader.read(channel);
@@ -218,13 +114,7 @@ public class Npy {
         readBytes += typeSize;
       }
       return builder.build();
-    }
-  }
-
-  public static NpyArray<?> memmapUnchecked(File file) {
-    try {
-      return memmap(file);
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new RuntimeException("failed to memmap NPY file: " + file, e);
     }
   }

@@ -21,7 +21,7 @@ public class NpyTest {
   @Test
   public void testMemmap() {
     Tests.eachNpy(testNpy -> {
-      var array = Npy.memmapUnchecked(testNpy.file());
+      var array = Npy.memmap(testNpy.file());
       runChecks(testNpy, array);
     });
   }
