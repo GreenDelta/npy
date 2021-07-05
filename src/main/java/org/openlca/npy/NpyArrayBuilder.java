@@ -16,62 +16,63 @@ import org.openlca.npy.arrays.NpyFloatArray;
 import org.openlca.npy.arrays.NpyIntArray;
 import org.openlca.npy.arrays.NpyLongArray;
 import org.openlca.npy.arrays.NpyShortArray;
+import org.openlca.npy.dict.NpyHeaderDict;
 
 abstract class NpyArrayBuilder {
 
-  protected final NpyHeader header;
+  protected final NpyHeaderDict dict;
   protected final int elementCount;
   private final int elementSize;
   private int pos;
 
-  private NpyArrayBuilder(NpyHeader header) {
-    this.header = header;
-    var type = header.dataType();
+  private NpyArrayBuilder(NpyHeaderDict dict) {
+    this.dict = dict;
+    var type = dict.dataType();
     this.elementCount = type == NpyDataType.S || type == NpyDataType.U
-      ? header.typeSize()
-      : header.numberOfElements();
+      ? dict.typeSize()
+      : dict.numberOfElements();
     this.elementSize = type == NpyDataType.S ? 1
       : type == NpyDataType.U ? 4 : type.size();
     this.pos = 0;
   }
 
-  static NpyArrayBuilder allocate(NpyHeader header) throws NpyFormatException {
-    switch (header.dataType()) {
+  static NpyArrayBuilder allocate(NpyHeaderDict dict) throws NpyFormatException {
+    switch (dict.dataType()) {
       case bool:
-        return new BooleanBuilder(header);
+        return new BooleanBuilder(dict);
       case f2:
-        return new FloatBuilder(header, Util::f2ToFloat);
+        return new FloatBuilder(dict, Util::f2ToFloat);
       case f4:
-        return new FloatBuilder(header, ByteBuffer::getFloat);
+        return new FloatBuilder(dict, ByteBuffer::getFloat);
       case f8:
-        return new DoubleBuilder(header);
+        return new DoubleBuilder(dict);
       case i1:
-        return new ByteBuilder(header);
+        return new ByteBuilder(dict);
       case i2:
-        return new ShortBuilder(header, ByteBuffer::getShort);
+        return new ShortBuilder(dict, ByteBuffer::getShort);
       case i4:
-        return new IntBuilder(header, ByteBuffer::getInt);
+        return new IntBuilder(dict, ByteBuffer::getInt);
       case i8:
-        return new LongBuilder(header, ByteBuffer::getLong);
+        return new LongBuilder(dict, ByteBuffer::getLong);
       case u1:
-        return new ShortBuilder(header, Util::u1ToShort);
+        return new ShortBuilder(dict, Util::u1ToShort);
       case u2:
-        return new IntBuilder(header, Util::u2ToInt);
+        return new IntBuilder(dict, Util::u2ToInt);
       case u4:
-        return new LongBuilder(header, Util::u4ToLong);
+        return new LongBuilder(dict, Util::u4ToLong);
       case u8:
-        return new BigIntBuilder(header);
+        return new BigIntBuilder(dict);
       case S:
-        return new AsciiBuilder(header);
+        return new AsciiBuilder(dict);
       case U:
-        return new UnicodeBuilder(header);
+        return new UnicodeBuilder(dict);
       default:
         throw new NpyFormatException(
-          "unsupported data type: " + header.dataType());
+          "unsupported data type: " + dict.dataType());
     }
   }
 
-  final void next(ByteBuffer buffer) {
+  final void readAllFrom(ByteBuffer buffer) {
     while (pos != elementCount && buffer.remaining() >= elementSize) {
       fillNext(buffer, pos);
       pos++;
@@ -86,8 +87,8 @@ abstract class NpyArrayBuilder {
 
     private final boolean[] data;
 
-    private BooleanBuilder(NpyHeader header) {
-      super(header);
+    private BooleanBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.data = new boolean[elementCount];
     }
 
@@ -98,7 +99,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyBooleanArray build() {
-      return new NpyBooleanArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyBooleanArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -106,8 +107,8 @@ abstract class NpyArrayBuilder {
 
     private final byte[] data;
 
-    private ByteBuilder(NpyHeader header) {
-      super(header);
+    private ByteBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.data = new byte[elementCount];
     }
 
@@ -118,7 +119,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyByteArray build() {
-      return new NpyByteArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyByteArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -126,8 +127,8 @@ abstract class NpyArrayBuilder {
 
     private final double[] data;
 
-    private DoubleBuilder(NpyHeader header) {
-      super(header);
+    private DoubleBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.data = new double[elementCount];
     }
 
@@ -138,7 +139,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyDoubleArray build() {
-      return new NpyDoubleArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyDoubleArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -147,8 +148,8 @@ abstract class NpyArrayBuilder {
     private final float[] data;
     private final ToFloatFunction<ByteBuffer> fn;
 
-    private FloatBuilder(NpyHeader header, ToFloatFunction<ByteBuffer> fn) {
-      super(header);
+    private FloatBuilder(NpyHeaderDict dict, ToFloatFunction<ByteBuffer> fn) {
+      super(dict);
       this.data = new float[elementCount];
       this.fn = fn;
     }
@@ -160,7 +161,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyFloatArray build() {
-      return new NpyFloatArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyFloatArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -169,8 +170,8 @@ abstract class NpyArrayBuilder {
     private final int[] data;
     private final ToIntFunction<ByteBuffer> fn;
 
-    private IntBuilder(NpyHeader header, ToIntFunction<ByteBuffer> fn) {
-      super(header);
+    private IntBuilder(NpyHeaderDict dict, ToIntFunction<ByteBuffer> fn) {
+      super(dict);
       this.data = new int[elementCount];
       this.fn = fn;
     }
@@ -182,7 +183,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyIntArray build() {
-      return new NpyIntArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyIntArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -191,8 +192,8 @@ abstract class NpyArrayBuilder {
     private final short[] data;
     private final ToShortFunction<ByteBuffer> fn;
 
-    private ShortBuilder(NpyHeader header, ToShortFunction<ByteBuffer> fn) {
-      super(header);
+    private ShortBuilder(NpyHeaderDict dict, ToShortFunction<ByteBuffer> fn) {
+      super(dict);
       this.data = new short[elementCount];
       this.fn = fn;
     }
@@ -204,7 +205,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyShortArray build() {
-      return new NpyShortArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyShortArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -213,8 +214,8 @@ abstract class NpyArrayBuilder {
     private final long[] data;
     private final ToLongFunction<ByteBuffer> fn;
 
-    private LongBuilder(NpyHeader header, ToLongFunction<ByteBuffer> fn) {
-      super(header);
+    private LongBuilder(NpyHeaderDict dict, ToLongFunction<ByteBuffer> fn) {
+      super(dict);
       this.data = new long[elementCount];
       this.fn = fn;
     }
@@ -226,7 +227,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyLongArray build() {
-      return new NpyLongArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyLongArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -234,8 +235,8 @@ abstract class NpyArrayBuilder {
 
     private final BigInteger[] data;
 
-    private BigIntBuilder(NpyHeader header) {
-      super(header);
+    private BigIntBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.data = new BigInteger[elementCount];
     }
 
@@ -246,7 +247,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyBigIntArray build() {
-      return new NpyBigIntArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyBigIntArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -255,8 +256,8 @@ abstract class NpyArrayBuilder {
     private final CharBuffer chars;
     private boolean terminated = false;
 
-    private AsciiBuilder(NpyHeader header) {
-      super(header);
+    private AsciiBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.chars = CharBuffer.allocate(elementCount);
     }
 
@@ -283,7 +284,7 @@ abstract class NpyArrayBuilder {
         chars.get(data, 0, chars.limit());
       }
 
-      return new NpyCharArray(header.shape(), data, header.hasFortranOrder());
+      return new NpyCharArray(dict.shape(), data, dict.hasFortranOrder());
     }
   }
 
@@ -291,8 +292,8 @@ abstract class NpyArrayBuilder {
 
     private final int[] data;
 
-    private UnicodeBuilder(NpyHeader header) {
-      super(header);
+    private UnicodeBuilder(NpyHeaderDict dict) {
+      super(dict);
       this.data = new int[elementCount];
     }
 
@@ -303,7 +304,7 @@ abstract class NpyArrayBuilder {
 
     @Override
     NpyCharArray build() {
-      var ints = new NpyIntArray(header.shape(), data, header.hasFortranOrder());
+      var ints = new NpyIntArray(dict.shape(), data, dict.hasFortranOrder());
       return ints.asCharArray();
     }
   }

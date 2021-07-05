@@ -35,11 +35,12 @@ public class NpyHeaderTest {
   }
 
   private void checkHeader(Tests.TestNpy testNpy, NpyHeader header) {
-    assertEquals(testNpy.dataType(), header.dataType());
+    var dict = header.dict();
+    assertEquals(testNpy.dataType(), dict.dataType());
     if (testNpy.dataType().size() > 1) {
       assertEquals(testNpy.byteOrder(), header.byteOrder());
     }
-    assertEquals(testNpy.hasFortranOrder(), header.hasFortranOrder());
-    assertArrayEquals(new int[]{2, 3}, header.shape());
+    assertEquals(testNpy.hasFortranOrder(), dict.hasFortranOrder());
+    assertArrayEquals(new int[]{2, 3}, dict.shape());
   }
 }

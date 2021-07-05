@@ -69,13 +69,14 @@ public class NpyHeaderDictTest {
       .toNpyHeader();
     var stream = new ByteArrayInputStream(bytes);
     var header = NpyHeader.read(stream);
-    assertEquals(NpyDataType.i4, header.dataType());
-    assertTrue(header.hasFortranOrder());
+    var dict = header.dict();
+    assertEquals(NpyDataType.i4, dict.dataType());
+    assertTrue(dict.hasFortranOrder());
     assertEquals(ByteOrder.LITTLE_ENDIAN, header.byteOrder());
-    assertEquals(2 * 3 * 4, header.dataSize());
-    assertEquals(2 * 3, header.numberOfElements());
-    assertEquals("123abc", header.property("_key"));
-    assertArrayEquals(new int[] {2, 3}, header.shape());
+    assertEquals(2 * 3 * 4, dict.dataSize());
+    assertEquals(2 * 3, dict.numberOfElements());
+    assertEquals("123abc", dict.property("_key"));
+    assertArrayEquals(new int[] {2, 3}, dict.shape());
     assertEquals(0, header.dataOffset() % 64);
   }
 
@@ -88,15 +89,17 @@ public class NpyHeaderDictTest {
       .withOtherProperty("_key", "Überstraße")
       .create()
       .toNpyHeader();
+
     var stream = new ByteArrayInputStream(bytes);
     var header = NpyHeader.read(stream);
-    assertEquals(NpyDataType.i4, header.dataType());
-    assertTrue(header.hasFortranOrder());
+    var dict = header.dict();
+    assertEquals(NpyDataType.i4, dict.dataType());
+    assertTrue(dict.hasFortranOrder());
     assertEquals(ByteOrder.LITTLE_ENDIAN, header.byteOrder());
-    assertEquals(2 * 3 * 4, header.dataSize());
-    assertEquals(2 * 3, header.numberOfElements());
-    assertEquals("Überstraße", header.property("_key"));
-    assertArrayEquals(new int[] {2, 3}, header.shape());
+    assertEquals(2 * 3 * 4, dict.dataSize());
+    assertEquals(2 * 3, dict.numberOfElements());
+    assertEquals("Überstraße", dict.property("_key"));
+    assertArrayEquals(new int[] {2, 3}, dict.shape());
     assertEquals(0, header.dataOffset() % 64);
   }
 

@@ -15,20 +15,23 @@ import org.openlca.npy.dict.NpyHeaderDict;
 public final class NpyHeader {
 
   private final long dataOffset;
-  private final NpyHeaderDict dictionary;
+  private final NpyHeaderDict dict;
 
-  private NpyHeader(long dataOffset, NpyHeaderDict dictionary) {
+  private NpyHeader(long dataOffset, NpyHeaderDict dict) {
     this.dataOffset = dataOffset;
-    this.dictionary = Objects.requireNonNull(dictionary);
+    this.dict = Objects.requireNonNull(dict);
   }
 
   @Override
   public String toString() {
-    return dictionary.toString();
+    return dict.toString();
   }
 
-  public NpyDataType dataType() {
-    return dictionary.dataType();
+  /**
+   * Returns the dictionary entries of this header.
+   */
+  public NpyHeaderDict dict() {
+    return dict;
   }
 
   /**
@@ -38,71 +41,10 @@ public final class NpyHeader {
     return dataOffset;
   }
 
-  /**
-   * Returns the size of the stored array in number of bytes. That is the
-   * number of elements of the stored array times the size of the data type in
-   * bytes.
-   *
-   * @return the size of the stored array in bytes
-   */
-  public long dataSize() {
-    long elemCount = numberOfElements();
-    var type = dataType();
-    if (type.size() != 0)
-      return elemCount * typeSize();
-    if (type == NpyDataType.U)
-      return typeSize() * 4L;
-    return elemCount * typeSize();
-  }
-
-  /**
-   * Returns {@code true} when the array is stored in Fortran order.
-   */
-  public boolean hasFortranOrder() {
-    return dictionary.hasFortranOrder();
-  }
-
-  /**
-   * Returns the shape of the stored array. Note that this returns a new
-   * allocated array each time you call this method.
-   *
-   * @return the shape of the stored array
-   */
-  public int[] shape() {
-    int n = dictionary.dimensions();
-    int[] shape = new int[n];
-    for (int i = 0; i < shape.length; i++) {
-      shape[i] = dictionary.sizeOfDimension(i);
-    }
-    return shape;
-  }
-
   public ByteOrder byteOrder() {
-    return dictionary.byteOrder() == null
+    return dict.byteOrder() == null
       ? ByteOrder.nativeOrder()
-      : dictionary.byteOrder().toJava();
-  }
-
-  /**
-   * Returns the number of elements that are stored in the array.
-   *
-   * @return the number of elements which is the product of all dimension sizes.
-   */
-  public int numberOfElements() {
-    int count = 1;
-    int n = dictionary.dimensions();
-    for (int i = 0; i < n; i++) {
-      count *= dictionary.sizeOfDimension(i);
-    }
-    return count;
-  }
-
-  public int typeSize() {
-    return dictionary.typeSize();
-  }
-
-  public String property(String key) {
-    return dictionary.otherProperties().get(key);
+      : dict.byteOrder().toJava();
   }
 
   public static NpyHeader read(InputStream in)

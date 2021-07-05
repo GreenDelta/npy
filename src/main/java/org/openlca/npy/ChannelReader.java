@@ -25,12 +25,12 @@ class ChannelReader {
   }
 
   private NpyArray<?> read() throws IOException, NpyFormatException{
-    long totalBytes = header.dataSize();
+    long totalBytes = header.dict().dataSize();
     int bufferSize = totalBytes > 0 && totalBytes < ((long) MAX_BUFFER_SIZE)
       ? (int) totalBytes
       : MAX_BUFFER_SIZE;
 
-    var builder = NpyArrayBuilder.allocate(header);
+    var builder = NpyArrayBuilder.allocate(header.dict());
 
     var buffer = ByteBuffer.allocate(bufferSize);
     buffer.order(header.byteOrder());
@@ -40,7 +40,7 @@ class ChannelReader {
       if (n <= 0)
         break;
       buffer.flip();
-      builder.next(buffer);
+      builder.readAllFrom(buffer);
       buffer.clear();
       readBytes += n;
     }

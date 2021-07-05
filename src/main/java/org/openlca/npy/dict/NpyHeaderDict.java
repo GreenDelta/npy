@@ -77,6 +77,9 @@ public class NpyHeaderDict {
     return typeSize;
   }
 
+  /**
+   * Returns {@code true} when the array is stored in Fortran order.
+   */
   public boolean hasFortranOrder() {
     return fortranOrder;
   }
@@ -100,6 +103,57 @@ public class NpyHeaderDict {
       throw new IndexOutOfBoundsException(i);
     return shape[i];
   }
+
+  /**
+   * Returns the size of the stored array in number of bytes. That is the
+   * number of elements of the stored array times the size of the data type in
+   * bytes.
+   *
+   * @return the size of the stored array in bytes
+   */
+  public long dataSize() {
+    long elemCount = numberOfElements();
+    var type = dataType();
+    if (type.size() != 0)
+      return elemCount * typeSize();
+    if (type == NpyDataType.U)
+      return typeSize() * 4L;
+    return elemCount * typeSize();
+  }
+
+  /**
+   * Returns the number of elements that are stored in the array.
+   *
+   * @return the number of elements which is the product of all dimension sizes.
+   */
+  public int numberOfElements() {
+    int count = 1;
+    int n = dimensions();
+    for (int i = 0; i < n; i++) {
+      count *= sizeOfDimension(i);
+    }
+    return count;
+  }
+
+  /**
+   * Returns the shape of the stored array. Note that this returns a new
+   * allocated array each time you call this method.
+   *
+   * @return the shape of the stored array
+   */
+  public int[] shape() {
+    int n = dimensions();
+    int[] shape = new int[n];
+    for (int i = 0; i < shape.length; i++) {
+      shape[i] = sizeOfDimension(i);
+    }
+    return shape;
+  }
+
+  public String property(String key) {
+    return properties.get(key);
+  }
+
 
   public Map<String, String> otherProperties() {
     return properties.isEmpty()

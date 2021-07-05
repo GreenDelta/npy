@@ -120,7 +120,7 @@ public class Npy {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
       var header = NpyHeader.read(channel);
-      long dataSize = header.dataSize();
+      long dataSize = header.dict().dataSize();
 
       // only a buffer of size < Integer.MAX_VALUE can be mapped
       // into memory. if the size of the stored array is larger
@@ -132,14 +132,8 @@ public class Npy {
       var buffer = channel.map(
         FileChannel.MapMode.READ_ONLY, header.dataOffset(), dataSize);
       buffer.order(header.byteOrder());
-      var builder = NpyArrayBuilder.allocate(header);
-
-      long typeSize = header.dataType().size();
-      long readBytes = 0;
-      while (readBytes < dataSize) {
-        builder.next(buffer);
-        readBytes += typeSize;
-      }
+      var builder = NpyArrayBuilder.allocate(header.dict());
+      builder.readAllFrom(buffer);
       return builder.build();
     } catch (IOException e) {
       throw new RuntimeException("failed to memmap NPY file: " + file, e);
