@@ -2,11 +2,14 @@ package org.openlca.npy;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.dict.NpyHeaderDict;
@@ -54,7 +57,16 @@ public class Npy {
   public static void write(File file, NpyArray<?> array) {
     try (var f = new RandomAccessFile(file, "rw");
          var channel = f.getChannel()) {
+      write(channel, array);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to write array to file " + file, e);
+    }
+  }
 
+  public static void write(WritableByteChannel channel, NpyArray<?> array) {
+    try {
+
+      // write the header
       var dataType = array.dataType();
       var header = NpyHeaderDict.of(dataType)
         .withShape(array.shape())
@@ -64,14 +76,20 @@ public class Npy {
         .toNpyHeader();
       channel.write(ByteBuffer.wrap(header));
 
-      long totalBytes = (long) dataType.size() * (long) array.size();
+      // allocate a buffer
+      long totalBytes = dataType.size() <= 1
+        ? array.size()
+        : (long) dataType.size() * (long) array.size();
+
+
       int maxBufferSize = 8 * 1024;
       int bufferSize = totalBytes < maxBufferSize
         ? (int) totalBytes
         : maxBufferSize;
-
       var buffer = ByteBuffer.allocate(bufferSize)
         .order(ByteOrder.LITTLE_ENDIAN);
+
+      // write data to the channel
       for (int i = 0; i < array.size(); i++) {
         array.writeElementTo(i, buffer);
         if (!buffer.hasRemaining()) {
@@ -84,9 +102,18 @@ public class Npy {
         buffer.flip();
         channel.write(buffer);
       }
+
     } catch (IOException e) {
-      throw new RuntimeException("failed to write array to file " + file, e);
+      throw new RuntimeException("failed to write NPY array to channel", e);
     }
+  }
+
+  public static void write(OutputStream stream, NpyArray<?> array) {
+    // do not close the channel here because it would
+    // close the underlying output stream which is
+    // not the idea of this function.
+    var channel = Channels.newChannel(stream);
+    write(channel, array);
   }
 
   public static NpyArray<?> memmap(File file) {

@@ -1,12 +1,15 @@
 package org.openlca.npy;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.openlca.npy.arrays.NpyArray;
 
@@ -99,4 +102,25 @@ public class Npz {
       throw new RuntimeException("failed to use NPZ file " + npz, e);
     }
   }
+
+  public static void create(File file, Consumer<ZipOutputStream> fn) {
+    try (var fileOut = new FileOutputStream(file);
+         var zipOut = new ZipOutputStream(fileOut)) {
+      fn.accept(zipOut);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to create NPZ file: " + file, e);
+    }
+  }
+
+  public static void write(ZipOutputStream npz, String entry, NpyArray<?> array) {
+    var e = new ZipEntry(entry);
+    try {
+      npz.putNextEntry(e);
+      // TODO: write to output stream
+      npz.closeEntry();
+    } catch (IOException ex) {
+      throw new RuntimeException("failed to write NPZ entry: " + entry, ex);
+    }
+  }
+
 }
