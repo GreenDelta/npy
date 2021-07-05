@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import org.junit.Test;
-import org.openlca.npy.arrays.NpyArray;
 
 public class NpyTest {
 
@@ -14,7 +13,7 @@ public class NpyTest {
   public void testLoad() {
     Tests.eachNpy(testNpy -> {
       var array = Npy.read(testNpy.file());
-      runChecks(testNpy, array);
+      Tests.check(testNpy, array);
     });
   }
 
@@ -22,52 +21,8 @@ public class NpyTest {
   public void testMemmap() {
     Tests.eachNpy(testNpy -> {
       var array = Npy.memmap(testNpy.file());
-      runChecks(testNpy, array);
+      Tests.check(testNpy, array);
     });
-  }
-
-  private void runChecks(Tests.TestNpy testNpy, NpyArray<?> array) {
-    switch (testNpy.dataType()) {
-      case bool:
-        assertTrue(array.isBooleanArray());
-        break;
-      case i1:
-        assertTrue(array.isByteArray());
-        break;
-      case i2:
-      case u1:
-        assertTrue(array.isShortArray());
-        break;
-      case i4:
-      case u2:
-        assertTrue(array.isIntArray());
-        break;
-      case i8:
-      case u4:
-        assertTrue(array.isLongArray());
-        break;
-      case u8:
-        assertTrue(array.isBigIntegerArray());
-        break;
-      case f2:
-      case f4:
-        assertTrue(array.isFloatArray());
-        break;
-      case f8:
-        assertTrue(array.isDoubleArray());
-        break;
-    }
-
-    Tests.checkBooleans(array.asBooleanArray());
-
-    if (!array.isBooleanArray()) {
-      Tests.checkBytes(array.asByteArray());
-      Tests.checkDoubles(array.asDoubleArray());
-      Tests.checkFloats(array.asFloatArray());
-      Tests.checkInts(array.asIntArray());
-      Tests.checkLongs(array.asLongArray());
-      Tests.checkShorts(array.asShortArray());
-    }
   }
 
   @Test

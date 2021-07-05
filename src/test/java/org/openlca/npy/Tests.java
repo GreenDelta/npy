@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.openlca.npy.arrays.Array2D;
+import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyByteArray;
 import org.openlca.npy.arrays.NpyDoubleArray;
@@ -55,6 +56,50 @@ public class Tests {
       }
     });
     return Optional.ofNullable(npy.npy);
+  }
+
+  static void check(TestNpy testNpy, NpyArray<?> array) {
+    switch (testNpy.dataType()) {
+      case bool:
+        assertTrue(array.isBooleanArray());
+        break;
+      case i1:
+        assertTrue(array.isByteArray());
+        break;
+      case i2:
+      case u1:
+        assertTrue(array.isShortArray());
+        break;
+      case i4:
+      case u2:
+        assertTrue(array.isIntArray());
+        break;
+      case i8:
+      case u4:
+        assertTrue(array.isLongArray());
+        break;
+      case u8:
+        assertTrue(array.isBigIntegerArray());
+        break;
+      case f2:
+      case f4:
+        assertTrue(array.isFloatArray());
+        break;
+      case f8:
+        assertTrue(array.isDoubleArray());
+        break;
+    }
+
+    checkBooleans(array.asBooleanArray());
+
+    if (!array.isBooleanArray()) {
+      checkBytes(array.asByteArray());
+      checkDoubles(array.asDoubleArray());
+      checkFloats(array.asFloatArray());
+      checkInts(array.asIntArray());
+      checkLongs(array.asLongArray());
+      checkShorts(array.asShortArray());
+    }
   }
 
   static void checkDoubles(NpyDoubleArray array) {
@@ -295,7 +340,7 @@ public class Tests {
     }
   }
 
-  public static class TestNpy {
+	public static class TestNpy {
     private final File file;
     private final NpyDataType dataType;
     private final ByteOrder byteOrder;
