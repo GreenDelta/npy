@@ -3,8 +3,6 @@ package org.openlca.npy;
 import java.io.File;
 import java.nio.ByteOrder;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.openlca.npy.arrays.Array2D;
@@ -20,6 +18,7 @@ import org.openlca.npy.arrays.NpyShortArray;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class Tests {
 
@@ -41,21 +40,6 @@ public class Tests {
         }
       }
     }
-  }
-
-  public static Optional<TestNpy> getNpy(
-		  NpyDataType type, ByteOrder byteOrder, boolean fortranOrder) {
-    var npy = new Object() {
-      TestNpy npy;
-    };
-    eachNpy(testNpy -> {
-      if (Objects.equals(type, testNpy.dataType)
-          && Objects.equals(byteOrder, testNpy.byteOrder)
-          && fortranOrder == testNpy.fortranOrder) {
-        npy.npy = testNpy;
-      }
-    });
-    return Optional.ofNullable(npy.npy);
   }
 
   static void check(TestNpy testNpy, NpyArray<?> array) {
@@ -88,6 +72,8 @@ public class Tests {
       case f8:
         assertTrue(array.isDoubleArray());
         break;
+      default:
+        fail("unexpected NPY test type: " + testNpy.dataType());
     }
 
     checkBooleans(array.asBooleanArray());
@@ -102,7 +88,7 @@ public class Tests {
     }
   }
 
-  static void checkDoubles(NpyDoubleArray array) {
+  private static void checkDoubles(NpyDoubleArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -136,7 +122,7 @@ public class Tests {
     }
   }
 
-  static void checkFloats(NpyFloatArray array) {
+  private static void checkFloats(NpyFloatArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -170,7 +156,7 @@ public class Tests {
     }
   }
 
-  static void checkBooleans(NpyBooleanArray array) {
+  private static void checkBooleans(NpyBooleanArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -197,14 +183,11 @@ public class Tests {
     assertArrayEquals(new boolean[]{true, true}, Array2D.getColumn(array, 2));
 
     // check by storage order
-    if (array.hasFortranOrder()) {
-      assertArrayEquals(new boolean[]{false, true, true, true, true, true}, array.data());
-    } else {
-      assertArrayEquals(new boolean[]{false, true, true, true, true, true}, array.data());
-    }
+    assertArrayEquals(
+      new boolean[]{false, true, true, true, true, true}, array.data());
   }
 
-  static void checkBytes(NpyByteArray array) {
+  private static void checkBytes(NpyByteArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -238,7 +221,7 @@ public class Tests {
     }
   }
 
-  static void checkInts(NpyIntArray array) {
+  private static void checkInts(NpyIntArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -272,7 +255,7 @@ public class Tests {
     }
   }
 
-  static void checkLongs(NpyLongArray array) {
+  private static void checkLongs(NpyLongArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
@@ -306,7 +289,7 @@ public class Tests {
     }
   }
 
-  static void checkShorts(NpyShortArray array) {
+  private static void checkShorts(NpyShortArray array) {
 
     assertTrue(Array2D.isValid(array));
     assertEquals(2, Array2D.rowCountOf(array));
