@@ -116,7 +116,7 @@ public class Npz {
     var e = new ZipEntry(entry);
     try {
       npz.putNextEntry(e);
-      // TODO: write to output stream
+      Npy.write(npz, array);
       npz.closeEntry();
     } catch (IOException ex) {
       throw new RuntimeException("failed to write NPZ entry: " + entry, ex);

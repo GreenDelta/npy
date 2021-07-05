@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import org.junit.Test;
 
@@ -43,6 +44,23 @@ public class NpzTest {
         }
       }
     });
+  }
+
+  @Test
+  public void testCreateWriteNpz() throws Exception {
+    var temp = Files.createTempFile("_npy_tests", ".npz").toFile();
+    Npz.create(temp, npz -> Tests.eachNpy(npy -> {
+      var entry = npy.file().getName();
+      var array = Npy.read(npy.file());
+      Npz.write(npz, entry, array);
+    }));
+
+    Tests.eachNpy(npy -> {
+      var entry = npy.file().getName();
+      var array = Npz.read(temp, entry);
+      Tests.check(npy, array);
+    });
+    Files.delete(temp.toPath());
   }
 
 }

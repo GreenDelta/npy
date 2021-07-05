@@ -74,12 +74,12 @@ abstract class NpyArrayBuilder {
 
   final void readAllFrom(ByteBuffer buffer) {
     while (pos != elementCount && buffer.remaining() >= elementSize) {
-      fillNext(buffer, pos);
+      readNextAt(buffer, pos);
       pos++;
     }
   }
 
-  abstract void fillNext(ByteBuffer buffer, int pos);
+  abstract void readNextAt(ByteBuffer buffer, int pos);
 
   abstract NpyArray<?> build();
 
@@ -93,7 +93,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = buffer.get() != 0;
     }
 
@@ -113,7 +113,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = buffer.get();
     }
 
@@ -133,7 +133,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = buffer.getDouble();
     }
 
@@ -155,7 +155,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsFloat(buffer);
     }
 
@@ -177,7 +177,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsInt(buffer);
     }
 
@@ -199,7 +199,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsShort(buffer);
     }
 
@@ -221,7 +221,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsLong(buffer);
     }
 
@@ -241,7 +241,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = Util.u8ToBigInteger(buffer);
     }
 
@@ -262,7 +262,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       if (terminated)
         return;
       char next = (char)buffer.get();
@@ -298,7 +298,7 @@ abstract class NpyArrayBuilder {
     }
 
     @Override
-    void fillNext(ByteBuffer buffer, int pos) {
+    void readNextAt(ByteBuffer buffer, int pos) {
       data[pos] = buffer.getInt();
     }
 

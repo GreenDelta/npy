@@ -68,20 +68,15 @@ public class Npy {
 
       // write the header
       var dataType = array.dataType();
-      var header = NpyHeaderDict.of(dataType)
+      var dict = NpyHeaderDict.of(dataType)
         .withShape(array.shape())
         .withFortranOrder(array.hasFortranOrder())
         .withByteOrder(NpyByteOrder.LITTLE_ENDIAN)
-        .create()
-        .toNpyHeader();
-      channel.write(ByteBuffer.wrap(header));
+        .create();
+      channel.write(ByteBuffer.wrap(dict.toNpyHeader()));
 
       // allocate a buffer
-      long totalBytes = dataType.size() <= 1
-        ? array.size()
-        : (long) dataType.size() * (long) array.size();
-
-
+      long totalBytes = dict.dataSize();
       int maxBufferSize = 8 * 1024;
       int bufferSize = totalBytes < maxBufferSize
         ? (int) totalBytes
