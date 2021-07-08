@@ -36,7 +36,7 @@ abstract class NpyArrayReader {
     this.pos = 0;
   }
 
-  static NpyArrayReader allocate(NpyHeaderDict dict) throws NpyFormatException {
+  static NpyArrayReader of(NpyHeaderDict dict) throws NpyFormatException {
     switch (dict.dataType()) {
       case bool:
         return new BooleanBuilder(dict);

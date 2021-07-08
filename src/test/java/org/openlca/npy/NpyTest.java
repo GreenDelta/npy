@@ -55,4 +55,14 @@ public class NpyTest {
     assertArrayEquals(new int[]{1, 2, 3, 4}, intArray.data());
   }
 
+  @Test
+  public void testReadElements() {
+    var file = new File(Tests.testDir, "i4_le_c.npy");
+    assumeTrue(file.exists());
+    var array = Npy.readElements(file, 3, 1, 2);
+    assertTrue(array.isIntArray());
+    var intArray = array.asIntArray();
+    assertArrayEquals(new int[]{1, 3, 5}, intArray.data());
+  }
+
 }

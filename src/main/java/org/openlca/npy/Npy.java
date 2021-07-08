@@ -28,7 +28,7 @@ public class Npy {
   public static NpyArray<?> read(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
-      var header = NpyHeader.read(channel);
+      var header = NpyHeader.readFrom(channel);
       return ChannelReader.read(channel, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to read file: " + file, e);
@@ -37,7 +37,7 @@ public class Npy {
 
   public static NpyArray<?> read(ReadableByteChannel channel) {
     try {
-      var header = NpyHeader.read(channel);
+      var header = NpyHeader.readFrom(channel);
       return ChannelReader.read(channel, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to read NPY array from channel", e);
@@ -56,7 +56,7 @@ public class Npy {
   public static void use(File file, BiConsumer<RandomAccessFile, NpyHeader> fn) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.read(channel);
+      var header = NpyHeader.readFrom(channel);
       fn.accept(raf, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to use NPY file: " + file, e);
@@ -77,11 +77,12 @@ public class Npy {
   public static NpyArray<?> readRange(File file, int n, int offset) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.read(channel);
+      var header = NpyHeader.readFrom(channel);
       return readRange(raf, header, n, offset);
     } catch (IOException e) {
-      throw new RuntimeException("failed to read a range of " + n +
-                                 " elements from NPY file " + file, e);
+      throw new RuntimeException(
+        "failed to read a range of " +
+        n + " elements from NPY file " + file, e);
     }
   }
 
@@ -115,18 +116,13 @@ public class Npy {
         .order(dict.byteOrder().toJava());
       if (file.getChannel().read(buffer) < byteCount) {
         throw new IndexOutOfBoundsException(
-          "failed to read " + n + " elements from the file.");
+          "failed to read " + n + " elements from file");
       }
       buffer.flip();
 
-      // build the range array
-      var rangeDict = NpyHeaderDict.of(dict.dataType())
-        .withTypeSize(dict.typeSize())
-        .withByteOrder(dict.byteOrder())
-        .withFortranOrder(dict.hasFortranOrder())
-        .withShape(new int[]{n})
-        .create();
-      var reader = NpyArrayReader.allocate(rangeDict);
+      // read the range into an array
+      var rangeDict = shape1d(dict, n);
+      var reader = NpyArrayReader.of(rangeDict);
       reader.readAllFrom(buffer);
       return reader.finish();
 
@@ -134,6 +130,68 @@ public class Npy {
       throw new RuntimeException(
         "failed to read range from NPY file: " + file, e);
     }
+  }
+
+  public static NpyArray<?> readElements(File file, int n, int offset, int inc) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.readFrom(channel);
+      return readElements(raf, header, n, offset, inc);
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read " + n + " elements from NPY file " + file, e);
+    }
+  }
+
+  public static NpyArray<?> readElements(
+    RandomAccessFile file, NpyHeader header, int n, int offset, int inc) {
+
+    if (inc == 1)
+      return readRange(file, header, n, offset);
+
+    var dict = header.dict();
+    int elemSize = dict.dataType() == NpyDataType.U
+      ? 4
+      : Math.max(dict.dataType().size(), 1);
+
+    try {
+
+      // seek to the reading position and read the data
+      long pos = header.dataOffset();
+      if (offset > 0) {
+        pos += (long) elemSize * (long) offset;
+      }
+      file.seek(pos);
+      var channel = file.getChannel();
+      var buffer = ByteBuffer.allocate(n * elemSize)
+        .order(dict.byteOrder().toJava());
+      for (int i = 0; i < n; i++) {
+        buffer.limit(buffer.position() + elemSize);
+        if (channel.read(buffer) < elemSize) {
+          throw new IndexOutOfBoundsException(
+            "failed to read " + n + " elements from file");
+        }
+      }
+      buffer.flip();
+
+      // read the range into an array
+      var rangeDict = shape1d(dict, n);
+      var reader = NpyArrayReader.of(rangeDict);
+      reader.readAllFrom(buffer);
+      return reader.finish();
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read elements from NPY file: " + file, e);
+    }
+  }
+
+  private static NpyHeaderDict shape1d(NpyHeaderDict dict, int n) {
+    return NpyHeaderDict.of(dict.dataType())
+      .withTypeSize(dict.typeSize())
+      .withByteOrder(dict.byteOrder())
+      .withFortranOrder(dict.hasFortranOrder())
+      .withShape(new int[]{n})
+      .create();
   }
 
   public static void write(File file, NpyHeaderDict dict, byte[] data) {
@@ -207,7 +265,7 @@ public class Npy {
   public static NpyArray<?> memmap(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
-      var header = NpyHeader.read(channel);
+      var header = NpyHeader.readFrom(channel);
       long dataSize = header.dict().dataSize();
 
       // only a buffer of size < Integer.MAX_VALUE can be mapped
@@ -220,7 +278,7 @@ public class Npy {
       var buffer = channel.map(
         FileChannel.MapMode.READ_ONLY, header.dataOffset(), dataSize);
       buffer.order(header.byteOrder());
-      var builder = NpyArrayReader.allocate(header.dict());
+      var builder = NpyArrayReader.of(header.dict());
       builder.readAllFrom(buffer);
       return builder.finish();
     } catch (IOException e) {

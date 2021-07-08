@@ -47,7 +47,7 @@ public final class NpyHeader {
       : dict.byteOrder().toJava();
   }
 
-  public static NpyHeader read(InputStream in)
+  public static NpyHeader readFrom(InputStream in)
     throws IOException, NpyFormatException {
 
     // read the version
@@ -85,7 +85,7 @@ public final class NpyHeader {
     return new NpyHeader(dataOffset, NpyHeaderDict.parse(header));
   }
 
-  static NpyHeader read(ReadableByteChannel channel) throws IOException {
+  static NpyHeader readFrom(ReadableByteChannel channel) throws IOException {
 
     // read the version
     var buffer = ByteBuffer.allocate(8)

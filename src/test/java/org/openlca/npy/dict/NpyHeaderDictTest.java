@@ -68,7 +68,7 @@ public class NpyHeaderDictTest {
       .create()
       .toNpyHeader();
     var stream = new ByteArrayInputStream(bytes);
-    var header = NpyHeader.read(stream);
+    var header = NpyHeader.readFrom(stream);
     var dict = header.dict();
     assertEquals(NpyDataType.i4, dict.dataType());
     assertTrue(dict.hasFortranOrder());
@@ -91,7 +91,7 @@ public class NpyHeaderDictTest {
       .toNpyHeader();
 
     var stream = new ByteArrayInputStream(bytes);
-    var header = NpyHeader.read(stream);
+    var header = NpyHeader.readFrom(stream);
     var dict = header.dict();
     assertEquals(NpyDataType.i4, dict.dataType());
     assertTrue(dict.hasFortranOrder());

@@ -30,7 +30,7 @@ class ChannelReader {
       ? (int) totalBytes
       : MAX_BUFFER_SIZE;
 
-    var builder = NpyArrayReader.allocate(header.dict());
+    var builder = NpyArrayReader.of(header.dict());
 
     var buffer = ByteBuffer.allocate(bufferSize);
     buffer.order(header.byteOrder());
