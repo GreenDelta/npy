@@ -156,16 +156,16 @@ public class Npy {
 
     try {
 
-      // seek to the reading position and read the data
-      long pos = header.dataOffset();
-      if (offset > 0) {
-        pos += (long) elemSize * (long) offset;
-      }
-      file.seek(pos);
-      var channel = file.getChannel();
+      // read the data
       var buffer = ByteBuffer.allocate(n * elemSize)
         .order(dict.byteOrder().toJava());
+      long fileOffset = header.dataOffset();
+      if (offset > 0) {
+        fileOffset += (long) elemSize * (long) offset;
+      }
+      var channel = file.getChannel();
       for (int i = 0; i < n; i++) {
+        file.seek(fileOffset + (long) i * inc * elemSize);
         buffer.limit(buffer.position() + elemSize);
         if (channel.read(buffer) < elemSize) {
           throw new IndexOutOfBoundsException(
