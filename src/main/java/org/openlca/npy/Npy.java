@@ -89,8 +89,10 @@ public class Npy {
         start += (long) elemSize * (long) offset;
       }
       file.seek(start);
-      var buffer = ByteBuffer.allocate(n * elemSize);
+      var buffer = ByteBuffer.allocate(n * elemSize)
+        .order(dict.byteOrder().toJava());
       file.getChannel().read(buffer);
+      buffer.flip();
 
       // build the range array
       var rangeDict = NpyHeaderDict.of(dict.dataType())
