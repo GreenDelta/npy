@@ -45,24 +45,14 @@ public class Npy {
   }
 
   /**
-   * Reads a range of {@code n} array elements from an NPY file.
+   * Opens the given file as a random access file and reads the NPY header. It
+   * the calls the given consumer with the opened file and header and closes
+   * the file when the consumer returns. This is useful when you want to do
+   * multiple operations on an NPY file, e.g. read multiple columns.
    *
-   * @param file   a NPY file
-   * @param offset the position of the first of the range
-   * @param n      the number of elements that should be read from the file
-   * @return an one-dimensional array with {@code n} elements
+   * @param file the NPY file
+   * @param fn   a consumer of the opened random access file and NPY header
    */
-  public static NpyArray<?> readRange(File file, int offset, int n) {
-    try (var raf = new RandomAccessFile(file, "r");
-         var channel = raf.getChannel()) {
-      var header = NpyHeader.read(channel);
-      return readRange(raf, header, offset, n);
-    } catch (IOException e) {
-      throw new RuntimeException("failed to read a range of " + n +
-        " elements from NPY file " + file, e);
-    }
-  }
-
   public static void use(File file, BiConsumer<RandomAccessFile, NpyHeader> fn) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
@@ -73,8 +63,39 @@ public class Npy {
     }
   }
 
+  /**
+   * Reads a range of {@code n} elements from an array in an NPY file. Say you
+   * have an NPY file with an array {@code [1, 2, 3, 4]}, then
+   * {@code readRange(file, 2, 1)} would read {@code 2} elements starting from
+   * an offset of {@code 1} and thus would return {@code [2, 3]}.
+   *
+   * @param file   a NPY file
+   * @param n      the number of elements that should be read from the file
+   * @param offset the 0-based position of the first element of the range
+   * @return an one-dimensional array with {@code n} elements
+   */
+  public static NpyArray<?> readRange(File file, int n, int offset) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.read(channel);
+      return readRange(raf, header, n, offset);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to read a range of " + n +
+                                 " elements from NPY file " + file, e);
+    }
+  }
+
+  /**
+   * Same as {@link #readRange(File, int, int)} but with an opened NPY file.
+   *
+   * @param file   the opened NPY file
+   * @param header the NPY header of the file
+   * @param n      the number of elements that should be read from the file
+   * @param offset the 0-based position of the first element of the range
+   * @return an one-dimensional array with {@code n} elements
+   */
   public static NpyArray<?> readRange(
-    RandomAccessFile file, NpyHeader header, int offset, int n) {
+    RandomAccessFile file, NpyHeader header, int n, int offset) {
 
     var dict = header.dict();
     int elemSize = dict.dataType() == NpyDataType.U
@@ -89,9 +110,13 @@ public class Npy {
         start += (long) elemSize * (long) offset;
       }
       file.seek(start);
-      var buffer = ByteBuffer.allocate(n * elemSize)
+      int byteCount = n * elemSize;
+      var buffer = ByteBuffer.allocate(byteCount)
         .order(dict.byteOrder().toJava());
-      file.getChannel().read(buffer);
+      if (file.getChannel().read(buffer) < byteCount) {
+        throw new IndexOutOfBoundsException(
+          "failed to read " + n + " elements from the file.");
+      }
       buffer.flip();
 
       // build the range array

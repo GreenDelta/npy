@@ -49,7 +49,7 @@ public class NpyTest {
   public void testReadRange() {
     var file = new File(Tests.testDir, "i4_le_c.npy");
     assumeTrue(file.exists());
-    var array = Npy.readRange(file, 1, 4);
+    var array = Npy.readRange(file, 4, 1);
     assertTrue(array.isIntArray());
     var intArray = array.asIntArray();
     assertArrayEquals(new int[]{1, 2, 3, 4}, intArray.data());
