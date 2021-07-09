@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openlca.npy.arrays.Array2D;
+import org.openlca.npy.arrays.Array2d;
 import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.arrays.NpyBooleanArray;
 import org.openlca.npy.arrays.NpyByteArray;
@@ -90,9 +90,9 @@ public class Tests {
 
   private static void checkDoubles(NpyDoubleArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new double[][]{
@@ -101,18 +101,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-3);
+        assertEquals(expected[row][col], Array2d.get(array, row, col), 1e-3);
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-3);
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-3);
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0), 1e-3);
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1), 1e-3);
 
     // check by columns
-    assertArrayEquals(new double[]{0, 3}, Array2D.getColumn(array, 0), 1e-3);
-    assertArrayEquals(new double[]{1, 4}, Array2D.getColumn(array, 1), 1e-3);
-    assertArrayEquals(new double[]{2, 5}, Array2D.getColumn(array, 2), 1e-3);
+    assertArrayEquals(new double[]{0, 3}, Array2d.getColumn(array, 0), 1e-3);
+    assertArrayEquals(new double[]{1, 4}, Array2d.getColumn(array, 1), 1e-3);
+    assertArrayEquals(new double[]{2, 5}, Array2d.getColumn(array, 2), 1e-3);
 
     // check by storage order
     if (array.hasFortranOrder()) {
@@ -124,9 +124,9 @@ public class Tests {
 
   private static void checkFloats(NpyFloatArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new float[][]{
@@ -135,18 +135,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col), 1e-3);
+        assertEquals(expected[row][col], Array2d.get(array, row, col), 1e-3);
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0), 1e-3f);
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1), 1e-3f);
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0), 1e-3f);
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1), 1e-3f);
 
     // check by columns
-    assertArrayEquals(new float[]{0, 3}, Array2D.getColumn(array, 0), 1e-3f);
-    assertArrayEquals(new float[]{1, 4}, Array2D.getColumn(array, 1), 1e-3f);
-    assertArrayEquals(new float[]{2, 5}, Array2D.getColumn(array, 2), 1e-3f);
+    assertArrayEquals(new float[]{0, 3}, Array2d.getColumn(array, 0), 1e-3f);
+    assertArrayEquals(new float[]{1, 4}, Array2d.getColumn(array, 1), 1e-3f);
+    assertArrayEquals(new float[]{2, 5}, Array2d.getColumn(array, 2), 1e-3f);
 
     // check by storage order
     if (array.hasFortranOrder()) {
@@ -158,9 +158,9 @@ public class Tests {
 
   private static void checkBooleans(NpyBooleanArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new boolean[][]{
@@ -169,18 +169,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col));
+        assertEquals(expected[row][col], Array2d.get(array, row, col));
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1));
 
     // check by columns
-    assertArrayEquals(new boolean[]{false, true}, Array2D.getColumn(array, 0));
-    assertArrayEquals(new boolean[]{true, true}, Array2D.getColumn(array, 1));
-    assertArrayEquals(new boolean[]{true, true}, Array2D.getColumn(array, 2));
+    assertArrayEquals(new boolean[]{false, true}, Array2d.getColumn(array, 0));
+    assertArrayEquals(new boolean[]{true, true}, Array2d.getColumn(array, 1));
+    assertArrayEquals(new boolean[]{true, true}, Array2d.getColumn(array, 2));
 
     // check by storage order
     assertArrayEquals(
@@ -189,9 +189,9 @@ public class Tests {
 
   private static void checkBytes(NpyByteArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new byte[][]{
@@ -200,18 +200,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col));
+        assertEquals(expected[row][col], Array2d.get(array, row, col));
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1));
 
     // check by columns
-    assertArrayEquals(new byte[]{0, 3}, Array2D.getColumn(array, 0));
-    assertArrayEquals(new byte[]{1, 4}, Array2D.getColumn(array, 1));
-    assertArrayEquals(new byte[]{2, 5}, Array2D.getColumn(array, 2));
+    assertArrayEquals(new byte[]{0, 3}, Array2d.getColumn(array, 0));
+    assertArrayEquals(new byte[]{1, 4}, Array2d.getColumn(array, 1));
+    assertArrayEquals(new byte[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
     if (array.hasFortranOrder()) {
@@ -223,9 +223,9 @@ public class Tests {
 
   private static void checkInts(NpyIntArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new int[][]{
@@ -234,18 +234,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col));
+        assertEquals(expected[row][col], Array2d.get(array, row, col));
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1));
 
     // check by columns
-    assertArrayEquals(new int[]{0, 3}, Array2D.getColumn(array, 0));
-    assertArrayEquals(new int[]{1, 4}, Array2D.getColumn(array, 1));
-    assertArrayEquals(new int[]{2, 5}, Array2D.getColumn(array, 2));
+    assertArrayEquals(new int[]{0, 3}, Array2d.getColumn(array, 0));
+    assertArrayEquals(new int[]{1, 4}, Array2d.getColumn(array, 1));
+    assertArrayEquals(new int[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
     if (array.hasFortranOrder()) {
@@ -257,9 +257,9 @@ public class Tests {
 
   private static void checkLongs(NpyLongArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new long[][]{
@@ -268,18 +268,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col));
+        assertEquals(expected[row][col], Array2d.get(array, row, col));
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1));
 
     // check by columns
-    assertArrayEquals(new long[]{0, 3}, Array2D.getColumn(array, 0));
-    assertArrayEquals(new long[]{1, 4}, Array2D.getColumn(array, 1));
-    assertArrayEquals(new long[]{2, 5}, Array2D.getColumn(array, 2));
+    assertArrayEquals(new long[]{0, 3}, Array2d.getColumn(array, 0));
+    assertArrayEquals(new long[]{1, 4}, Array2d.getColumn(array, 1));
+    assertArrayEquals(new long[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
     if (array.hasFortranOrder()) {
@@ -291,9 +291,9 @@ public class Tests {
 
   private static void checkShorts(NpyShortArray array) {
 
-    assertTrue(Array2D.isValid(array));
-    assertEquals(2, Array2D.rowCountOf(array));
-    assertEquals(3, Array2D.columnCountOf(array));
+    assertTrue(Array2d.isValid(array));
+    assertEquals(2, Array2d.rowCountOf(array));
+    assertEquals(3, Array2d.columnCountOf(array));
 
     // check each element
     var expected = new short[][]{
@@ -302,18 +302,18 @@ public class Tests {
     };
     for (int row = 0; row < 2; row++) {
       for (int col = 0; col < 3; col++) {
-        assertEquals(expected[row][col], Array2D.get(array, row, col));
+        assertEquals(expected[row][col], Array2d.get(array, row, col));
       }
     }
 
     // check by rows
-    assertArrayEquals(expected[0], Array2D.getRow(array, 0));
-    assertArrayEquals(expected[1], Array2D.getRow(array, 1));
+    assertArrayEquals(expected[0], Array2d.getRow(array, 0));
+    assertArrayEquals(expected[1], Array2d.getRow(array, 1));
 
     // check by columns
-    assertArrayEquals(new short[]{0, 3}, Array2D.getColumn(array, 0));
-    assertArrayEquals(new short[]{1, 4}, Array2D.getColumn(array, 1));
-    assertArrayEquals(new short[]{2, 5}, Array2D.getColumn(array, 2));
+    assertArrayEquals(new short[]{0, 3}, Array2d.getColumn(array, 0));
+    assertArrayEquals(new short[]{1, 4}, Array2d.getColumn(array, 1));
+    assertArrayEquals(new short[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
     if (array.hasFortranOrder()) {

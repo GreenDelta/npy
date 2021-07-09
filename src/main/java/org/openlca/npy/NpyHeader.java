@@ -85,7 +85,7 @@ public final class NpyHeader {
     return new NpyHeader(dataOffset, NpyHeaderDict.parse(header));
   }
 
-  static NpyHeader readFrom(ReadableByteChannel channel) throws IOException {
+  public static NpyHeader readFrom(ReadableByteChannel channel) throws IOException {
 
     // read the version
     var buffer = ByteBuffer.allocate(8)

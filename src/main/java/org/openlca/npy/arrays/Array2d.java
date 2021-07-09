@@ -1,10 +1,16 @@
 package org.openlca.npy.arrays;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Arrays;
 
-public final class Array2D {
+import org.openlca.npy.Npy;
+import org.openlca.npy.NpyHeader;
 
-  private Array2D() {
+public final class Array2d {
+
+  private Array2d() {
   }
 
   /**
@@ -305,4 +311,45 @@ public final class Array2D {
     return values;
   }
 
+  public static NpyArray<?> readRow(File file, int row) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.readFrom(channel);
+      return readRow(raf, header, row);
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read a row " + row + " from NPY file " + file, e);
+    }
+  }
+
+  public static NpyArray<?> readRow(
+    RandomAccessFile file, NpyHeader header, int row) {
+    var dict = header.dict();
+    int rows = dict.sizeOfDimension(0);
+    int columns = dict.sizeOfDimension(1);
+    return dict.hasFortranOrder()
+      ? Npy.readElements(file, header, columns, row, rows)
+      : Npy.readRange(file, header, columns, row * columns);
+  }
+
+  public static NpyArray<?> readColumn(File file, int column) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.readFrom(channel);
+      return readColumn(raf, header, column);
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read a column " + column + " from NPY file " + file, e);
+    }
+  }
+
+  public static NpyArray<?> readColumn(
+    RandomAccessFile file, NpyHeader header, int column) {
+    var dict = header.dict();
+    int rows = dict.sizeOfDimension(0);
+    int columns = dict.sizeOfDimension(1);
+    return dict.hasFortranOrder()
+      ? Npy.readRange(file, header, rows, column * rows)
+      : Npy.readElements(file, header, rows, column, columns);
+  }
 }
