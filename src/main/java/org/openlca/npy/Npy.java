@@ -28,7 +28,7 @@ public class Npy {
   public static NpyArray<?> read(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return ChannelReader.read(channel, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to read file: " + file, e);
@@ -37,7 +37,7 @@ public class Npy {
 
   public static NpyArray<?> read(ReadableByteChannel channel) {
     try {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return ChannelReader.read(channel, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to read NPY array from channel", e);
@@ -46,9 +46,9 @@ public class Npy {
 
   /**
    * Opens the given file as a random access file and reads the NPY header. It
-   * the calls the given consumer with the opened file and header and closes
-   * the file when the consumer returns. This is useful when you want to do
-   * multiple operations on an NPY file, e.g. read multiple columns.
+   * calls the given consumer with the opened file and header and closes the
+   * file when the consumer returns. This is useful when you want to do multiple
+   * operations on an NPY file, e.g. read multiple columns.
    *
    * @param file the NPY file
    * @param fn   a consumer of the opened random access file and NPY header
@@ -56,7 +56,7 @@ public class Npy {
   public static void use(File file, BiConsumer<RandomAccessFile, NpyHeader> fn) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       fn.accept(raf, header);
     } catch (IOException e) {
       throw new RuntimeException("failed to use NPY file: " + file, e);
@@ -77,7 +77,7 @@ public class Npy {
   public static NpyArray<?> readRange(File file, int n, int offset) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return readRange(raf, header, n, offset);
     } catch (IOException e) {
       throw new RuntimeException(
@@ -135,7 +135,7 @@ public class Npy {
   public static NpyArray<?> readElements(File file, int n, int offset, int inc) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return readElements(raf, header, n, offset, inc);
     } catch (IOException e) {
       throw new RuntimeException(
@@ -265,7 +265,7 @@ public class Npy {
   public static NpyArray<?> memmap(File file) {
     try (var f = new RandomAccessFile(file, "r");
          var channel = f.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       long dataSize = header.dict().dataSize();
 
       // only a buffer of size < Integer.MAX_VALUE can be mapped

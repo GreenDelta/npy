@@ -314,7 +314,7 @@ public final class Array2d {
   public static NpyArray<?> readRow(File file, int row) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return readRow(raf, header, row);
     } catch (IOException e) {
       throw new RuntimeException(
@@ -335,7 +335,7 @@ public final class Array2d {
   public static NpyArray<?> readColumn(File file, int column) {
     try (var raf = new RandomAccessFile(file, "r");
          var channel = raf.getChannel()) {
-      var header = NpyHeader.readFrom(channel);
+      var header = NpyHeader.read(channel);
       return readColumn(raf, header, column);
     } catch (IOException e) {
       throw new RuntimeException(

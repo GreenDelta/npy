@@ -13,7 +13,7 @@ public class NpyHeaderTest {
   public void testReadFromStream() {
     Tests.eachNpy(testNpy -> {
       try (var stream = new FileInputStream(testNpy.file())) {
-        var header = NpyHeader.readFrom(stream);
+        var header = NpyHeader.read(stream);
         checkHeader(testNpy, header);
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -26,7 +26,7 @@ public class NpyHeaderTest {
     Tests.eachNpy(testNpy -> {
       try (var file = new RandomAccessFile(testNpy.file(), "r");
            var channel = file.getChannel()) {
-        var header = NpyHeader.readFrom(channel);
+        var header = NpyHeader.read(channel);
         checkHeader(testNpy, header);
       } catch (Exception e) {
         throw new RuntimeException(e);
