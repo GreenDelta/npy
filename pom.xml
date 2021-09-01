@@ -14,7 +14,7 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A library for reading and writing NPY and NPZ files</description>
-  <url>https://github.com/msrocka/npy</url>
+  <url>https://github.com/GreenDelta/npy</url>
 
   <licenses>
     <license>
@@ -40,15 +40,14 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/msrocka/npy.git</connection>
-    <developerConnection>scm:git:git://github.com/msrocka/npy.git
-    </developerConnection>
-    <url>https://github.com/msrocka/npy</url>
+    <connection>scm:git:git://github.com/GreenDelta/npy.git</connection>
+    <developerConnection>scm:git:git://github.com/GreenDelta/npy.git</developerConnection>
+    <url>https://github.com/GreenDelta/npy</url>
   </scm>
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/msrocka/npy/issues</url>
+    <url>https://github.com/GreenDelta/npy/issues</url>
   </issueManagement>
 
   <distributionManagement>
