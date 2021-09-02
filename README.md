@@ -24,7 +24,30 @@ __Alternatives__
   [npy from JetBrains-Research](https://github.com/JetBrains-Research/npy)
 * Scala? maybe [this](https://github.com/priimak/scala-data)
 
-__Examples__
+
+## Installation
+The latest version is available on the 
+[Maven Central](https://search.maven.org/artifact/org.openlca/npy). If you are
+using Maven add the following dependency to your `pom.xml`:
+
+```xml
+<dependency>
+  <groupId>org.openlca</groupId>
+  <artifactId>npy</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
+For Gradle, add this to your `build.gradle`:
+
+```groovy
+dependencies {
+  compile 'org.openlca:npy:0.0.1'
+}
+```
+
+
+## Examples
 
 Reading and writing an NPY file:
 
