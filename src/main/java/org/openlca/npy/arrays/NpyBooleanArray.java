@@ -11,6 +11,10 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyBooleanArray vectorOf(boolean[] data) {
+    return new NpyBooleanArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.bool;

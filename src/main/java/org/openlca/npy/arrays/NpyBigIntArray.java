@@ -11,6 +11,10 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyBigIntArray vectorOf(BigInteger[] data) {
+    return new NpyBigIntArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.u8;

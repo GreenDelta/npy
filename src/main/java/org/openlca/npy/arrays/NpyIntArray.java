@@ -11,6 +11,10 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyIntArray vectorOf(int[] data) {
+    return new NpyIntArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i4;

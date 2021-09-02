@@ -10,6 +10,10 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyDoubleArray vectorOf(double[] data) {
+    return new NpyDoubleArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.f8;

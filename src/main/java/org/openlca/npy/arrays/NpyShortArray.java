@@ -10,6 +10,10 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyShortArray vectorOf(short[] data) {
+    return new NpyShortArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i2;

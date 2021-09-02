@@ -10,6 +10,10 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyLongArray vectorOf(long[] data) {
+    return new NpyLongArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i8;

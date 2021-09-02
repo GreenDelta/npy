@@ -10,6 +10,10 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyFloatArray vectorOf(float[] data) {
+    return new NpyFloatArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.f4;

@@ -10,6 +10,10 @@ public final class NpyByteArray extends AbstractNpyArray<byte[]> {
     super(shape, data, fortranOrder);
   }
 
+  public static NpyByteArray vectorOf(byte[] data) {
+    return new NpyByteArray(new int[] {data.length}, data, false);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i1;
