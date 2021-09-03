@@ -221,7 +221,7 @@ public class Npy {
       var dataType = array.dataType();
       var dict = NpyHeaderDict.of(dataType)
         .withShape(array.shape())
-        .withFortranOrder(array.hasFortranOrder())
+        .withFortranOrder(array.hasColumnOrder())
         .withByteOrder(NpyByteOrder.LITTLE_ENDIAN)
         .create();
       channel.write(ByteBuffer.wrap(dict.toNpyHeader()));

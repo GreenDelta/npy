@@ -11,13 +11,17 @@ public interface NpyArray<T> {
   int[] shape();
 
   /**
-   * Returns if this array is stored in Fortran order (column-major order). If
-   * false is returned it is stored in C order (row-major order).
-   *
-   * @return {@code true} if the array is stored in Fortran order; {@code false}
-   * otherwise
+   * Returns {@code true} when this array is stored in column-major order
+   * (Fortran order).
    */
-  boolean hasFortranOrder();
+  boolean hasColumnOrder();
+
+  /**
+   * Returns {@code true} when this array is stored in row-major order (C order).
+   */
+  default boolean hasRowOrder() {
+    return !hasColumnOrder();
+  }
 
   NpyDataType dataType();
 

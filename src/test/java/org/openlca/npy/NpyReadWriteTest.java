@@ -33,7 +33,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isBigIntegerArray());
-    assertTrue(copy.hasFortranOrder());
+    assertTrue(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), ((NpyBigIntArray) copy).data());
     Files.delete(tempFile.toPath());
@@ -49,7 +49,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isBooleanArray());
-    assertTrue(copy.hasFortranOrder());
+    assertTrue(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asBooleanArray().data());
     Files.delete(tempFile.toPath());
@@ -65,7 +65,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isByteArray());
-    assertFalse(copy.hasFortranOrder());
+    assertFalse(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asByteArray().data());
     Files.delete(tempFile.toPath());
@@ -81,7 +81,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isDoubleArray());
-    assertTrue(copy.hasFortranOrder());
+    assertTrue(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asDoubleArray().data(), 1e-16);
     Files.delete(tempFile.toPath());
@@ -97,7 +97,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isFloatArray());
-    assertFalse(copy.hasFortranOrder());
+    assertFalse(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asFloatArray().data(), 1e-16f);
     Files.delete(tempFile.toPath());
@@ -113,7 +113,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isIntArray());
-    assertTrue(copy.hasFortranOrder());
+    assertTrue(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asIntArray().data());
     Files.delete(tempFile.toPath());
@@ -129,7 +129,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isLongArray());
-    assertFalse(copy.hasFortranOrder());
+    assertFalse(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asLongArray().data());
     Files.delete(tempFile.toPath());
@@ -145,7 +145,7 @@ public class NpyReadWriteTest {
     Npy.write(tempFile, array);
     var copy = Npy.read(tempFile);
     assertTrue(copy.isShortArray());
-    assertTrue(copy.hasFortranOrder());
+    assertTrue(copy.hasColumnOrder());
     assertArrayEquals(array.shape(), copy.shape());
     assertArrayEquals(array.data(), copy.asShortArray().data());
     Files.delete(tempFile.toPath());

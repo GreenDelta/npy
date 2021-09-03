@@ -115,7 +115,7 @@ public class Tests {
     assertArrayEquals(new double[]{2, 5}, Array2d.getColumn(array, 2), 1e-3);
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new double[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-3);
     } else {
       assertArrayEquals(new double[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-3);
@@ -149,7 +149,7 @@ public class Tests {
     assertArrayEquals(new float[]{2, 5}, Array2d.getColumn(array, 2), 1e-3f);
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new float[]{0, 3, 1, 4, 2, 5}, array.data(), 1e-3f);
     } else {
       assertArrayEquals(new float[]{0, 1, 2, 3, 4, 5}, array.data(), 1e-3f);
@@ -214,7 +214,7 @@ public class Tests {
     assertArrayEquals(new byte[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new byte[]{0, 3, 1, 4, 2, 5}, array.data());
     } else {
       assertArrayEquals(new byte[]{0, 1, 2, 3, 4, 5}, array.data());
@@ -248,7 +248,7 @@ public class Tests {
     assertArrayEquals(new int[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new int[]{0, 3, 1, 4, 2, 5}, array.data());
     } else {
       assertArrayEquals(new int[]{0, 1, 2, 3, 4, 5}, array.data());
@@ -282,7 +282,7 @@ public class Tests {
     assertArrayEquals(new long[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new long[]{0, 3, 1, 4, 2, 5}, array.data());
     } else {
       assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5}, array.data());
@@ -316,7 +316,7 @@ public class Tests {
     assertArrayEquals(new short[]{2, 5}, Array2d.getColumn(array, 2));
 
     // check by storage order
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       assertArrayEquals(new short[]{0, 3, 1, 4, 2, 5}, array.data());
     } else {
       assertArrayEquals(new short[]{0, 1, 2, 3, 4, 5}, array.data());

@@ -43,7 +43,7 @@ public final class Array2d {
   }
 
   public static int indexOf(NpyArray<?> array, int row, int col) {
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int rows = array.shape()[0];
       return col * rows + row;
     } else {
@@ -59,7 +59,7 @@ public final class Array2d {
 
   public static boolean[] getRow(NpyBooleanArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -75,7 +75,7 @@ public final class Array2d {
 
   public static boolean[] getColumn(NpyBooleanArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -96,7 +96,7 @@ public final class Array2d {
 
   public static byte[] getRow(NpyByteArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -112,7 +112,7 @@ public final class Array2d {
 
   public static byte[] getColumn(NpyByteArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -133,7 +133,7 @@ public final class Array2d {
 
   public static double[] getRow(NpyDoubleArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -149,7 +149,7 @@ public final class Array2d {
 
   public static double[] getColumn(NpyDoubleArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -170,7 +170,7 @@ public final class Array2d {
 
   public static float[] getRow(NpyFloatArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -186,7 +186,7 @@ public final class Array2d {
 
   public static float[] getColumn(NpyFloatArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -207,7 +207,7 @@ public final class Array2d {
 
   public static int[] getRow(NpyIntArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -223,7 +223,7 @@ public final class Array2d {
 
   public static int[] getColumn(NpyIntArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -244,7 +244,7 @@ public final class Array2d {
 
   public static long[] getRow(NpyLongArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -260,7 +260,7 @@ public final class Array2d {
 
   public static long[] getColumn(NpyLongArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }
@@ -281,7 +281,7 @@ public final class Array2d {
 
   public static short[] getRow(NpyShortArray array, int row) {
     int cols = array.shape[1];
-    if (!array.hasFortranOrder()) {
+    if (!array.hasColumnOrder()) {
       int offset = row * cols;
       return Arrays.copyOfRange(array.data, offset, offset + cols);
     }
@@ -297,7 +297,7 @@ public final class Array2d {
 
   public static short[] getColumn(NpyShortArray array, int col) {
     int rows = array.shape[0];
-    if (array.hasFortranOrder()) {
+    if (array.hasColumnOrder()) {
       int offset = col * rows;
       return Arrays.copyOfRange(array.data, offset, offset + rows);
     }

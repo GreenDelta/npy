@@ -21,7 +21,7 @@ abstract class AbstractNpyArray<T> implements NpyArray<T> {
   }
 
   @Override
-  public final boolean hasFortranOrder() {
+  public final boolean hasColumnOrder() {
     return fortranOrder;
   }
 

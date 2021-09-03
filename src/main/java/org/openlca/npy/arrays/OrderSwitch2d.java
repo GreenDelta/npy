@@ -16,39 +16,44 @@ class OrderSwitch2d<T extends NpyArray<?>> {
     return new OrderSwitch2d<T>(array).apply();
   }
 
+  @SuppressWarnings("unchecked")
   private T apply() {
     if (array.isDoubleArray()) {
-      var a = array.asDoubleArray();
-      var data = a.data;
-      var swapped = new double[data.length];
-      iter((row, col, idx) -> {
-        var value = data[idx];
-        if (value == 0)
-          return;
-        var idxSwapped = a.hasFortranOrder()
-          ? row * cols + col
-          : col * rows + row;
-        swapped[idxSwapped] = value;
-      });
-
+      return (T) switchDoubles(array.asDoubleArray());
     }
     return null;
   }
 
+  private NpyDoubleArray switchDoubles(NpyDoubleArray a) {
+    var data = a.data;
+    var newData = new double[data.length];
+    iter((pos, newPos) -> {
+      var value = data[pos];
+      if (value == 0)
+        return;
+      newData[newPos] = value;
+    });
+    return a.hasColumnOrder()
+      ? NpyDoubleArray.rowOrderOf(newData, rows, cols)
+      : NpyDoubleArray.columnOrderOf(newData, rows, cols);
+  }
+
   private void iter(IndexFn fn) {
-    int i = 0;
-    if (array.hasFortranOrder()) {
+    int pos = 0;
+    if (array.hasColumnOrder()) {
       for (int col = 0; col < cols; col++) {
         for (int row = 0; row < rows; row++) {
-          fn.accept(row, col, i);
-          i++;
+          int newPos = row * cols + col;
+          fn.accept(pos, newPos);
+          pos++;
         }
       }
     } else {
       for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++) {
-          fn.accept(row, col, i);
-          i++;
+          int newPos = col * rows + row;
+          fn.accept(pos, newPos);
+          pos++;
         }
       }
     }
@@ -56,7 +61,7 @@ class OrderSwitch2d<T extends NpyArray<?>> {
 
   @FunctionalInterface
   interface IndexFn {
-    void accept(int row, int col, int pos);
+    void accept(int pos, int newPos);
   }
 
 }
