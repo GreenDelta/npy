@@ -15,6 +15,31 @@ public final class NpyIntArray extends AbstractNpyArray<int[]> {
     return new NpyIntArray(new int[] {data.length}, data, false);
   }
 
+  /**
+   * Wraps the given data in a 2-dimensional array in row-major order (C order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyIntArray rowOrderOf(int[] data, int rows, int cols) {
+    return new NpyIntArray(new int[]{rows, cols}, data, false);
+  }
+
+  /**
+   * Wraps the given data in a 2-dimensional array in column-major order (
+   * Fortran order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyIntArray columnOrderOf(int[] data, int rows, int cols) {
+    return new NpyIntArray(new int[]{rows, cols}, data, true);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i4;

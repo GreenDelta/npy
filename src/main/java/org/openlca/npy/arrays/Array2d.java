@@ -352,4 +352,8 @@ public final class Array2d {
       ? Npy.readRange(file, header, rows, column * rows)
       : Npy.readElements(file, header, rows, column, columns);
   }
+
+  public static <T extends NpyArray<?>> T switchOrder(T array) {
+    return OrderSwitch2d.of(array);
+  }
 }

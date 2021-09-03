@@ -11,7 +11,32 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   }
 
   public static NpyDoubleArray vectorOf(double[] data) {
-    return new NpyDoubleArray(new int[] {data.length}, data, false);
+    return new NpyDoubleArray(new int[]{data.length}, data, false);
+  }
+
+  /**
+   * Wraps the given data in a 2-dimensional array in row-major order (C order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyDoubleArray rowOrderOf(double[] data, int rows, int cols) {
+    return new NpyDoubleArray(new int[]{rows, cols}, data, false);
+  }
+
+  /**
+   * Wraps the given data in a 2-dimensional array in column-major order (
+   * Fortran order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyDoubleArray columnOrderOf(double[] data, int rows, int cols) {
+    return new NpyDoubleArray(new int[]{rows, cols}, data, true);
   }
 
   @Override

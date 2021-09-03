@@ -14,6 +14,31 @@ public final class NpyByteArray extends AbstractNpyArray<byte[]> {
     return new NpyByteArray(new int[] {data.length}, data, false);
   }
 
+  /**
+   * Wraps the given data in a 2-dimensional array in row-major order (C order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyByteArray rowOrderOf(byte[] data, int rows, int cols) {
+    return new NpyByteArray(new int[]{rows, cols}, data, false);
+  }
+
+  /**
+   * Wraps the given data in a 2-dimensional array in column-major order (
+   * Fortran order).
+   *
+   * @param data the data of the array
+   * @param rows the number of rows of the array
+   * @param cols the number of columns of the array
+   * @return a 2d array of the given shape
+   */
+  public static NpyByteArray columnOrderOf(byte[] data, int rows, int cols) {
+    return new NpyByteArray(new int[]{rows, cols}, data, true);
+  }
+
   @Override
   public NpyDataType dataType() {
     return NpyDataType.i1;
