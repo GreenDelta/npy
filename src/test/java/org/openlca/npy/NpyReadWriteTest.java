@@ -6,14 +6,6 @@ import java.nio.file.Files;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.openlca.npy.arrays.NpyBigIntArray;
-import org.openlca.npy.arrays.NpyBooleanArray;
-import org.openlca.npy.arrays.NpyByteArray;
-import org.openlca.npy.arrays.NpyDoubleArray;
-import org.openlca.npy.arrays.NpyFloatArray;
-import org.openlca.npy.arrays.NpyIntArray;
-import org.openlca.npy.arrays.NpyLongArray;
-import org.openlca.npy.arrays.NpyShortArray;
 
 public class NpyReadWriteTest {
 

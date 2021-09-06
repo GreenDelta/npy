@@ -12,7 +12,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 
-import org.openlca.npy.arrays.NpyArray;
 import org.openlca.npy.dict.NpyHeaderDict;
 
 public class Npy {

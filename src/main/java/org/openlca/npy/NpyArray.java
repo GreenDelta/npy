@@ -1,8 +1,6 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
-
-import org.openlca.npy.NpyDataType;
 
 public interface NpyArray<T> {
 

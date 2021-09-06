@@ -6,16 +6,6 @@ import java.nio.CharBuffer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
-import org.openlca.npy.arrays.NpyArray;
-import org.openlca.npy.arrays.NpyBigIntArray;
-import org.openlca.npy.arrays.NpyBooleanArray;
-import org.openlca.npy.arrays.NpyByteArray;
-import org.openlca.npy.arrays.NpyCharArray;
-import org.openlca.npy.arrays.NpyDoubleArray;
-import org.openlca.npy.arrays.NpyFloatArray;
-import org.openlca.npy.arrays.NpyIntArray;
-import org.openlca.npy.arrays.NpyLongArray;
-import org.openlca.npy.arrays.NpyShortArray;
 import org.openlca.npy.dict.NpyHeaderDict;
 
 abstract class NpyArrayReader {

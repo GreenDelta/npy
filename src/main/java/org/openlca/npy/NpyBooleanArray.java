@@ -1,17 +1,16 @@
-package org.openlca.npy.arrays;
+
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
 
-public final class NpyShortArray extends AbstractNpyArray<short[]> {
-
-  public NpyShortArray(int[] shape, short[] data, boolean fortranOrder) {
+  public NpyBooleanArray(int[] shape, boolean[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyShortArray vectorOf(short[] data) {
-    return new NpyShortArray(new int[] {data.length}, data, false);
+  public static NpyBooleanArray vectorOf(boolean[] data) {
+    return new NpyBooleanArray(new int[] {data.length}, data, false);
   }
 
   /**
@@ -22,8 +21,8 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyShortArray rowOrderOf(short[] data, int rows, int cols) {
-    return new NpyShortArray(new int[]{rows, cols}, data, false);
+  public static NpyBooleanArray rowOrderOf(boolean[] data, int rows, int cols) {
+    return new NpyBooleanArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -35,13 +34,13 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyShortArray columnOrderOf(short[] data, int rows, int cols) {
-    return new NpyShortArray(new int[]{rows, cols}, data, true);
+  public static NpyBooleanArray columnOrderOf(boolean[] data, int rows, int cols) {
+    return new NpyBooleanArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.i2;
+    return NpyDataType.bool;
   }
 
   @Override
@@ -51,33 +50,27 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    buffer.putShort(data[i]);
+    byte b = data[i] ? (byte) 1 : (byte) 0;
+    buffer.put(b);
   }
 
   @Override
-  public boolean isShortArray() {
+  public boolean isBooleanArray() {
     return true;
   }
 
   @Override
-  public NpyShortArray asShortArray() {
-    return this;
-  }
-
-  @Override
   public NpyBooleanArray asBooleanArray() {
-    var booleans = new boolean[data.length];
-    for (int i = 0; i < data.length; i++) {
-      booleans[i] = i != 0;
-    }
-    return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
+    return this;
   }
 
   @Override
   public NpyByteArray asByteArray() {
     var bytes = new byte[data.length];
     for (int i = 0; i < data.length; i++) {
-      bytes[i] = (byte) data[i];
+      if (data[i]) {
+        bytes[i] = 1;
+      }
     }
     return new NpyByteArray(copyShape(), bytes, fortranOrder);
   }
@@ -86,7 +79,9 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      doubles[i] = data[i];
+      if (data[i]) {
+        doubles[i] = 1d;
+      }
     }
     return new NpyDoubleArray(copyShape(), doubles, fortranOrder);
   }
@@ -95,7 +90,9 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   public NpyFloatArray asFloatArray() {
     var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      floats[i] = data[i];
+      if (data[i]) {
+        floats[i] = 1f;
+      }
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
@@ -104,7 +101,9 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      ints[i] = data[i];
+      if (data[i]) {
+        ints[i] = 1;
+      }
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
@@ -113,9 +112,22 @@ public final class NpyShortArray extends AbstractNpyArray<short[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      longs[i] = data[i];
+      if (data[i]) {
+        longs[i] = 1L;
+      }
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
+  }
+
+  @Override
+  public NpyShortArray asShortArray() {
+    var shorts = new short[data.length];
+    for (int i = 0; i < data.length; i++) {
+      if (data[i]) {
+        shorts[i] = 1;
+      }
+    }
+    return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }
 }
   

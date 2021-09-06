@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.function.Supplier;
 
 import org.openlca.npy.Npy;
-import org.openlca.npy.arrays.NpyArray;
+import org.openlca.npy.NpyArray;
 
 public class MemmapExample {
 

@@ -1,12 +1,9 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-
-import org.openlca.npy.Npy;
-import org.openlca.npy.NpyHeader;
 
 public final class Array2d {
 

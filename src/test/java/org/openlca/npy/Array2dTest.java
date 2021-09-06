@@ -1,9 +1,8 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.openlca.npy.Tests;
 
 public class Array2dTest {
 

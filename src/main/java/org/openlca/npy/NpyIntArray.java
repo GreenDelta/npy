@@ -1,17 +1,16 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyIntArray extends AbstractNpyArray<int[]> {
 
-public final class NpyFloatArray extends AbstractNpyArray<float[]> {
-
-  public NpyFloatArray(int[] shape, float[] data, boolean fortranOrder) {
+  public NpyIntArray(int[] shape, int[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyFloatArray vectorOf(float[] data) {
-    return new NpyFloatArray(new int[] {data.length}, data, false);
+  public static NpyIntArray vectorOf(int[] data) {
+    return new NpyIntArray(new int[] {data.length}, data, false);
   }
 
   /**
@@ -22,8 +21,8 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyFloatArray rowOrderOf(float[] data, int rows, int cols) {
-    return new NpyFloatArray(new int[]{rows, cols}, data, false);
+  public static NpyIntArray rowOrderOf(int[] data, int rows, int cols) {
+    return new NpyIntArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -35,13 +34,13 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyFloatArray columnOrderOf(float[] data, int rows, int cols) {
-    return new NpyFloatArray(new int[]{rows, cols}, data, true);
+  public static NpyIntArray columnOrderOf(int[] data, int rows, int cols) {
+    return new NpyIntArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.f4;
+    return NpyDataType.i4;
   }
 
   @Override
@@ -51,19 +50,24 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    buffer.putFloat(data[i]);
+    buffer.putInt(data[i]);
   }
 
   @Override
-  public boolean isFloatArray() {
+  public boolean isIntArray() {
     return true;
+  }
+
+  @Override
+  public NpyIntArray asIntArray() {
+    return this;
   }
 
   @Override
   public NpyBooleanArray asBooleanArray() {
     var booleans = new boolean[data.length];
     for (int i = 0; i < data.length; i++) {
-      booleans[i] = i != 0;
+      booleans[i] = data[i] != 0;
     }
     return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }
@@ -78,6 +82,47 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
   }
 
   @Override
+  public NpyCharArray asCharArray() {
+    var bufferSize = Math.max(data.length, 10);
+    var buffer = CharBuffer.allocate(bufferSize);
+    for (int i : data) {
+      var next = Character.toChars(i);
+
+      // because a code point can result in multiple
+      // characters, we may need to allocate a larger
+      // buffer here
+      if (buffer.remaining() < next.length) {
+        bufferSize = Math.max(
+          bufferSize + next.length,
+          bufferSize + (bufferSize >> 1));
+        if (bufferSize < 0)
+          throw new OutOfMemoryError();
+        var chars = new char[bufferSize];
+        buffer.flip();
+        int nextPos = buffer.limit();
+        buffer.get(chars, 0, nextPos);
+        buffer = CharBuffer.wrap(chars);
+        buffer.position(nextPos);
+      }
+
+      for (char c : next) {
+        buffer.put(c);
+      }
+    }
+
+    char[] chars;
+    if (buffer.remaining() == 0) {
+      chars = buffer.array();
+    } else {
+      buffer.flip();
+      chars = new char[buffer.limit()];
+      buffer.get(chars, 0, buffer.limit());
+    }
+
+    return new NpyCharArray(copyShape(), chars, fortranOrder);
+  }
+
+  @Override
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
@@ -88,23 +133,18 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
 
   @Override
   public NpyFloatArray asFloatArray() {
-    return this;
-  }
-
-  @Override
-  public NpyIntArray asIntArray() {
-    var ints = new int[data.length];
+    var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      ints[i] = (int) data[i];
+      floats[i] = (float) data[i];
     }
-    return new NpyIntArray(copyShape(), ints, fortranOrder);
+    return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
 
   @Override
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      longs[i] = (long) data[i];
+      longs[i] = data[i];
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
@@ -117,4 +157,6 @@ public final class NpyFloatArray extends AbstractNpyArray<float[]> {
     }
     return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }
+
 }
+  

@@ -1,17 +1,15 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyByteArray extends AbstractNpyArray<byte[]> {
 
-public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
-
-  public NpyDoubleArray(int[] shape, double[] data, boolean fortranOrder) {
+  public NpyByteArray(int[] shape, byte[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyDoubleArray vectorOf(double[] data) {
-    return new NpyDoubleArray(new int[]{data.length}, data, false);
+  public static NpyByteArray vectorOf(byte[] data) {
+    return new NpyByteArray(new int[] {data.length}, data, false);
   }
 
   /**
@@ -22,8 +20,8 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyDoubleArray rowOrderOf(double[] data, int rows, int cols) {
-    return new NpyDoubleArray(new int[]{rows, cols}, data, false);
+  public static NpyByteArray rowOrderOf(byte[] data, int rows, int cols) {
+    return new NpyByteArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -35,13 +33,13 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyDoubleArray columnOrderOf(double[] data, int rows, int cols) {
-    return new NpyDoubleArray(new int[]{rows, cols}, data, true);
+  public static NpyByteArray columnOrderOf(byte[] data, int rows, int cols) {
+    return new NpyByteArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.f8;
+    return NpyDataType.i1;
   }
 
   @Override
@@ -51,16 +49,16 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    buffer.putDouble(data[i]);
+    buffer.put(data[i]);
   }
 
   @Override
-  public boolean isDoubleArray() {
+  public boolean isByteArray() {
     return true;
   }
 
   @Override
-  public NpyDoubleArray asDoubleArray() {
+  public NpyByteArray asByteArray() {
     return this;
   }
 
@@ -68,25 +66,25 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   public NpyBooleanArray asBooleanArray() {
     var booleans = new boolean[data.length];
     for (int i = 0; i < data.length; i++) {
-      booleans[i] = data[i] != 0;
+      booleans[i] = i != 0;
     }
     return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }
 
   @Override
-  public NpyByteArray asByteArray() {
-    var bytes = new byte[data.length];
+  public NpyDoubleArray asDoubleArray() {
+    var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      bytes[i] = (byte) data[i];
+      doubles[i] = data[i];
     }
-    return new NpyByteArray(copyShape(), bytes, fortranOrder);
+    return new NpyDoubleArray(copyShape(), doubles, fortranOrder);
   }
 
   @Override
   public NpyFloatArray asFloatArray() {
     var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      floats[i] = (float) data[i];
+      floats[i] = data[i];
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
@@ -95,7 +93,7 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      ints[i] = (int) data[i];
+      ints[i] = data[i];
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
@@ -104,7 +102,7 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      longs[i] = (long) data[i];
+      longs[i] = data[i];
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
@@ -113,8 +111,9 @@ public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
   public NpyShortArray asShortArray() {
     var shorts = new short[data.length];
     for (int i = 0; i < data.length; i++) {
-      shorts[i] = (short) data[i];
+      shorts[i] = data[i];
     }
     return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }
 }
+  

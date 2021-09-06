@@ -1,18 +1,15 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyFloatArray extends AbstractNpyArray<float[]> {
 
-public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
-
-  public NpyBigIntArray(int[] shape, BigInteger[] data, boolean fortranOrder) {
+  public NpyFloatArray(int[] shape, float[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyBigIntArray vectorOf(BigInteger[] data) {
-    return new NpyBigIntArray(new int[] {data.length}, data, false);
+  public static NpyFloatArray vectorOf(float[] data) {
+    return new NpyFloatArray(new int[] {data.length}, data, false);
   }
 
   /**
@@ -23,8 +20,8 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyBigIntArray rowOrderOf(BigInteger[] data, int rows, int cols) {
-    return new NpyBigIntArray(new int[]{rows, cols}, data, false);
+  public static NpyFloatArray rowOrderOf(float[] data, int rows, int cols) {
+    return new NpyFloatArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -36,13 +33,13 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyBigIntArray columnOrderOf(BigInteger[] data, int rows, int cols) {
-    return new NpyBigIntArray(new int[]{rows, cols}, data, true);
+  public static NpyFloatArray columnOrderOf(float[] data, int rows, int cols) {
+    return new NpyFloatArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.u8;
+    return NpyDataType.f4;
   }
 
   @Override
@@ -52,16 +49,11 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    var value = data[i];
-    if (value == null) {
-      buffer.putLong(0);
-    } else {
-      buffer.putLong(value.longValueExact());
-    }
+    buffer.putFloat(data[i]);
   }
 
   @Override
-  public boolean isBigIntegerArray() {
+  public boolean isFloatArray() {
     return true;
   }
 
@@ -69,10 +61,7 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   public NpyBooleanArray asBooleanArray() {
     var booleans = new boolean[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        booleans[i] = val.longValueExact() != 0;
-      }
+      booleans[i] = i != 0;
     }
     return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }
@@ -81,10 +70,7 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   public NpyByteArray asByteArray() {
     var bytes = new byte[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        bytes[i] = (byte) val.intValueExact();
-      }
+      bytes[i] = (byte) data[i];
     }
     return new NpyByteArray(copyShape(), bytes, fortranOrder);
   }
@@ -93,34 +79,21 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   public NpyDoubleArray asDoubleArray() {
     var doubles = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        doubles[i] = val.doubleValue();
-      }
+      doubles[i] = data[i];
     }
     return new NpyDoubleArray(copyShape(), doubles, fortranOrder);
   }
 
   @Override
   public NpyFloatArray asFloatArray() {
-    var floats = new float[data.length];
-    for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        floats[i] = (float) val.doubleValue();
-      }
-    }
-    return new NpyFloatArray(copyShape(), floats, fortranOrder);
+    return this;
   }
 
   @Override
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        ints[i] = val.intValueExact();
-      }
+      ints[i] = (int) data[i];
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
@@ -129,10 +102,7 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        longs[i] = val.longValueExact();
-      }
+      longs[i] = (long) data[i];
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
@@ -141,10 +111,7 @@ public final class NpyBigIntArray extends AbstractNpyArray<BigInteger[]> {
   public NpyShortArray asShortArray() {
     var shorts = new short[data.length];
     for (int i = 0; i < data.length; i++) {
-      var val = data[i];
-      if (val != null) {
-        shorts[i] = (short) val.intValueExact();
-      }
+      shorts[i] = (short) data[i];
     }
     return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }

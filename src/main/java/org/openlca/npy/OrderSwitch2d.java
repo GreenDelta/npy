@@ -1,4 +1,4 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.math.BigInteger;
 

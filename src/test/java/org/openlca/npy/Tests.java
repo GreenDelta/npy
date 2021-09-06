@@ -5,16 +5,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openlca.npy.arrays.Array2d;
-import org.openlca.npy.arrays.NpyArray;
-import org.openlca.npy.arrays.NpyBooleanArray;
-import org.openlca.npy.arrays.NpyByteArray;
-import org.openlca.npy.arrays.NpyDoubleArray;
-import org.openlca.npy.arrays.NpyFloatArray;
-import org.openlca.npy.arrays.NpyIntArray;
-import org.openlca.npy.arrays.NpyLongArray;
-import org.openlca.npy.arrays.NpyShortArray;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

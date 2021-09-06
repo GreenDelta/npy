@@ -1,18 +1,15 @@
-
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyDoubleArray extends AbstractNpyArray<double[]> {
 
-public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
-
-  public NpyBooleanArray(int[] shape, boolean[] data, boolean fortranOrder) {
+  public NpyDoubleArray(int[] shape, double[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyBooleanArray vectorOf(boolean[] data) {
-    return new NpyBooleanArray(new int[] {data.length}, data, false);
+  public static NpyDoubleArray vectorOf(double[] data) {
+    return new NpyDoubleArray(new int[]{data.length}, data, false);
   }
 
   /**
@@ -23,8 +20,8 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyBooleanArray rowOrderOf(boolean[] data, int rows, int cols) {
-    return new NpyBooleanArray(new int[]{rows, cols}, data, false);
+  public static NpyDoubleArray rowOrderOf(double[] data, int rows, int cols) {
+    return new NpyDoubleArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -36,13 +33,13 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyBooleanArray columnOrderOf(boolean[] data, int rows, int cols) {
-    return new NpyBooleanArray(new int[]{rows, cols}, data, true);
+  public static NpyDoubleArray columnOrderOf(double[] data, int rows, int cols) {
+    return new NpyDoubleArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.bool;
+    return NpyDataType.f8;
   }
 
   @Override
@@ -52,49 +49,42 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    byte b = data[i] ? (byte) 1 : (byte) 0;
-    buffer.put(b);
+    buffer.putDouble(data[i]);
   }
 
   @Override
-  public boolean isBooleanArray() {
+  public boolean isDoubleArray() {
     return true;
   }
 
   @Override
-  public NpyBooleanArray asBooleanArray() {
+  public NpyDoubleArray asDoubleArray() {
     return this;
+  }
+
+  @Override
+  public NpyBooleanArray asBooleanArray() {
+    var booleans = new boolean[data.length];
+    for (int i = 0; i < data.length; i++) {
+      booleans[i] = data[i] != 0;
+    }
+    return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }
 
   @Override
   public NpyByteArray asByteArray() {
     var bytes = new byte[data.length];
     for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        bytes[i] = 1;
-      }
+      bytes[i] = (byte) data[i];
     }
     return new NpyByteArray(copyShape(), bytes, fortranOrder);
-  }
-
-  @Override
-  public NpyDoubleArray asDoubleArray() {
-    var doubles = new double[data.length];
-    for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        doubles[i] = 1d;
-      }
-    }
-    return new NpyDoubleArray(copyShape(), doubles, fortranOrder);
   }
 
   @Override
   public NpyFloatArray asFloatArray() {
     var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        floats[i] = 1f;
-      }
+      floats[i] = (float) data[i];
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
@@ -103,9 +93,7 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        ints[i] = 1;
-      }
+      ints[i] = (int) data[i];
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
@@ -114,9 +102,7 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyLongArray asLongArray() {
     var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        longs[i] = 1L;
-      }
+      longs[i] = (long) data[i];
     }
     return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
@@ -125,11 +111,8 @@ public final class NpyBooleanArray extends AbstractNpyArray<boolean[]> {
   public NpyShortArray asShortArray() {
     var shorts = new short[data.length];
     for (int i = 0; i < data.length; i++) {
-      if (data[i]) {
-        shorts[i] = 1;
-      }
+      shorts[i] = (short) data[i];
     }
     return new NpyShortArray(copyShape(), shorts, fortranOrder);
   }
 }
-  

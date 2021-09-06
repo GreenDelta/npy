@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
-import org.openlca.npy.arrays.NpyArray;
-
 
 class ChannelReader {
 

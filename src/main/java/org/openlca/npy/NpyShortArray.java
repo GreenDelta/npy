@@ -1,17 +1,15 @@
-package org.openlca.npy.arrays;
+package org.openlca.npy;
 
 import java.nio.ByteBuffer;
 
-import org.openlca.npy.NpyDataType;
+public final class NpyShortArray extends AbstractNpyArray<short[]> {
 
-public final class NpyLongArray extends AbstractNpyArray<long[]> {
-
-  public NpyLongArray(int[] shape, long[] data, boolean fortranOrder) {
+  public NpyShortArray(int[] shape, short[] data, boolean fortranOrder) {
     super(shape, data, fortranOrder);
   }
 
-  public static NpyLongArray vectorOf(long[] data) {
-    return new NpyLongArray(new int[] {data.length}, data, false);
+  public static NpyShortArray vectorOf(short[] data) {
+    return new NpyShortArray(new int[] {data.length}, data, false);
   }
 
   /**
@@ -22,8 +20,8 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyLongArray rowOrderOf(long[] data, int rows, int cols) {
-    return new NpyLongArray(new int[]{rows, cols}, data, false);
+  public static NpyShortArray rowOrderOf(short[] data, int rows, int cols) {
+    return new NpyShortArray(new int[]{rows, cols}, data, false);
   }
 
   /**
@@ -35,13 +33,13 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
    * @param cols the number of columns of the array
    * @return a 2d array of the given shape
    */
-  public static NpyLongArray columnOrderOf(long[] data, int rows, int cols) {
-    return new NpyLongArray(new int[]{rows, cols}, data, true);
+  public static NpyShortArray columnOrderOf(short[] data, int rows, int cols) {
+    return new NpyShortArray(new int[]{rows, cols}, data, true);
   }
 
   @Override
   public NpyDataType dataType() {
-    return NpyDataType.i8;
+    return NpyDataType.i2;
   }
 
   @Override
@@ -51,16 +49,16 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
 
   @Override
   public void writeElementTo(int i, ByteBuffer buffer) {
-    buffer.putLong(data[i]);
+    buffer.putShort(data[i]);
   }
 
   @Override
-  public boolean isLongArray() {
+  public boolean isShortArray() {
     return true;
   }
 
   @Override
-  public NpyLongArray asLongArray() {
+  public NpyShortArray asShortArray() {
     return this;
   }
 
@@ -95,7 +93,7 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
   public NpyFloatArray asFloatArray() {
     var floats = new float[data.length];
     for (int i = 0; i < data.length; i++) {
-      floats[i] = (float) data[i];
+      floats[i] = data[i];
     }
     return new NpyFloatArray(copyShape(), floats, fortranOrder);
   }
@@ -104,18 +102,18 @@ public final class NpyLongArray extends AbstractNpyArray<long[]> {
   public NpyIntArray asIntArray() {
     var ints = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      ints[i] = (int) data[i];
+      ints[i] = data[i];
     }
     return new NpyIntArray(copyShape(), ints, fortranOrder);
   }
 
   @Override
-  public NpyShortArray asShortArray() {
-    var shorts = new short[data.length];
+  public NpyLongArray asLongArray() {
+    var longs = new long[data.length];
     for (int i = 0; i < data.length; i++) {
-      shorts[i] = (short) data[i];
+      longs[i] = data[i];
     }
-    return new NpyShortArray(copyShape(), shorts, fortranOrder);
+    return new NpyLongArray(copyShape(), longs, fortranOrder);
   }
 }
   
