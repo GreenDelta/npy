@@ -64,12 +64,17 @@ abstract class NpyArrayReader {
 
   final void readAllFrom(ByteBuffer buffer) {
     while (pos != elementCount && buffer.remaining() >= elementSize) {
-      readNextAt(buffer, pos);
+      nextInto(buffer, pos);
       pos++;
     }
   }
 
-  abstract void readNextAt(ByteBuffer buffer, int pos);
+  final void readNextFrom(ByteBuffer buffer) {
+    nextInto(buffer, pos);
+    pos++;
+  }
+
+  abstract void nextInto(ByteBuffer buffer, int pos);
 
   abstract NpyArray<?> finish();
 
@@ -83,7 +88,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = buffer.get() != 0;
     }
 
@@ -103,7 +108,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = buffer.get();
     }
 
@@ -123,7 +128,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = buffer.getDouble();
     }
 
@@ -145,7 +150,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsFloat(buffer);
     }
 
@@ -167,7 +172,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsInt(buffer);
     }
 
@@ -189,7 +194,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsShort(buffer);
     }
 
@@ -211,7 +216,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = fn.applyAsLong(buffer);
     }
 
@@ -231,7 +236,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = Util.u8ToBigInteger(buffer);
     }
 
@@ -252,7 +257,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       if (terminated)
         return;
       char next = (char)buffer.get();
@@ -288,7 +293,7 @@ abstract class NpyArrayReader {
     }
 
     @Override
-    void readNextAt(ByteBuffer buffer, int pos) {
+    void nextInto(ByteBuffer buffer, int pos) {
       data[pos] = buffer.getInt();
     }
 

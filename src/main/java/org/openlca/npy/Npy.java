@@ -184,7 +184,7 @@ public class Npy {
     }
   }
 
-  private static NpyHeaderDict shape1d(NpyHeaderDict dict, int n) {
+  static NpyHeaderDict shape1d(NpyHeaderDict dict, int n) {
     return NpyHeaderDict.of(dict.dataType())
       .withTypeSize(dict.typeSize())
       .withByteOrder(dict.byteOrder())

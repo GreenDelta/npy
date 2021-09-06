@@ -1,5 +1,7 @@
 package org.openlca.npy;
 
+import java.util.function.Function;
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -47,4 +49,42 @@ public class Array2dTest {
     });
   }
 
+  @Test
+  public void testReadDiag() {
+
+    Function<NpyDoubleArray, NpyDoubleArray> readDiag = array -> {
+      var ref = new Object() {
+        NpyArray<?> diag;
+      };
+      Tests.withFile(file -> {
+        Npy.write(file, array);
+        ref.diag = Array2d.readDiag(file);
+      });
+      assertTrue(ref.diag.isDoubleArray());
+      var diag = ref.diag.asDoubleArray();
+      assertArrayEquals(new int[]{diag.data().length}, diag.shape());
+      return diag;
+    };
+
+    // square matrix
+    var diag = readDiag.apply(NpyDoubleArray.columnOrderOf(
+      new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 3, 3));
+    assertArrayEquals(new double[]{1, 5, 9}, diag.data(), 1e-10);
+
+    // more columns than rows
+    diag = readDiag.apply(NpyDoubleArray.rowOrderOf(new double[]{
+      1, 2, 3,
+      4, 5, 6
+    }, 2, 3));
+    assertArrayEquals(new double[]{1, 5}, diag.data(), 1e-10);
+
+    // more rows than columns
+    diag = readDiag.apply(NpyDoubleArray.rowOrderOf(new double[]{
+      1, 2, 3,
+      4, 5, 6,
+      7, 8, 9,
+      10, 11, 12
+    }, 4, 3));
+    assertArrayEquals(new double[]{1, 5, 9}, diag.data(), 1e-10);
+  }
 }

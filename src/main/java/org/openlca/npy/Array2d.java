@@ -3,6 +3,7 @@ package org.openlca.npy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public final class Array2d {
@@ -353,4 +354,61 @@ public final class Array2d {
   public static <T extends NpyArray<?>> T switchOrder(T array) {
     return OrderSwitch2d.of(array);
   }
+
+  /**
+   * Read the diagonal of the 2d-array (matrix) stored in the given NPY file.
+   *
+   * @param file the NPY file
+   * @return the diagonal of the matrix
+   */
+  public static NpyArray<?> readDiag(File file) {
+    try (var raf = new RandomAccessFile(file, "r");
+         var channel = raf.getChannel()) {
+      var header = NpyHeader.read(channel);
+      return readDiag(raf, header);
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read diagonal from NPY file " + file, e);
+    }
+  }
+
+  public static NpyArray<?> readDiag(RandomAccessFile file, NpyHeader header) {
+    var dict = header.dict();
+    int elemSize = dict.dataType() == NpyDataType.U
+      ? 4
+      : Math.max(dict.dataType().size(), 1);
+
+    int rows = dict.sizeOfDimension(0);
+    int cols = dict.sizeOfDimension(1);
+    int n = Math.min(rows, cols);
+    if (n < 1)
+      throw new IndexOutOfBoundsException(n);
+
+    try {
+      var reader = NpyArrayReader.of(Npy.shape1d(dict, n));
+      var buffer = ByteBuffer.allocate(elemSize);
+      buffer.order(header.byteOrder());
+      var channel = file.getChannel();
+
+      long pos = header.dataOffset();
+      long seekDist = dict.hasFortranOrder()
+        ? (long) (rows + 1) * elemSize
+        : (long) (cols + 1) * elemSize;
+
+      for (int i = 0; i < n; i++) {
+        file.seek(pos);
+        channel.read(buffer);
+        buffer.flip();
+        reader.readNextFrom(buffer);
+        pos += seekDist;
+        buffer.clear();
+      }
+
+      return reader.finish();
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "failed to read diagonal from NPY file: " + file, e);
+    }
+  }
+
 }

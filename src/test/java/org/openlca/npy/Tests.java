@@ -1,7 +1,9 @@
 package org.openlca.npy;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -15,6 +17,16 @@ public class Tests {
   static final File testDir = new File("target/testdata");
 
   private Tests() {
+  }
+
+  static void withFile(Consumer<File> fn) {
+    try {
+      var tmp = Files.createTempFile("_npy_tests", ".npy");
+      fn.accept(tmp.toFile());
+      Files.delete(tmp);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static void eachNpy(Consumer<TestNpy> fn) {
