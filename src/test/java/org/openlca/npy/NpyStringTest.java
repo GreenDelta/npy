@@ -55,9 +55,26 @@ public class NpyStringTest {
   }
 
   @Test
-  public void testWriteCharArray() {
+  public void testWriteAsciiArray() {
     Tests.withFile(file -> {
-      Npy.write(file, NpyCharArray.of("csc"));
+      var ascii = NpyCharArray.of("csc");
+      assertEquals(NpyDataType.S, ascii.dataType());
+      Npy.write(file, ascii);
+      var array = Npy.read(file);
+      assertTrue(array.isCharArray());
+      assertEquals("csc", array.toString());
+    });
+  }
+
+  @Test
+  public void testWriteUnicodeArray() {
+    Tests.withFile(file -> {
+      var unicode = NpyCharArray.of("ÁléImÜberflög");
+      assertEquals(NpyDataType.U, unicode.dataType());
+      Npy.write(file, unicode);
+      var array = Npy.read(file);
+      assertTrue(array.isCharArray());
+      assertEquals("ÁléImÜberflög", array.toString());
     });
   }
 

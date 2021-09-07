@@ -81,7 +81,7 @@ public class Npy {
     } catch (IOException e) {
       throw new RuntimeException(
         "failed to read a range of " +
-        n + " elements from NPY file " + file, e);
+          n + " elements from NPY file " + file, e);
     }
   }
 
@@ -196,11 +196,20 @@ public class Npy {
   public static void write(File file, NpyHeaderDict dict, byte[] data) {
     try (var f = new RandomAccessFile(file, "rw");
          var channel = f.getChannel()) {
+      write(channel, dict, data);
+    } catch (IOException e) {
+      throw new RuntimeException("failed to write npy data to file " + file, e);
+    }
+  }
+
+  private static void write(
+    WritableByteChannel channel, NpyHeaderDict dict, byte[] data) {
+    try {
       var header = dict.toNpyHeader();
       channel.write(ByteBuffer.wrap(header));
       channel.write(ByteBuffer.wrap(data));
-    } catch (IOException e) {
-      throw new RuntimeException("failed to write NPY data to file " + file, e);
+    } catch (Exception e) {
+      throw new RuntimeException("failed to write npy data", e);
     }
   }
 
@@ -215,6 +224,23 @@ public class Npy {
 
   public static void write(WritableByteChannel channel, NpyArray<?> array) {
     try {
+
+      // handle NULL-terminated strings
+      if (array.isCharArray()) {
+        var charArray = array.asCharArray();
+        if (charArray.dataType() == NpyDataType.S) {
+          var chars = charArray.data;
+          var dict = NpyHeaderDict.of(NpyDataType.S)
+            .withTypeSize(chars.length)
+            .create();
+          var bytes = new byte[chars.length + 1];
+          for (int i = 0; i < chars.length; i++) {
+            bytes[i] = (byte) chars[i];
+          }
+          Npy.write(channel, dict, bytes);
+          return;
+        }
+      }
 
       // write the header
       var dataType = array.dataType();
