@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -16,7 +17,54 @@ public class Tests {
 
   static final File testDir = new File("target/testdata");
 
+  static {
+    initTestFiles();
+  }
+
   private Tests() {
+  }
+
+  private static void initTestFiles() {
+
+    BooleanSupplier exists = () -> {
+      if (!testDir.exists())
+        return false;
+      var files = testDir.list();
+      if (files == null)
+        return false;
+      for (var file : files) {
+        if (file.endsWith(".npy"))
+          return true;
+      }
+      return false;
+    };
+
+    if (exists.getAsBoolean())
+      return;
+
+    try {
+      Files.createDirectories(testDir.toPath());
+
+      var pycmds = new String[]{
+        "python3", "python", "py"
+      };
+      for (var pycmd : pycmds) {
+        try {
+          Runtime.getRuntime()
+            .exec(new String[]{pycmd, "scripts/generate_tests.py"})
+            .waitFor();
+        } catch (Exception e) {
+          System.out.println("Command " + pycmd + " failed");
+        }
+        if (exists.getAsBoolean()) {
+          System.out.println("Created test files");
+          break;
+        }
+      }
+
+    } catch (Exception e) {
+      System.err.println("failed to create test files: " + e.getMessage());
+    }
   }
 
   static void withFile(Consumer<File> fn) {
@@ -325,7 +373,7 @@ public class Tests {
     }
   }
 
-	public static class TestNpy {
+  public static class TestNpy {
     private final File file;
     private final NpyDataType dataType;
     private final ByteOrder byteOrder;
@@ -343,10 +391,10 @@ public class Tests {
     }
 
     private static TestNpy of(
-			NpyDataType dataType, String byteOrder, String storageOrder) {
+      NpyDataType dataType, String byteOrder, String storageOrder) {
       var fileName = dataType.name() + "_"
-                     + byteOrder + "_"
-                     + storageOrder + ".npy";
+        + byteOrder + "_"
+        + storageOrder + ".npy";
       var file = new File(testDir, fileName);
       if (!file.exists()) {
         System.err.println("test file is missing: " + file.getAbsolutePath());

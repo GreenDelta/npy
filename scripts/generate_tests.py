@@ -3,7 +3,7 @@ import numpy as np
 import zipfile
 
 
-TESTDIR = "../target/testdata"
+TESTDIR = os.path.join(os.path.dirname(__file__), "../target/testdata")
 
 
 def main():
