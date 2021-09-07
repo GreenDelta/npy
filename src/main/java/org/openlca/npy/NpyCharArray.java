@@ -1,6 +1,7 @@
 package org.openlca.npy;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
@@ -63,11 +64,34 @@ public class NpyCharArray extends AbstractNpyArray<char[]> {
     return new NpyBooleanArray(copyShape(), booleans, fortranOrder);
   }
 
+  /**
+   * Converts this character array into a byte array. If the characters in this
+   * array can be encoded in ASCII, a NULL-terminated byte array will be
+   * returned. Otherwise, an array with the 4-byte unicode code-points encoded
+   * in little-endian order will be returned.
+   *
+   * @return the NPY byte-array representation of this character array
+   */
   @Override
   public NpyByteArray asByteArray() {
-    var bytes = String.valueOf(data)
-      .getBytes(StandardCharsets.UTF_8);
-    return new NpyByteArray(new int[0], bytes, false);
+    var type = dataType();
+    if (type == NpyDataType.S) {
+      // write as NULL terminated string
+      var bytes = new byte[data.length + 1];
+      for (int i = 0; i < data.length; i++) {
+        bytes[i] = (byte) data[i];
+      }
+      return NpyByteArray.vectorOf(bytes);
+    }
+
+    // write unicode code points
+    var bytes = new byte[data.length * 4];
+    var buffer = ByteBuffer.wrap(bytes);
+    buffer.order(ByteOrder.LITTLE_ENDIAN);
+    for (char datum : data) {
+      buffer.putInt(datum);
+    }
+    return NpyByteArray.vectorOf(bytes);
   }
 
   @Override

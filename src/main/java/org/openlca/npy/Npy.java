@@ -225,25 +225,23 @@ public class Npy {
   public static void write(WritableByteChannel channel, NpyArray<?> array) {
     try {
 
-      // handle NULL-terminated strings
+      var dataType = array.dataType();
+
+      // handle strings
       if (array.isCharArray()) {
         var charArray = array.asCharArray();
-        if (charArray.dataType() == NpyDataType.S) {
-          var chars = charArray.data;
-          var dict = NpyHeaderDict.of(NpyDataType.S)
-            .withTypeSize(chars.length)
-            .create();
-          var bytes = new byte[chars.length + 1];
-          for (int i = 0; i < chars.length; i++) {
-            bytes[i] = (byte) chars[i];
-          }
-          Npy.write(channel, dict, bytes);
-          return;
-        }
+        var dict = NpyHeaderDict.of(dataType)
+          .withByteOrder(dataType == NpyDataType.S
+            ? NpyByteOrder.NOT_APPLICABLE
+            : NpyByteOrder.LITTLE_ENDIAN)
+          .withTypeSize(charArray.size())
+          .create();
+        var bytes = charArray.asByteArray().data();
+        Npy.write(channel, dict, bytes);
+        return;
       }
 
       // write the header
-      var dataType = array.dataType();
       var dict = NpyHeaderDict.of(dataType)
         .withShape(array.shape())
         .withFortranOrder(array.hasColumnOrder())
