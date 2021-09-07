@@ -63,4 +63,13 @@ public class NpzTest {
     Files.delete(temp.toPath());
   }
 
+  @Test
+  public void testCreateCscMatrix() {
+    Tests.withFile(file -> {
+      Npz.create(file, zout -> {
+        Npz.write(zout, "format.npy", NpyCharArray.of("csc"));
+      });
+    });
+  }
+
 }

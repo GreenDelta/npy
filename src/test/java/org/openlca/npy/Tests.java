@@ -67,12 +67,12 @@ public class Tests {
     }
   }
 
-  static void withFile(Consumer<File> fn) {
+  static void withFile(ThrowingConsumer<File> fn) {
     try {
       var tmp = Files.createTempFile("_npy_tests", ".npy");
       fn.accept(tmp.toFile());
       Files.delete(tmp);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
@@ -425,5 +425,10 @@ public class Tests {
     public boolean hasFortranOrder() {
       return fortranOrder;
     }
+  }
+
+  @FunctionalInterface
+  public interface ThrowingConsumer<T> {
+    void accept(T t) throws Exception;
   }
 }
