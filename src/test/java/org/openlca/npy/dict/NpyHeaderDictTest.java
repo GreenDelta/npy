@@ -42,7 +42,7 @@ public class NpyHeaderDictTest {
       .withByteOrder(NpyByteOrder.LITTLE_ENDIAN)
       .create();
     assertEquals(
-      "{'descr': '<i4', 'fortran_order': False, 'shape': (2, 3)}",
+      "{'descr': '<i4', 'fortran_order': False, 'shape': (2, 3,)}",
       dict.toString());
   }
 
@@ -55,7 +55,7 @@ public class NpyHeaderDictTest {
       .create()
       .toString();
     assertEquals("{'descr': '<i4', 'fortran_order': False, " +
-      "'shape': (2, 3), '_key': '123abc'}", s);
+      "'shape': (2, 3,), '_key': '123abc'}", s);
   }
 
   @Test

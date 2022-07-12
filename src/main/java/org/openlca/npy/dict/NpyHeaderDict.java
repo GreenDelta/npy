@@ -297,9 +297,9 @@ public class NpyHeaderDict {
     if (shape != null) {
       for (int i = 0; i < shape.length; i++) {
         if (i > 0) {
-          buffer.append(", ");
+          buffer.append(' ');
         }
-        buffer.append(shape[i]);
+        buffer.append(shape[i]).append(',');
       }
     }
     buffer.append(")");
